@@ -11,11 +11,11 @@ const app = express();
 const PORT = 5000; // Choose a port
 
 require('dotenv').config();
-const url = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI, {
 }).then(() =>
-  {console.log('MongoDB Connected'); populateAccounts();})
+  {console.log('MongoDB Connected');})
 .catch(err => console.error('MongoDB Connection Error:', err));
 
 app.use(cors()); // Enable CORS for all routes
