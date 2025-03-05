@@ -1,13 +1,15 @@
-# pokeverse
+# Pokéverse
+## **Description**
+Pokéverse is a Pokémon Pokédex platform that allows users to explore and engage with the Pokémon universe! Users can sign up, log in, and search or browse the Pokédex to discover information about their favorite Pokémon. The platform also enables users to favorite Pokémon, create custom teams, and share their collections with the community.
 
-Member Roles:
-Alex   - PM
-Yama   - Web App
-Lucas  - Mobile
-Nathan - Mobile
-Angy   - API
-Lance  - API
-Denis  - DB & API
+## **Group 11 Members & Roles:**
+- Alex Nash: Project Manager!
+- Lucas Salinas: Frontend (Mobile)
+- Nathan Davis: Frontend (Mobile)
+- Yama Jiang: Frontend (Web)
+- Angela Le: API 
+- Lance Nelson: API 
+- Denis Irala Morales: Database & API 
 
 # SCHEDULE
 
