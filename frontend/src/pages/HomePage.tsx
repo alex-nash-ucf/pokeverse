@@ -1,8 +1,6 @@
 import Navbar from "../components/nav.tsx"; 
 import Menu from "../components/menu.tsx"; 
 import './HomePage.css'; 
-import ControllerButtons from "../components/controls.tsx";
-
 
 
 const HomePage = () => {
@@ -24,10 +22,11 @@ const HomePage = () => {
         </p>
       </div>
 
-      <div className="mt-4 w-full max-w-3xl mx-4 mr-13">
+      <div className="mt-4 w-full max-w-3xl mx-4 mr-13 flex justify-between items-center">
         <Menu />
-        <ControllerButtons/>
+        
       </div>
+
     </div>
   );
 };
