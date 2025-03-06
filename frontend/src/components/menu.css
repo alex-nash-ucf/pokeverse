@@ -1,0 +1,12 @@
+@font-face{
+    font-family: 'PokemonFont';
+    src: url('/fonts/PokemonFont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.menu-box{
+    margin-top:10px;
+    font-family: 'PokemonFont';
+    margin-left:20px;
+}
