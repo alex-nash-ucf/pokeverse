@@ -19,6 +19,7 @@ export default function Menu() {
   const location = useLocation();
   const [inputSequence, setInputSequence] = useState<string[]>([]);
   const [greenBoxColor, setGreenBoxColor] = useState("bg-green-500"); // default
+  const [greenBoxContent, setGreenBoxContent] = useState<React.ReactNode | null>(null); 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
@@ -32,13 +33,16 @@ export default function Menu() {
   const handleInput = (input: string)=> {
     setInputSequence((prev) => {
       const newSequence = [...prev, input].slice(-konamiCode.length);
-      if (JSON.stringify(newSequence)=== JSON.stringify(konamiCode)){
-        setGreenBoxColor("!bg-purple-500"); // change green box 
-        setTimeout(() => setGreenBoxColor("bg-green-500"), 2000); //revert after 2 seconds
+      if (JSON.stringify(newSequence) === JSON.stringify(konamiCode)) {
+        setGreenBoxContent(<img src="/assets/dratini.svg" alt="Dratini" className="object-contain w-full h-full"/>); 
+        setTimeout(() => {
+          setGreenBoxContent(null); 
+        }, 2000);
       }
       return newSequence;
     });
   };
+
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -67,7 +71,7 @@ export default function Menu() {
   }, [navigate, selectedIndex]);
 
   return (
-    
+
     <div className="menu-items flex items-center gap-8">
       {/* menu box*/}
       <div
@@ -101,7 +105,8 @@ export default function Menu() {
           <button className="yellow-button bg-yellow-500 w-8 h-8"></button>
         </div>
         {/*green box */}
-        <div className={`green-box ${greenBoxColor} w-12 h-12 rounded-lg`}></div>
+
+        <div className={`green-box ${greenBoxColor} w-12 h-12 rounded-lg`}>{greenBoxContent}</div>
       </div>
 
       {/* controls up down l r*/}
