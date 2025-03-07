@@ -2,16 +2,23 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./menu.css";
 
-const menuItems = [
+const menuItems= [
   { name: "Home", path: "/" },
   { name: "Sign Up", path: "/signup" },
   { name: "Login", path: "/login" },
   { name: "About", path: "/about" },
 ];
 
+const konamiCode= ["ArrowUp", "ArrowUp", 
+  "ArrowDown", "ArrowDown", 
+  "ArrowLeft", "ArrowRight", 
+  "ArrowLeft", "ArrowRight"];
+
 export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [inputSequence, setInputSequence] = useState<string[]>([]);
+  const [greenBoxColor, setGreenBoxColor] = useState("bg-green-500"); // default
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
@@ -21,9 +28,23 @@ export default function Menu() {
     }
   }, [location.pathname]);
 
+  //super duper secret easter egg
+  const handleInput = (input: string)=> {
+    setInputSequence((prev) => {
+      const newSequence = [...prev, input].slice(-konamiCode.length);
+      if (JSON.stringify(newSequence)=== JSON.stringify(konamiCode)){
+        setGreenBoxColor("!bg-purple-500"); // change green box 
+        setTimeout(() => setGreenBoxColor("bg-green-500"), 2000); //revert after 2 seconds
+      }
+      return newSequence;
+    });
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       event.preventDefault();
+      handleInput(event.key);
+
 
       if (event.key === "ArrowDown") {
         setSelectedIndex((prev) => (prev + 1) % menuItems.length);
@@ -48,7 +69,7 @@ export default function Menu() {
   return (
     
     <div className="menu-items flex items-center gap-8">
-      {/* Menu Box */}
+      {/* menu box*/}
       <div
         className="menu-box flex justify-center items-center outline-none focus:outline-none"
         tabIndex={0}
@@ -72,7 +93,7 @@ export default function Menu() {
       </div>  
 
       {/* controls and buttons */}
-      <div className=" flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4">
         {/* buttons*/}
         <div className="control-buttons flex items-center gap-4" >
           <button className="blue-circle bg-blue-500 w-8 h-8 rounded-full"></button>
@@ -80,7 +101,7 @@ export default function Menu() {
           <button className="yellow-button bg-yellow-500 w-8 h-8"></button>
         </div>
         {/*green box */}
-        <div className="green-box bg-green-500 w-12 h-12 rounded-lg"></div>
+        <div className={`green-box ${greenBoxColor} w-12 h-12 rounded-lg`}></div>
       </div>
 
       {/* controls up down l r*/}
@@ -88,13 +109,13 @@ export default function Menu() {
         {/*top*/}
         <button
           className="!bg-black  p-4 h-9 rounded-t-lg hover:bg-gray-300 transition duration-200 border-b-2 border-gray-400"
-          onClick={() => setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length)}>
+          onClick={() => { handleInput("ArrowUp"); setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length); }}>
         </button>
         {/*left */}
         <div className="flex gap-2">
           <button
             className="!bg-black p-4 h-9 rounded-l-lg hover:bg-gray-300 transition duration-200 border-r-2 border-gray-400"
-            onClick={() => setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length)}>
+            onClick={() => { handleInput("ArrowLeft"); setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length); }}>
           </button>
           {/*middle*/}
           <button
@@ -104,13 +125,13 @@ export default function Menu() {
           {/*right */}
           <button
             className="!bg-black   h-9 p-4 rounded-r-lg hover:bg-gray-300 transition duration-200 border-l-2 border-gray-400"
-            onClick={() => setSelectedIndex((prev) => (prev + 1) % menuItems.length)}>
+            onClick={() => { handleInput("ArrowRight"); setSelectedIndex((prev) => (prev + 1) % menuItems.length); }}>
           </button>
         </div>
         {/* bottom*/}
         <button
           className="!bg-black h-9 p-4 rounded-b-lg hover:bg-gray-300 transition duration-200 border-t-2 border-gray-400"
-          onClick={() => setSelectedIndex((prev) => (prev + 1) % menuItems.length)}>
+          onClick={() => { handleInput("ArrowDown"); setSelectedIndex((prev) => (prev + 1) % menuItems.length); }}>
           </button>
       </div>
     </div>
