@@ -18,13 +18,13 @@ const About = () => {
       <Navbar />
 
       <div className="border-4 border-black p-6 rounded-lg text-center max-w-3xl w-full mt-20 mx-4">
-        <h1 className="hero-text font-[PokemonFont] text-[20px] mb-4">Our Team!</h1>
+        <h1 className="hero-text font-[PokemonFont] mb-4">Our Team!</h1>
 
         {/* members grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 ">
           {teamMembers.map((member, index) => (
             <div key={index} className="flex items-center bg-gray-100 p-2 rounded-lg shadow-md w-full">
-              <img src={member.img} alt={member.name} className=" w-12 h-12 object-cover" />
+              <img src={member.img} alt={member.name} className=" w-10 h-10 object-cover" />
               <div className="ml-2 flex items-center">
                 <h2 className="text-xs font-bold ml-3">{member.name} &nbsp;</h2>
                 <p className="text-xs text-gray-600">( {member.role} )</p>
