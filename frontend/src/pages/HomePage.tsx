@@ -20,13 +20,13 @@ const HomePage = () => {
         <p className="text-md font-[PokemonFont]">
           Create teams, explore the Pokédex, favorite Pokémon, and share with the community!
         </p>
+
       </div>
 
       <div className="mt-4 w-full max-w-3xl mx-4 mr-13 flex justify-between items-center">
         <Menu />
-        
       </div>
-
+      
     </div>
   );
 };

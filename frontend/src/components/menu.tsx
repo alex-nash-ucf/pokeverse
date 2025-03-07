@@ -46,7 +46,8 @@ export default function Menu() {
   }, [navigate, selectedIndex]);
 
   return (
-    <div className="flex items-center gap-8">
+    
+    <div className="menu-items flex items-center gap-8">
       {/* Menu Box */}
       <div
         className="menu-box flex justify-center items-center outline-none focus:outline-none"
@@ -70,17 +71,17 @@ export default function Menu() {
         </div>
       </div>  
 
-      {/* controls and buttons 
-      <div className="control-buttons">
-        <button className="blue-circle ml-2 ">B</button>
-        <button className="red-button ml-25">Red</button>
-        <button className="yellow-button">Yellow </button>
-
-        <div className="green-box rounded-lg ml-25"></div>
-
+      {/* controls and buttons */}
+      <div className=" flex flex-col items-center gap-4">
+        {/* buttons*/}
+        <div className="control-buttons flex items-center gap-4" >
+          <button className="blue-circle bg-blue-500 w-8 h-8 rounded-full"></button>
+          <button className="red-button ml-20 bg-red-500 w-8 h-8"></button>
+          <button className="yellow-button bg-yellow-500 w-8 h-8"></button>
+        </div>
+        {/*green box */}
+        <div className="green-box bg-green-500 w-12 h-12 rounded-lg"></div>
       </div>
-
-      */}
 
       {/* controls up down l r*/}
       <div className="flex flex-col items-center gap-2">

@@ -15,20 +15,20 @@
     background-color: rgb(22, 187, 22);  
     border: 2px solid black;   
     padding: 20px;             
-    margin: 10px;           
+    margin-left: 70px;
     width: 200px;              
     height: 100px;          
 }
-  
+
 .blue-circle{
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    border: 2px solid black; 
     background-color: #4ab1fa; 
-    display: flex;                
+    display: flex;              
     justify-content: center;        
     align-items: center;            
-    font-size: 18px;                
     cursor: pointer;              
 }
 
@@ -37,7 +37,9 @@
     color: white;                  
     border: 2px solid black;        
     padding: 8px 16px;             
-    cursor: pointer;               
+    cursor: pointer;        
+    height: 1px;
+    width:50px;       
 }
   
 .yellow-button{
@@ -45,7 +47,8 @@
     color: black;                  
     border: 2px solid black;       
     padding: 8px 16px;             
-    cursor: pointer;               
+    cursor: pointer;    
+    height: 1px;
+    width:50px;             
 }
-  
 
