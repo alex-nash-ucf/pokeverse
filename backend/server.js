@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // Enable Cross-Origin Resource Sharing
 
 const app = express();
-const PORT = 5000; // Choose a port
+const PORT = 5001; // Choose a port
 
 require('dotenv').config();
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -74,10 +74,35 @@ const Pokemon = mongoose.model('Pokemon', pokemonSchema);
 
 // API Endpoints:
 
+// Login In
+app.post("/userlogin", async (req, res) =>{
+  try
+  {
+    const { login, password } = req.body;
+    const user = await Account.findOne({ username: login, password: password })
+
+    if (!user) 
+    {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    var ret = { id: user._id, user: user.username, email: user.email };
+    res.status(200).json(ret);
+
+  }
+
+  catch(error)
+  {
+    console.error = ('Invalid user name/password', error);
+    res.status(500).json({error: 'Failed to login'});
+  }
+
+});
+
 // Example: Get all users (Mostly for testing you can probably remove it)
 app.get('/users', async (req, res) => {
     try {
-      const users = await User.find();
+      const users = await Account.find();
       res.json(users);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch users' });
@@ -88,7 +113,7 @@ app.get('/users', async (req, res) => {
 app.post('/addUser', async (req, res) => {
   
     try {
-      res.status(201).json(createAccount(req.body)); // 201 Created status code
+      res.status(201).json(newAccount); // 201 Created status code
     } catch (error) {
       res.status(500).json({ error: 'Failed to create user' });
     }
