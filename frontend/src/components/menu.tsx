@@ -46,30 +46,37 @@ export default function Menu() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      event.preventDefault();
-      handleInput(event.key);
-
-
-      if (event.key === "ArrowDown") {
-        setSelectedIndex((prev) => (prev + 1) % menuItems.length);
-      } else if (event.key === "ArrowUp") {
-        setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length);
-      } else if (event.key === "ArrowLeft") {
-        setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length);
-      } else if (event.key === "ArrowRight") {
-        setSelectedIndex((prev) => (prev + 1) % menuItems.length);
-      } else if (event.key === "Enter") {
-        navigate(menuItems[selectedIndex].path);
+      const isInputFocused = 
+        document.activeElement?.tagName === "INPUT" || 
+        document.activeElement?.tagName === "TEXTAREA";
+  
+      if (!isInputFocused && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(event.key)) {
+        event.preventDefault();
+      }
+  
+      if (!isInputFocused) {
+        handleInput(event.key);
+  
+        if (event.key === "ArrowDown") {
+          setSelectedIndex((prev) => (prev + 1) % menuItems.length);
+        } else if (event.key === "ArrowUp") {
+          setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length);
+        } else if (event.key === "ArrowLeft") {
+          setSelectedIndex((prev) => (prev - 1 + menuItems.length) % menuItems.length);
+        } else if (event.key === "ArrowRight") {
+          setSelectedIndex((prev) => (prev + 1) % menuItems.length);
+        } else if (event.key === "Enter") {
+          navigate(menuItems[selectedIndex].path);
+        }
       }
     };
-
+  
     window.addEventListener("keydown", handleKeyDown);
-
+  
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [navigate, selectedIndex]);
-
   return (
 
     <div className="menu-items flex items-center gap-8">

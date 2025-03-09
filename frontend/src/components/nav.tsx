@@ -16,7 +16,7 @@ const Navbar = () =>{
           style={{ clipPath: "polygon(0% 0%, 90% 0%, 50% 100%, 0% 100%)"}}>
         </div>
         
-        <div className="big-circle"></div>
+        <div className="big-circle cursor-pointer" onClick={handleClick} ></div>
   
         <div className="flex space-x-2">
           <div className="small-circle red bg-red-500"></div>

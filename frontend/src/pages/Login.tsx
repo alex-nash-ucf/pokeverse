@@ -1,8 +1,10 @@
 import Navbar from "../components/nav.tsx"; 
 import Menu from "../components/menu.tsx"; 
 import './HomePage.css'; 
+import { useState } from "react";
 
 const Login = () => {
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white">
       <Navbar />
@@ -27,7 +29,7 @@ const Login = () => {
           <form className="bg-transparent">
             <div className="mb-4">
               <label htmlFor="user" className="block text-sm font-medium text-gray-700 "></label>
-              <input type="text" id="user" name="user" required className="w-full p-3 border border-gray-300 text-[13px] rounded-md" placeholder="Username"/>
+              <input type="text" id="user" name="user" required className="w-full p-3 border border-gray-300 text-[13px] rounded-md" placeholder="Username" />
             </div>
             
             <div className="mb-4">
