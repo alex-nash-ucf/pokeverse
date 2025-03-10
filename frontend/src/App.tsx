@@ -3,6 +3,8 @@ import HomePage from "./pages/HomePage.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import About from "./pages/About.tsx";
+import LoggedIn from "./pages/loggedIn.tsx"; 
+
 
 
 import './App.css';
@@ -17,6 +19,8 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/about" element={<About/>} />
+          <Route path="/loggedIn" element={<LoggedIn/>} />
+
 
         </Routes>
       </div>
