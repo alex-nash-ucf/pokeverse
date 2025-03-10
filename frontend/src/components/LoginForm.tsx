@@ -18,35 +18,41 @@ const LoginForm = () => {
 
   const doLogin = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
-
-    var obj = { username: loginName, password: loginPassword };
-    var js = JSON.stringify(obj);
-
-    try{
+  
+    const obj = { login: loginName, password: loginPassword };
+    const js = JSON.stringify(obj);
+  
+    try {
       const response = await fetch("http://localhost:5001/userlogin", {
         method: "POST",
         body: js,
         headers: { "Content-Type": "application/json" },
       });
-
-      const res = await response.json();
-
-      if(res.id<= 0) {
-        setMessage("User/Password combination incorrect");
-      } else {
-        const user = { firstName: res.firstName, lastName: res.lastName, id: res.id };
-        localStorage.setItem("user_data", JSON.stringify(user));
-
-        setMessage("");
-        //set logged in page once made 
-        navigate("/loggedIn"); 
+  
+      if (!response.ok) {
+        setMessage("Error: Invalid response from server");
+        return;
       }
+  
+      const res = await response.json();
+      console.log("Login response:", res);
+  
+      if (!res || !res.id) {  
+        setMessage("User/Password combination incorrect");
+        return;
+      }
+  
+      const user= { username: res.user, email: res.email, id: res.id };
+      localStorage.setItem("user_data", JSON.stringify(user));
+  
+      setMessage("");
+      navigate("/loggedIn"); 
     } catch (error) {
       setMessage("Error occurred during login");
-      console.error(error);
+      console.error("Login error:", error);
     }
   };
-
+  
   return (
     <div className="w-1/2 p-6 login-box">
       <form onSubmit={doLogin} className="bg-transparent">
