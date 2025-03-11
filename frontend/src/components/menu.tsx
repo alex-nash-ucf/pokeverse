@@ -5,8 +5,10 @@ import "./menu.css";
 const menuItems= [
   { name: "Home", path: "/" },
   { name: "Sign Up", path: "/signup" },
-  { name: "Login", path: "/login" },
-  { name: "About", path: "/about" },
+  { name: "Login", path: "/login"},
+  { name: "Reset", path: "/resetpass" },
+  { name: "About", path: "/about" }
+
 ];
 
 const konamiCode= ["ArrowUp", "ArrowUp", 

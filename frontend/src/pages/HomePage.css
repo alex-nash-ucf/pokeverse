@@ -30,8 +30,7 @@
 }
 
 
-
-.login-btn {
+.login-btn, .reset-btn{
     background-color: #f30808; 
     color: white;
     padding: 12px;
@@ -43,11 +42,10 @@
     font-weight: bold;
   }
 
-.login-btn:hover{
+.login-btn:hover, .reset-btn:hover{
     background-color: black; 
     color: white; 
   }
-
 
 
 

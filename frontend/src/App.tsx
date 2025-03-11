@@ -4,6 +4,8 @@ import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import About from "./pages/About.tsx";
 import LoggedIn from "./pages/loggedIn.tsx"; 
+import ResetPass from "./pages/resetpass.tsx"; 
+
 
 
 
@@ -20,6 +22,7 @@ function App() {
           <Route path="/login" element={<Login/>} />
           <Route path="/about" element={<About/>} />
           <Route path="/loggedIn" element={<LoggedIn/>} />
+          <Route path="/resetpass" element={<ResetPass/>} />
 
 
         </Routes>

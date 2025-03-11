@@ -95,7 +95,7 @@ const LoginForm = () => {
 
         <div className="mt-4 text-center font-[PokemonFont] text-[10px]">
           Forgot Password?
-          <a href="#" className="font-medium !text-red-600 !underline !hover:text-red-700 ml-2">
+          <a href="/resetpass" className="font-medium !text-red-600 !underline !hover:text-red-700 ml-2">
             Reset here
           </a>
         </div>
