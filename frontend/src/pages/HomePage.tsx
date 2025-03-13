@@ -5,7 +5,7 @@ import './HomePage.css';
 
 const HomePage = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+    <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
       <Navbar />
       <div className="border-4 border-black p-6 rounded-lg text-center max-w-3xl mt-20 mx-4">
         <h1 className="hero-text font-[PokemonFont]">
@@ -17,7 +17,7 @@ const HomePage = () => {
           <img src="/assets/pokemonswow.png" alt="Pokémon" className="h-16" />
         </div>
 
-        <p className="text-md font-[PokemonFont]">
+        <p className="text-md font-[PokemonFont] text-black">
           Create teams, explore the Pokédex, favorite Pokémon, and share with the community!
         </p>
 

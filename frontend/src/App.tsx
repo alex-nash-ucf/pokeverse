@@ -6,9 +6,6 @@ import About from "./pages/About.tsx";
 import LoggedIn from "./pages/loggedIn.tsx"; 
 import ResetPass from "./pages/resetpass.tsx"; 
 
-
-
-
 import './App.css';
 
 function App() {

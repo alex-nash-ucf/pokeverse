@@ -19,8 +19,8 @@ const konamiCode= ["ArrowUp", "ArrowUp",
 export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [inputSequence, setInputSequence] = useState<string[]>([]);
-  const [greenBoxColor, setGreenBoxColor] = useState("bg-green-500"); // default
+  const [_inputSequence, setInputSequence] = useState<string[]>([]);
+  const [greenBoxColor, _setGreenBoxColor] = useState("bg-green-500"); // default
   const [greenBoxContent, setGreenBoxContent] = useState<React.ReactNode | null>(null); 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -91,8 +91,8 @@ export default function Menu() {
           {menuItems.map((item, index) => (
             <div
               key={index}
-              className={`flex items-center px-2 py-1 cursor-pointer ${
-                selectedIndex === index ? "font-bold" : ""
+              className={`flex items-center px-2 py-1 cursor-pointer text-black${
+                selectedIndex === index ? "font-bold text-black" : ""
               }`}
               onClick={() => navigate(item.path)}
             >

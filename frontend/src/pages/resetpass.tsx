@@ -5,7 +5,7 @@ import ResetPasswordForm from "../components/ResetPasswordForm.tsx";
 
 const ResetPass = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+    <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
       <Navbar />
 
       <div className="border-4 border-black p-6 rounded-lg text-center max-w-3xl w-full sm:w-[700px] md:w-[800px] lg:w-[900px] sm:h-[300px] md:h-[300px] mt-20 flex mx-4">

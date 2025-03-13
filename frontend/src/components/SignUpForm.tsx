@@ -78,7 +78,7 @@ const SignUpForm = () => {
             id="firstName"
             name="firstName"
             required
-            className="w-full p-3 border border-gray-300 text-[13px] rounded-md h-8"
+            className="w-full p-3 border border-gray-300 text-[13px] text-gray-700 rounded-md h-8"
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -92,7 +92,7 @@ const SignUpForm = () => {
             id="lastName"
             name="lastName"
             required
-            className="w-full p-3 border border-gray-300 text-[13px] rounded-md h-8"
+            className="w-full p-3 border border-gray-300 text-[13px] text-gray-700 rounded-md h-8"
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -106,7 +106,7 @@ const SignUpForm = () => {
             id="email"
             name="email"
             required
-            className="w-full p-3 border border-gray-300 text-[13px] rounded-md h-8"
+            className="w-full p-3 border border-gray-300 text-[13px] text-gray-700 rounded-md h-8"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -120,7 +120,7 @@ const SignUpForm = () => {
             id="user"
             name="user"
             required
-            className="w-full p-3 border border-gray-300 text-[13px] rounded-md h-8"
+            className="w-full p-3 border border-gray-300 text-[13px] text-gray-700 rounded-md h-8"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -134,7 +134,7 @@ const SignUpForm = () => {
             id="password"
             name="password"
             required
-            className="w-full p-3 border text-[13px] border-gray-300 rounded-md h-8"
+            className="w-full p-3 border text-[13px] border-gray-300 text-gray-700 rounded-md h-8"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

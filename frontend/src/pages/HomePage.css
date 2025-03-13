@@ -5,9 +5,15 @@
     font-style: normal;
   }
 
+.hero-class{
+  margin-top:40px;
+}
+
 .hero-text{
     font-size: 23px;
     line-height: 1.8;
+    color: black;
+
 }
 
 .hero-text2{

@@ -29,10 +29,12 @@ const LoginForm = () => {
         headers: { "Content-Type": "application/json" },
       });
   
+      /*
       if (!response.ok) {
         setMessage("Error: Invalid response from server");
         return;
       }
+      */
   
       const res = await response.json();
       console.log("Login response:", res);
@@ -57,13 +59,13 @@ const LoginForm = () => {
     <div className="w-1/2 p-6 login-box">
       <form onSubmit={doLogin} className="bg-transparent">
         <div className="mb-4">
-          <label htmlFor="user" className="block text-sm font-medium text-gray-700"></label>
+          <label htmlFor="user" className="block text-sm font-medium !text-gray-700"></label>
           <input
             type="text"
             id="user"
             name="user"
             required
-            className="w-full p-3 border border-gray-300 text-[13px] rounded-md"
+            className="w-full p-3 border border-gray-300 text-[13px] text-gray-700 rounded-md"
             placeholder="Username"
             value={loginName}
             onChange={handleSetLoginName}
@@ -77,7 +79,7 @@ const LoginForm = () => {
             id="password"
             name="password"
             required
-            className="w-full p-3 border text-[13px] border-gray-300 rounded-md"
+            className="w-full p-3 border text-[13px] border-gray-300 text-gray-700 rounded-md"
             placeholder="Password"
             value={loginPassword}
             onChange={handleSetPassword}
@@ -93,7 +95,7 @@ const LoginForm = () => {
           Login
         </button>
 
-        <div className="mt-4 text-center font-[PokemonFont] text-[10px]">
+        <div className="mt-4 text-center font-[PokemonFont] text-[10px] text-black">
           Forgot Password?
           <a href="/resetpass" className="font-medium !text-red-600 !underline !hover:text-red-700 ml-2">
             Reset here
