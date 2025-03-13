@@ -3,6 +3,7 @@ const http = require('http');
 const hostname = 'localhost'; // Localhost
 
 const express = require('express');
+const axios = require('axios');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Enable Cross-Origin Resource Sharing
@@ -129,6 +130,53 @@ app.delete('/users/:id', async (req, res) => { // Delete user (We probably won't
       res.status(500).json({ error: 'Failed to delete user' });
   }
 });
+
+app.get('/pokemon/search/:query', async (req,res)=>{
+  const query = req.params.query.toLowerCase();
+  try {
+    // Attempt to fetch by name directly (faster if it's an exact match)
+    const nameResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
+    const simplifiedPokemon = {
+      name: nameResponse.data.name,
+      types: nameResponse.data.types.map(type => type.type.name),
+      pokedexNumber: nameResponse.data.id,
+    };
+    res.json(simplifiedPokemon);
+    return; // Exit the function after successful name search
+
+  } catch (nameError) {
+    // If direct name search fails, try fuzzy search or other methods
+    try {
+      // Fuzzy search using pokemon species endpoint. This endpoint allows searching by name.
+      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=1000`);
+      const results = speciesResponse.data.results;
+      const matchingPokemon = results.filter(pokemon => pokemon.name.includes(query));
+
+      if (matchingPokemon.length > 0) {
+        // Fetch detailed information for each matching Pokemon.
+        const simplifiedPokemonList = await Promise.all(
+          matchingPokemon.map(async (pokemon) => {
+            const pokemonResponse = await axios.get(pokemon.url.replace("-species","")); //replace -species to get pokemon endpoint.
+            return {
+              name: pokemonResponse.data.name,
+              types: pokemonResponse.data.types.map(type => type.type.name),
+              pokedexNumber: pokemonResponse.data.id,
+            };
+          })
+        );
+        res.json(simplifiedPokemonList);
+
+      } else {
+        res.status(404).json({ message: 'Pokemon not found' });
+      }
+    } catch (speciesError) {
+      console.error('Error during species search:', speciesError);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+})
+
+// Auxiliar functions
 
 async function createAccount(accountData) {
   try {
