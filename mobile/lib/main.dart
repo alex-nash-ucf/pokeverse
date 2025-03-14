@@ -8,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,23 +21,60 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-class GettingStartedScreen extends StatelessWidget{
-
-  @override Widget build(BuildContext context) {
+class GettingStartedScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text("WHY DOSNT THE TEXT SHOW UP"),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          "Pokeverse demo",
+          style: TextStyle(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            fontSize: 24,
+          ),
         ),
+      ),
 
-        body: Column(
-            children: [
-                Container(color: Colors.green, height: 55,),
-                Container(color: const Color.fromARGB(255, 109, 76, 175), height: 100,)
-            ],
-        ),
+      body: Column(
+        children: [
+            
+          // CAROUSEL
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(
+                  4, // 4 items in the carousel
+                  (index) => Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color:
+                          index.isEven
+                              ? Colors.blue
+                              : const Color.fromARGB(255, 31, 31, 193),
+                      border: Border.all(color: Colors.white, width: 2.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Container ${index + 1}',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          //NAVBAR
+          Container(
+            height: 64,
+            color: const Color.fromARGB(255, 169, 169, 241),
+          ),
+        ],
+      ),
     );
   }
 }
-
-
