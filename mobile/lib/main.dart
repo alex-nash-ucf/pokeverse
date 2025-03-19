@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/componenets/carouselItem.dart';
 import 'package:mobile/themes/theme.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -15,8 +17,8 @@ class MyApp extends StatelessWidget {
       home: GettingStartedScreen(),
 
       theme: lightMode,
-      //darkTheme: darkMode,
 
+      //darkTheme: darkMode,
     );
   }
 }
@@ -38,7 +40,6 @@ class GettingStartedScreen extends StatelessWidget {
 
       body: Column(
         children: [
-            
           // CAROUSEL
           Expanded(
             child: SingleChildScrollView(
@@ -46,23 +47,8 @@ class GettingStartedScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: List.generate(
-                  4, // 4 items in the carousel
-                  (index) => Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color:
-                          index.isEven
-                              ? Colors.blue
-                              : const Color.fromARGB(255, 31, 31, 193),
-                      border: Border.all(color: Colors.white, width: 2.0),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Container ${index + 1}',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ),
+                  4,
+                  (index) => CarouselItem(), 
                 ),
               ),
             ),
@@ -71,7 +57,7 @@ class GettingStartedScreen extends StatelessWidget {
           //NAVBAR
           Container(
             height: 64,
-            color: const Color.fromARGB(255, 169, 169, 241),
+            color: const Color.fromARGB(255, 114, 114, 255),
           ),
         ],
       ),
