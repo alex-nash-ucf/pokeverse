@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
 import 'package:mobile/themes/theme.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -15,17 +13,32 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pokeverse',
-      // home: LoginPage(),
       home: GettingStartedScreen(),
-
       theme: lightMode,
-
-      //darkTheme: darkMode,
     );
   }
 }
 
-class GettingStartedScreen extends StatelessWidget {
+class GettingStartedScreen extends StatefulWidget {
+  @override
+  _GettingStartedScreenState createState() => _GettingStartedScreenState();
+}
+
+class _GettingStartedScreenState extends State<GettingStartedScreen> {
+  final PageController _pageController = PageController();
+  int _selectedIndex = 0; 
+
+  void _onNavBarTap(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _pageController.animateToPage(
+        index,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,38 +52,42 @@ class GettingStartedScreen extends StatelessWidget {
           ),
         ),
       ),
-
       body: Column(
         children: [
           // CAROUSEL
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(4, (index) => CarouselItem()),
-              ),
+            child: PageView(
+              controller: _pageController,
+              children: List.generate(5, (index) => CarouselItem()),
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
             ),
           ),
 
-          //NAVBAR
+          // NAVBAR
           Container(
             height: 64,
             color: Theme.of(context).primaryColor,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceEvenly, // Equal spacing
-                children: [
-                  NavBarButton(icon: Icons.home),
-                  NavBarButton(icon: Icons.table_rows),
-                  NavBarButton(icon: Icons.favorite),
-                  NavBarButton(icon: Icons.people_alt),
-                  NavBarButton(icon: Icons.exit_to_app),
-                ],
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(5, (index) {
+                  return NavBarButton(
+                    icon: [
+                      Icons.home,
+                      Icons.table_rows,
+                      Icons.favorite,
+                      Icons.people_alt,
+                      Icons.exit_to_app
+                    ][index],
+                    isSelected: _selectedIndex == index,
+                    onPressed: () => _onNavBarTap(index),
+                  );
+                }),
               ),
             ),
           ),
@@ -82,18 +99,24 @@ class GettingStartedScreen extends StatelessWidget {
 
 class NavBarButton extends StatelessWidget {
   final IconData icon;
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
+  final bool isSelected;
 
-  const NavBarButton({Key? key, required this.icon, this.onPressed})
-    : super(key: key);
+  const NavBarButton({
+    Key? key,
+    required this.icon,
+    required this.onPressed,
+    required this.isSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onPressed,
       icon: Icon(
-        icon, 
-        color: Theme.of(context).scaffoldBackgroundColor,
+        icon,
+        color: isSelected ? const Color.fromARGB(255, 145, 24, 24) : Theme.of(context).scaffoldBackgroundColor,
+        
       ),
     );
   }
