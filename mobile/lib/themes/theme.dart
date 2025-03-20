@@ -17,6 +17,7 @@ ThemeData lightMode = ThemeData(
     onError: Color.fromRGBO(0, 13, 255, 1), 
     surface: Color.fromRGBO(255, 0, 0, 1), 
     onSurface: Color.fromRGBO(255, 0, 0, 1), 
+
   )
 );
 

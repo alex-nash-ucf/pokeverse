@@ -4,7 +4,6 @@ import 'package:mobile/themes/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -49,10 +48,7 @@ class GettingStartedScreen extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(
-                  4,
-                  (index) => CarouselItem(), 
-                ),
+                children: List.generate(4, (index) => CarouselItem()),
               ),
             ),
           ),
@@ -60,9 +56,44 @@ class GettingStartedScreen extends StatelessWidget {
           //NAVBAR
           Container(
             height: 64,
-            color: const Color.fromARGB(255, 114, 114, 255),
+            color: Theme.of(context).primaryColor,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+              ),
+              child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceEvenly, // Equal spacing
+                children: [
+                  NavBarButton(icon: Icons.home),
+                  NavBarButton(icon: Icons.table_rows),
+                  NavBarButton(icon: Icons.favorite),
+                  NavBarButton(icon: Icons.people_alt),
+                  NavBarButton(icon: Icons.exit_to_app),
+                ],
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class NavBarButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  const NavBarButton({Key? key, required this.icon, this.onPressed})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: Icon(
+        icon, 
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
     );
   }
