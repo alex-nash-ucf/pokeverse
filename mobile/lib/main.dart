@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
 import 'package:mobile/themes/theme.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 
 void main() {
@@ -14,6 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pokeverse',
+      // home: LoginPage(),
       home: GettingStartedScreen(),
 
       theme: lightMode,
