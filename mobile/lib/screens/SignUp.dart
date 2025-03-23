@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:mobile/main.dart';
 import 'dart:convert';
 import 'package:mobile/screens/login.dart';
+import 'package:mobile/screens/hub.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -74,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
         print('Email: ${responseData['email']}');
         print('Name: ${responseData['firstname']} ${responseData['lastName']}');
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => GettingStartedScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HubScreen()));
       } else if (response.statusCode == 401) {
         // Invalid credentials
         ScaffoldMessenger.of(context).showSnackBar(
@@ -101,19 +102,19 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 255, 17, 0),
-        centerTitle: true,
-        title: Text(
-          'Pokeverse',
-          style: TextStyle(
-            color: Colors.black,
-            fontFamily: 'Pokemon GB'
-          ), 
-        ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color.fromARGB(255, 255, 17, 0),
+      //   centerTitle: true,
+      //   title: Text(
+      //     'Pokeverse',
+      //     style: TextStyle(
+      //       color: Colors.black,
+      //       fontFamily: 'Pokemon GB'
+      //     ), 
+      //   ),
 
 
-      ),
+      // ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(

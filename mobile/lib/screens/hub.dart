@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
 import 'package:mobile/componenets/header.dart';
+import 'package:mobile/pages/pokemonSearchPage.dart';
 
-class MainScreen extends StatefulWidget {
+class HubScreen extends StatefulWidget {
   @override
-  _MainScreenState createState() => _MainScreenState();
+  _HubScreenState createState() => _HubScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _HubScreenState extends State<HubScreen> {
   final PageController _pageController = PageController();
   int _selectedIndex = 0;
 
@@ -29,27 +30,16 @@ class _MainScreenState extends State<MainScreen> {
       // BODY
       body: Column(
         children: [
-          Container(
-            height: MediaQuery.of(context).padding.top,
-            color: Theme.of(context).primaryColor,
-          ),
-
-          ClipRect(  
-            clipBehavior: Clip.none,
-            child: CustomPaint(
-              size: Size(MediaQuery.of(context).size.width, 128), 
-              painter: Header(color: Theme.of(context).primaryColor),
-            ),
-          ),
 
           // CAROUSEL
           Expanded(
             child: PageView(
               controller: _pageController,
-              children: List.generate(
-                5,
-                (index) => CarouselItem(),
-              ),
+              children: [
+                PokemonSearch(),
+                ...List.generate(4, (index) => CarouselItem()),
+              ],
+
               onPageChanged: (index) {
                 setState(() {
                   _selectedIndex = index;
@@ -66,6 +56,7 @@ class _MainScreenState extends State<MainScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
                 children: List.generate(5, (index) {
                   return NavBarButton(
                     icon_unpressed:
