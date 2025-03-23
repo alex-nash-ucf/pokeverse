@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
 import 'package:mobile/componenets/header.dart';
-import 'package:mobile/pages/pokemonSearchPage.dart';
 
 class HubScreen extends StatefulWidget {
   @override
@@ -36,7 +35,7 @@ class _HubScreenState extends State<HubScreen> {
             child: PageView(
               controller: _pageController,
               children: [
-                PokemonSearch(),
+                CarouselItem(),
                 ...List.generate(4, (index) => CarouselItem()),
               ],
 
