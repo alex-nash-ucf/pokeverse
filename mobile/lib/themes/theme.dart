@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 
 ThemeData lightMode = ThemeData(
   scaffoldBackgroundColor: Color.fromRGBO(255, 255, 255, 1),
-  shadowColor: const Color.fromARGB(255, 72, 94, 104),
 
   colorScheme: ColorScheme(
     brightness: Brightness.light,
+    shadow: Color.fromARGB(255, 194, 203, 207),
     
     primary: Color.fromRGBO(255, 0, 0, 1), 
     onPrimary: Color.fromRGBO(255, 125, 125, 1), 

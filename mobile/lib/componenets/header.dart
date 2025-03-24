@@ -46,7 +46,7 @@ class Header extends CustomPainter {
     path2.close();
     
     // DRAWING THE LINE
-    canvas.drawPath(path2, paint2,);
+    //canvas.drawPath(path2, paint2,);
 
     // DRAWING THE SHAPE
     canvas.drawPath(path, paint);
