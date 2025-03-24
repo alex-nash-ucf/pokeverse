@@ -35,7 +35,9 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12), // Ensure child is clipped with rounded corners
+        borderRadius: BorderRadius.circular(
+          12,
+        ), // Ensure child is clipped with rounded corners
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.all(16),
@@ -55,7 +57,7 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                     child: ColorFiltered(
                       colorFilter: ColorFilter.mode(
                         const Color.fromARGB(75, 255, 255, 255),
-                        BlendMode.srcIn, 
+                        BlendMode.srcIn,
                       ),
                       child: Image.asset('assets/images/pokeball.png'),
                     ),
@@ -83,7 +85,9 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
               Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  widget.name,
+                  widget.name.isNotEmpty
+                      ? widget.name[0].toUpperCase() + widget.name.substring(1)
+                      : widget.name, 
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
