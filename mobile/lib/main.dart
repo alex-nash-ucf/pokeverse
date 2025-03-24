@@ -56,7 +56,8 @@ class _ScreenContainerState extends State<ScreenContainer> {
 
             CustomPaint(
                 size: Size(MediaQuery.of(context).size.width, 128),
-                painter: Header(color: Theme.of(context).primaryColor),
+                painter: Header(Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary),
+                
             ),
           ],
         ),
