@@ -6,7 +6,12 @@ const LoginForm = () => {
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const navigate = useNavigate();
-
+  var apiURL="";
+  
+  if (import.meta.env.NODE_ENV === 'development') {
+    apiURL="http://localhost:5001";
+  }
+  else apiURL="http://pokeverse.space:5001";
 
   const handleSetLoginName = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setLoginName(e.target.value);
@@ -23,7 +28,7 @@ const LoginForm = () => {
     const js = JSON.stringify(obj);
   
     try {
-      const response = await fetch("http://localhost:5001/userlogin", {
+      const response = await fetch(apiURL+"/userlogin", {
         method: "POST",
         body: js,
         headers: { "Content-Type": "application/json" },

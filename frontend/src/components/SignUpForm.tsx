@@ -8,6 +8,13 @@ const SignUpForm = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
   
+    var apiURL="";
+  
+    if (import.meta.env.NODE_ENV === 'development') {
+      apiURL="http://localhost:5001";
+    }
+    else apiURL="http://pokeverse.space:5001";
+
     const handleSetFirstName= (e: React.ChangeEvent<HTMLInputElement>): void => {
       setFirstName(e.target.value);
     };
@@ -40,9 +47,11 @@ const SignUpForm = () => {
       };
   
       const js= JSON.stringify(userData);
-  
+      
+      
+
       try {
-        const response = await fetch("http://localhost:5000/api/signup", {
+        const response = await fetch(apiURL+"/api/signup", {
           method: "POST",
           body: js,
           headers: { "Content-Type": "application/json" },
