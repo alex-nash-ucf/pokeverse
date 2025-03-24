@@ -42,7 +42,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (username.isEmpty || password.isEmpty || email.isEmpty || fname.isEmpty || lname.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all inputs.')),
+        SnackBar(content: Text('Please fill in all inputs.' , style: TextStyle(color: Colors.black))),
       );
       setState(() {
         _isLoading = false;
@@ -52,14 +52,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:5001/signup'), // UPDATE API CALL
+        Uri.parse('http://10.0.2.2:5001/addUser'), // UPDATE API CALL
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'login': username,
-          'email': email,
-          'password': password,
           'firstName': fname,
           'lastName' : lname,
+          'email': email,
+          'username': username,
+          'password': password,
         }),
       );
 
@@ -68,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
       if (response.statusCode == 200) {
         // SignUp successful
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('SignUp successful')),
+          SnackBar(content: Text('SignUp successful', style: TextStyle(color: Colors.black))),
         );
         // Handle the response data (e.g., save user ID, navigate to the next screen)
         print('User ID: ${responseData['id']}');
@@ -76,7 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
         print('Email: ${responseData['email']}');
         print('Name: ${responseData['firstname']} ${responseData['lastName']}');
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HubScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else if (response.statusCode == 401) {
         // Invalid credentials
         ScaffoldMessenger.of(context).showSnackBar(
@@ -85,13 +85,13 @@ class _SignUpPageState extends State<SignUpPage> {
       } else {
         // Other errors
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to sign up: ${responseData['error']}')),
+          SnackBar(content: Text('Failed to sign up: ${responseData['error']}', style: TextStyle(color: Colors.black))),
         );
       }
     } catch (e) {
       // Handle network or server errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
+        SnackBar(content: Text('An error occurred: $e', style: TextStyle(color: Colors.black))),
       );
     } finally {
       setState(() {
@@ -147,7 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     print('Get Started pressed');
                     Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => ScreenContainer(LoginPage())),
                     );
                   },
                   child: Text(
@@ -161,6 +161,31 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                                 SizedBox(height: 15),
+<<<<<<< HEAD
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 120,
+                      child: TextField(
+                        controller: _fnameController,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          hintText: 'First Name',
+                          hintStyle: TextStyle(color: Colors.black),
+                          filled: true,
+                          fillColor: Colors.grey,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey[600]!),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black), 
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                        ),
+=======
                 SizedBox(
                   width: 250,
                   child: TextField(
@@ -174,13 +199,32 @@ class _SignUpPageState extends State<SignUpPage> {
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey[600]!),
                         borderRadius: BorderRadius.circular(20),
+>>>>>>> ced8f3b5f2536d0553bf4bcdda582a5e9c72200e
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black), 
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                     ),
+<<<<<<< HEAD
+                    SizedBox(width: 10),
+                    Container(
+                      width: 120,
+                      child: TextField(
+                        controller: _lnameController,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                          hintText: 'Last Name',
+                          hintStyle: TextStyle(color: Colors.black),
+                          filled: true,
+                          fillColor: Colors.grey,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey[600]!),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black), 
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                        ),
+=======
                   ),
                 ),
                                 SizedBox(height: 15),
@@ -197,14 +241,10 @@ class _SignUpPageState extends State<SignUpPage> {
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey[600]!),
                         borderRadius: BorderRadius.circular(20),
+>>>>>>> ced8f3b5f2536d0553bf4bcdda582a5e9c72200e
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black), 
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                     ),
-                  ),
+                  ],
                 ),
                 SizedBox(height: 15),
                 SizedBox(

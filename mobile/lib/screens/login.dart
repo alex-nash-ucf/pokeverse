@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:5001/userlogin'), // Replace with your API endpoint
+        Uri.parse('http://10.0.2.2:5001/userlogin'), // Replace with your API endpoint
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'login': username,
@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
         print('User ID: ${responseData['id']}');
         print('Username: ${responseData['user']}');
         print('Email: ${responseData['email']}');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HubScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else if (response.statusCode == 401) {
         // Invalid credentials
         ScaffoldMessenger.of(context).showSnackBar(
@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                     print('Get Started pressed');
                     Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpPage()),
+                    MaterialPageRoute(builder: (context) => ScreenContainer(SignUpPage())),
                     );
                   },
                   child: Text(
