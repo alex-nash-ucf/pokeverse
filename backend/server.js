@@ -131,41 +131,59 @@ app.delete('/users/:id', async (req, res) => { // Delete user (We probably won't
   }
 });
 
-app.get('/pokemon/search/:query', async (req,res)=>{
-  const query = req.params.query.toLowerCase();
+async function getPokemonColor(speciesUrl) {
   try {
-    // Attempt to fetch by name directly (faster if it's an exact match)
-    const nameResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
+    const speciesResponse = await axios.get(speciesUrl);
+    return speciesResponse.data.color.name;
+  } catch (error) {
+    console.error('Error fetching Pokemon species:', error);
+    return null;
+  }
+}
+
+app.get('/pokemon/search/:query', async (req, res) => {
+  const query = req.params.query.toLowerCase();
+
+  try {
+    const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
+    const speciesUrl = pokemonResponse.data.species.url;
+    const color = await getPokemonColor(speciesUrl);
+
     const simplifiedPokemon = {
-      name: nameResponse.data.name,
-      types: nameResponse.data.types.map(type => type.type.name),
-      pokedexNumber: nameResponse.data.id,
+      name: pokemonResponse.data.name,
+      types: pokemonResponse.data.types.map(type => type.type.name),
+      pokedexNumber: pokemonResponse.data.id,
+      color: color,
     };
     res.json(simplifiedPokemon);
-    return; // Exit the function after successful name search
+    return;
 
   } catch (nameError) {
-    // If direct name search fails, try fuzzy search or other methods
     try {
-      // Fuzzy search using pokemon species endpoint. This endpoint allows searching by name.
-      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=1000`);
+      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=10000`);
       const results = speciesResponse.data.results;
       const matchingPokemon = results.filter(pokemon => pokemon.name.includes(query));
 
       if (matchingPokemon.length > 0) {
-        // Fetch detailed information for each matching Pokemon.
         const simplifiedPokemonList = await Promise.all(
           matchingPokemon.map(async (pokemon) => {
-            const pokemonResponse = await axios.get(pokemon.url.replace("-species","")); //replace -species to get pokemon endpoint.
-            return {
-              name: pokemonResponse.data.name,
-              types: pokemonResponse.data.types.map(type => type.type.name),
-              pokedexNumber: pokemonResponse.data.id,
-            };
+            try {
+              const pokemonDataResponse = await axios.get(pokemon.url.replace("-species", ""));
+              const speciesUrl = pokemonDataResponse.data.species.url;
+              const color = await getPokemonColor(speciesUrl);
+              return {
+                name: pokemonDataResponse.data.name,
+                types: pokemonDataResponse.data.types.map(type => type.type.name),
+                pokedexNumber: pokemonDataResponse.data.id,
+                color: color,
+              };
+            } catch (error) {
+              console.error('Error fetching detailed Pokemon data:', error);
+              return null; // Or handle the error as needed
+            }
           })
         );
-        res.json(simplifiedPokemonList);
-
+        res.json(simplifiedPokemonList.filter(p => p !== null)); // Filter out any errors
       } else {
         res.status(404).json({ message: 'Pokemon not found' });
       }
@@ -174,7 +192,7 @@ app.get('/pokemon/search/:query', async (req,res)=>{
       res.status(500).json({ message: 'Internal server error' });
     }
   }
-})
+});
 
 // Auxiliar functions
 
