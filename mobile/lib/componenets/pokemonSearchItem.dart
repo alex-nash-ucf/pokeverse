@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 
 class PokemonSearchItem extends StatefulWidget {
@@ -101,7 +100,7 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
               Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
-                  "#" + widget.index.toString(),
+                  "#${widget.index}",
                   style: TextStyle(
                     color: const Color.fromARGB(200, 255, 255, 255),
                     fontSize: 24,

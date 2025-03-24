@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
-import 'package:mobile/componenets/header.dart';
 import 'package:mobile/pages/pokemonSearch.dart';
 
 class HubScreen extends StatefulWidget {
+  const HubScreen({super.key});
+
   @override
   _HubScreenState createState() => _HubScreenState();
 }
@@ -97,12 +98,12 @@ class NavBarButton extends StatelessWidget {
   final bool isSelected;
 
   const NavBarButton({
-    Key? key,
+    super.key,
     required this.icon_pressed,
     required this.icon_unpressed,
     required this.onPressed,
     required this.isSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
