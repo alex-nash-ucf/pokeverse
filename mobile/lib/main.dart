@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/componenets/carouselItem.dart';
 import 'package:mobile/componenets/header.dart';
-import 'package:mobile/screens/SignUp.dart';
 import 'package:mobile/screens/hub.dart';
-import 'package:mobile/screens/login.dart';
 import 'package:mobile/themes/theme.dart';
 
 void main() {
@@ -26,7 +23,7 @@ class MyApp extends StatelessWidget {
 class ScreenContainer extends StatefulWidget {
   final Widget screen;
 
-  const ScreenContainer(this.screen, {Key? key}) : super(key: key);
+  const ScreenContainer(this.screen, {super.key});
 
   @override
   _ScreenContainerState createState() => _ScreenContainerState();

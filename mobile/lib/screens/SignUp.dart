@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mobile/main.dart';
 import 'dart:convert';
 import 'package:mobile/screens/login.dart';
 import 'package:mobile/screens/hub.dart';
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -160,7 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _fnameController,
@@ -183,7 +184,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _lnameController,
@@ -206,7 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _usernameController,
@@ -229,7 +230,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _emailController,
@@ -252,7 +253,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _passwordController,

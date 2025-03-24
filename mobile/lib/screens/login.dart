@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:mobile/main.dart';
 import 'dart:convert';
 import 'package:mobile/screens/SignUp.dart';
 import 'package:mobile/screens/hub.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -146,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _usernameController,
@@ -171,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Container(
+                SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _passwordController,

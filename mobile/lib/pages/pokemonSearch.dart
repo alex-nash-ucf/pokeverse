@@ -6,6 +6,8 @@ import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/componenets/pokemonSearchItem.dart';
 
 class PokemonSearch extends StatefulWidget {
+  const PokemonSearch({super.key});
+
   @override
   _PokemonSearchState createState() => _PokemonSearchState();
 }
@@ -15,6 +17,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
   List<dynamic> _pokemonResults = [];
   bool _isLoading = false;
   Timer? _debounce;  // Timer for debounce
+  bool _isRequestInProgress = false;  // To track if a request is in progress
 
   // Fetch Pokemon search results from the API
   Future<void> _searchPokemon(String query) async {
@@ -25,32 +28,41 @@ class _PokemonSearchState extends State<PokemonSearch> {
       return;
     }
 
+    // Cancel the previous request if there is an ongoing one
+    if (_isRequestInProgress) {
+      _isRequestInProgress = false; // Mark previous request as canceled
+    }
+
     setState(() {
       _isLoading = true;
+      _isRequestInProgress = true;  // Mark new request as in progress
     });
 
     try {
       final response = await http.get(Uri.parse('http://157.230.80.230:5001/pokemon/search/$query'));
 
-      if (response.statusCode == 200) {
-        final List<dynamic> result = json.decode(response.body);
-        setState(() {
-          _pokemonResults = result;
-        });
-      } else {
-        setState(() {
-          _pokemonResults = [];
-        });
+      if (_isRequestInProgress) { // Proceed only if the request was not canceled
+        if (response.statusCode == 200) {
+          final List<dynamic> result = json.decode(response.body);
+          setState(() {
+            _pokemonResults = result;
+          });
+        } else {
+          setState(() {
+            _pokemonResults = [];
+          });
+        }
       }
     } catch (error) {
       setState(() {
         _pokemonResults = [];
       });
-      // Handle network error
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (_isRequestInProgress) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -113,9 +125,9 @@ class _PokemonSearchState extends State<PokemonSearch> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: _isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator())  // Show loading indicator while fetching data
                 : _pokemonResults.isEmpty
-                    ? Center(child: Text("No Pokémon found"))
+                    ? Center(child: Text("No Pokémon found"))  // Show message if no results found
                     : GridView.builder(
                         itemCount: _pokemonResults.length,
                         shrinkWrap: true,
@@ -142,7 +154,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
 
   @override
   void dispose() {
-    _debounce?.cancel();  // Cancel the timer when the widget is disposed
+    _debounce?.cancel(); 
     super.dispose();
   }
 }
