@@ -7,7 +7,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Enable Cross-Origin Resource Sharing
-
+const jwt =require('jsonwebtoken');
 const app = express();
 const PORT = 5001; // Choose a port
 
@@ -86,8 +86,13 @@ app.post("/userlogin", async (req, res) =>{
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    var ret = { id: user._id, user: user.username, email: user.email };
-    res.status(200).json(ret);
+    const token = jwt.sign(
+      { id: user._id , username: user.username},
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ token });
 
   }
 
@@ -127,6 +132,20 @@ app.delete('/users/:id', async (req, res) => { // Delete user (We probably won't
   } catch (error) {
       console.error('Error deleting user:', error);
       res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+app.get('/verify', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.send("Success");
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
   }
 });
 
@@ -239,10 +258,18 @@ app.get('/pokemon/search/', async (req, res) => {
 
 // Auxiliar functions
 
+/* Example of accountData
+const accountData = { 
+  username: "ash123",
+  password: "hashed_password",
+  email: "ash@example.com",
+};
+*/
+
 async function createTemporaryAccount(accountData) {
   try {
+    
     const newAccount = new temporaryAccountAccount(accountData);
-
     const savedAccount = await newAccount.save();
     console.log('Temporary Account created:', savedAccount);
     return savedAccount;

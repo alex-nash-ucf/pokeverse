@@ -12,10 +12,11 @@ import Community from "./pages/Community.tsx";
 
 
 import './App.css';
+import { AuthProvider } from "./components/AuthProvider.tsx";
 
 function App() {
   return (
-    
+    <AuthProvider>
     <Router>
       <div className="content">
         <Routes>
@@ -34,6 +35,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </AuthProvider>
   );
 }
 

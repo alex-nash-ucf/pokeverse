@@ -14,7 +14,7 @@ const SignUpForm = () => {
       apiURL="http://localhost:5001";
     }
     else apiURL="http://pokeverse.space:5001";
-
+/*
     const handleSetFirstName= (e: React.ChangeEvent<HTMLInputElement>): void => {
       setFirstName(e.target.value);
     };
@@ -34,7 +34,7 @@ const SignUpForm = () => {
     const handleSetPassword= (e: React.ChangeEvent<HTMLInputElement>): void => {
       setPassword(e.target.value);
     };
-  
+  */
     const doSignUp= async (event: React.FormEvent): Promise<void> => {
       event.preventDefault();
   
