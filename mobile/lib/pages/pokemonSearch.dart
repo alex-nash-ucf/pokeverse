@@ -24,13 +24,6 @@ class _PokemonSearchState extends State<PokemonSearch> {
 
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
-    if (query.isEmpty) {
-      setState(() {
-        _pokemonResults = [];
-      });
-      return;
-    }
-
     // Reset pagination and results if a new search is performed
     if (_isRequestInProgress != query) {
       _offset = 0; // Reset offset for new search
@@ -117,8 +110,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
       // Fetch more data when scrolled to the bottom
       if (!_isFetchingMore && !_noMoreResults) {
         final query = _searchController.text;
-        if (query.isNotEmpty) {
-          _searchPokemon(query, offset: _offset);
+        if (query.isNotEmpty || _pokemonResults.isNotEmpty) {
+          _searchPokemon(query, offset: _offset); // Fetch more data
         }
       }
     }
@@ -131,6 +124,9 @@ class _PokemonSearchState extends State<PokemonSearch> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
+
+    // Trigger the initial search when the widget is loaded
+    _searchPokemon('', offset: 0);  // Ensure the first fetch happens
   }
 
   @override
@@ -194,12 +190,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child:
                 _isLoading
-                    ? Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: CircularProgressIndicator(),
-                      ),
-                    ) // Show loading indicator while fetching data
+                    ? SizedBox(height: 16)
                     : _pokemonResults.isEmpty
                     ? Center(
                       child: Padding(
@@ -242,7 +233,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
           ),
 
           // BOTTOM LOADER: Positioned outside the GridView
-          if (_isFetchingMore)
+          if ((!_noMoreResults && _pokemonResults.isNotEmpty) || _isLoading)
             Padding(
               padding:EdgeInsets.fromLTRB(0, 4, 0, 16),
               child: Container(
