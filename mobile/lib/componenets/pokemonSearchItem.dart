@@ -19,6 +19,9 @@ class PokemonSearchItem extends StatefulWidget {
 class _PokemonSearchItemState extends State<PokemonSearchItem> {
   @override
   Widget build(BuildContext context) {
+    // Determine if the background is light or dark
+    final bool isDarkBackground = widget.color.computeLuminance() < 0.5;
+
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 96,
@@ -55,7 +58,9 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                     scale: 2.5,
                     child: ColorFiltered(
                       colorFilter: ColorFilter.mode(
-                        const Color.fromARGB(75, 255, 255, 255),
+                        isDarkBackground ? 
+                          const Color.fromARGB(75, 255, 255, 255) : 
+                          const Color.fromARGB(41, 106, 63, 2),
                         BlendMode.srcIn,
                       ),
                       child: Image.asset('assets/images/pokeball.png'),
@@ -80,35 +85,38 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                 ),
               ),
 
-              // Pokemon Name
+              // Pokemon Name with dynamic text color
               Align(
                 alignment: Alignment.topLeft,
-                child: Text(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  Text(
                   widget.name.isNotEmpty
                       ? widget.name[0].toUpperCase() + widget.name.substring(1)
-                      : widget.name, 
+                      : widget.name,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: isDarkBackground ? Colors.white : const Color.fromARGB(255, 5, 19, 53),
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.left,
                 ),
-              ),
 
-              // Pokemon Index Number
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
+                Text(
                   "#${widget.index}",
                   style: TextStyle(
-                    color: const Color.fromARGB(200, 255, 255, 255),
-                    fontSize: 24,
+                    color: isDarkBackground
+                        ? const Color.fromARGB(200, 255, 255, 255)
+                        : const Color.fromARGB(100, 0, 0, 0),
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.left,
                 ),
-              ),
+            
+            ]),),
+
             ],
           ),
           onPressed: () {
