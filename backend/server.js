@@ -160,7 +160,7 @@ app.get('/pokemon/search/:query', async (req, res) => {
 
   } catch (nameError) {
     try {
-      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=10000`);
+      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=50`);
       const results = speciesResponse.data.results;
       const matchingPokemon = results.filter(pokemon => pokemon.name.includes(query));
 
