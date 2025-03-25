@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mobile/screens/login.dart';
 import 'package:mobile/screens/hub.dart';
+import 'package:mobile/main.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -103,19 +104,6 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: const Color.fromARGB(255, 255, 17, 0),
-      //   centerTitle: true,
-      //   title: Text(
-      //     'Pokeverse',
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //       fontFamily: 'Pokemon GB'
-      //     ), 
-      //   ),
-
-
-      // ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
@@ -161,7 +149,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                                 SizedBox(height: 15),
-<<<<<<< HEAD
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -185,24 +172,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                         ),
-=======
-                SizedBox(
-                  width: 250,
-                  child: TextField(
-                    controller: _fnameController,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: 'First Name',
-                      hintStyle: TextStyle(color: Colors.black),
-                      filled: true,
-                      fillColor: Colors.grey,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey[600]!),
-                        borderRadius: BorderRadius.circular(20),
->>>>>>> ced8f3b5f2536d0553bf4bcdda582a5e9c72200e
-                      ),
+                      )
                     ),
-<<<<<<< HEAD
                     SizedBox(width: 10),
                     Container(
                       width: 120,
@@ -224,27 +195,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                         ),
-=======
-                  ),
-                ),
-                                SizedBox(height: 15),
-                SizedBox(
-                  width: 250,
-                  child: TextField(
-                    controller: _lnameController,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: 'Last Name',
-                      hintStyle: TextStyle(color: Colors.black),
-                      filled: true,
-                      fillColor: Colors.grey,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey[600]!),
-                        borderRadius: BorderRadius.circular(20),
->>>>>>> ced8f3b5f2536d0553bf4bcdda582a5e9c72200e
-                      ),
+                      )
                     ),
-                  ],
+                  ]
                 ),
                 SizedBox(height: 15),
                 SizedBox(
