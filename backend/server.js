@@ -22,6 +22,15 @@ mongoose.connect(MONGODB_URI, {
 app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json()); // to parse JSON data
 
+const temporaryAccountSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+});
+
+const temporaryAccount = mongoose.model('temporaryAccount', temporaryAccountSchema);
+
+
 const accountSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -47,6 +56,7 @@ const Account = mongoose.model('Account', accountSchema);
 const pokemonSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Pokemon name
     nickname: { type: String },
+    ability: { type: String, required: true },
     moves: {
       type: [String],
       default: [null, null, null, null],
@@ -57,18 +67,7 @@ const pokemonSchema = new mongoose.Schema({
         message: props => `${props.value} must have exactly 4 elements.`
       },
     },
-    hpEV: { type: Number, default: 0 }, // Effort Value in HP
-    attackEV: { type: Number, default: 0 }, // Effort Value in Attack
-    defenseEV: { type: Number, default: 0 }, // Effort Value in Defense
-    specialAttackEV: { type: Number, default: 0 }, // Effort Value in Special Attack
-    specialDefenseEV: { type: Number, default: 0 }, // Effort Value in Special Defense
-    speedEV: { type: Number, default: 0 },
-    hpIV: { type: Number, default: 0 }, // Individual Value in HP
-    attackIV: { type: Number, default: 0 }, // Individual Value in Attack
-    defenseIV: { type: Number, default: 0 }, // Individual Value in Defense
-    specialAttackIV: { type: Number, default: 0 }, // Individual Value in Special Attack
-    specialDefenseIV: { type: Number, default: 0 }, // Individual Value in Special Defense
-    speedIV: { type: Number, default: 0 },
+    
 });
 
 const Pokemon = mongoose.model('Pokemon', pokemonSchema);
@@ -159,14 +158,15 @@ app.get('/pokemon/search/:query', async (req, res) => {
           pokedexNumber: pokemonResponse.data.id,
           color: color,
       };
-      res.json(simplifiedPokemon); // For direct match, count is 1
+      res.json([simplifiedPokemon]); // For direct match, count is 1
       return;
 
   } catch (nameError) {
       try {
           const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=10000`); // Get all for counting
-          const allMatchingPokemon = speciesResponse.data.results.filter(pokemon => pokemon.name.includes(query));
-          const totalCount = allMatchingPokemon.length;
+          const allMatchingPokemon = query !== ''
+          ? speciesResponse.data.results.filter(pokemon => pokemon.name.includes(query))
+          : speciesResponse.data.results;
           const paginatedMatchingPokemon = allMatchingPokemon.slice(offset, offset + limit);
 
           if (paginatedMatchingPokemon.length > 0) {
@@ -199,7 +199,58 @@ app.get('/pokemon/search/:query', async (req, res) => {
   }
 });
 
+app.get('/pokemon/search/', async (req, res) => {
+  const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;
+  const offset = parseInt(req.query.offset) || 0;
+  try{
+          const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=10000`); // Get all for counting
+          const allMatchingPokemon = speciesResponse.data.results;
+          const paginatedMatchingPokemon = allMatchingPokemon.slice(offset, offset + limit);
+
+          if (paginatedMatchingPokemon.length > 0) {
+              const simplifiedPokemonList = await Promise.all(
+                  paginatedMatchingPokemon.map(async (pokemon) => {
+                      try {
+                          const pokemonDataResponse = await axios.get(pokemon.url.replace("-species", ""));
+                          const speciesUrl = pokemonDataResponse.data.species.url;
+                          const color = await getPokemonColor(speciesUrl);
+                          return {
+                              name: pokemonDataResponse.data.name,
+                              types: pokemonDataResponse.data.types.map(type => type.type.name),
+                              pokedexNumber: pokemonDataResponse.data.id,
+                              color: color,
+                          };
+                      } catch (error) {
+                          console.error('Error fetching detailed Pokemon data:', error);
+                          return null;
+                      }
+                  })
+              );
+              res.json(simplifiedPokemonList.filter(p => p !== null));
+          } else {
+              res.status(404).json({ message: 'Pokemon not found' });
+          }
+      } catch (speciesError) {
+          console.error('Error during species search:', speciesError);
+          res.status(500).json({ message: 'Internal server error' });
+      }
+  }
+);
+
 // Auxiliar functions
+
+async function createTemporaryAccount(accountData) {
+  try {
+    const newAccount = new temporaryAccountAccount(accountData);
+
+    const savedAccount = await newAccount.save();
+    console.log('Temporary Account created:', savedAccount);
+    return savedAccount;
+  } catch (error) {
+    console.error('Error creating account:', error);
+    throw error;
+  }
+}
 
 async function createAccount(accountData) {
   try {
