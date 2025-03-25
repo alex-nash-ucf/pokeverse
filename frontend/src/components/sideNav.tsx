@@ -2,6 +2,7 @@ import './nav.css';
 // import { useNavigate } from 'react-router-dom';
 import { useContext, createContext, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthProvider';
 
 const SidebarContext = createContext<{ expanded: boolean }>({ expanded: true });
 
@@ -13,7 +14,7 @@ interface SideNavProps {
 export const SideNav = ({ children }: SideNavProps) => {
   const [expanded, setExpanded] = useState(false);
   const navigate = useNavigate();
-
+  const {logout}=useAuth();
 
   return (
     <aside className={`fixed top-23 left-0 h-[85vh] transition-all duration-300 ${expanded ? 'w-60' : 'w-16'}`}>
@@ -68,7 +69,10 @@ export const SideNav = ({ children }: SideNavProps) => {
 
         <div className="mb-4 flex justify-between items-center">
           <button
-            onClick={() => navigate('/')} 
+            onClick={() => {
+              logout();
+              navigate('/')
+            }} 
             className="rounded-lg hover:!bg-blue-100 "
 
           >

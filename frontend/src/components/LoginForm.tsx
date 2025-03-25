@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from './AuthProvider';
 
 const LoginForm = () => {
   const [message, setMessage] = useState("");
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const navigate = useNavigate();
+  const {login} = useAuth(); 
   var apiURL="";
   
   if (import.meta.env.NODE_ENV === 'development') {
@@ -44,14 +46,12 @@ const LoginForm = () => {
       const res = await response.json();
       console.log("Login response:", res);
   
-      if (!res || !res.id) {  
+      if (!res.token) {  
         setMessage("User/Password combination incorrect");
         return;
       }
-  
-      const user= { username: res.user, email: res.email, id: res.id };
-      localStorage.setItem("user_data", JSON.stringify(user));
-  
+      
+      login(res.token);
       setMessage("");
       navigate("/loggedIn"); 
     } catch (error) {
