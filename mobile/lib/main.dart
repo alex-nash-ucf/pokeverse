@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Pokeverse', 
-        home: ScreenContainer(LoginPage()), // INSERT SCREEN HERE FOR UNIVERSAL HEADER
+        home: ScreenContainer(HubScreen()), // INSERT SCREEN HERE FOR UNIVERSAL HEADER
         theme: lightMode
     );
   }
