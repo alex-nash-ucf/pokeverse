@@ -28,18 +28,7 @@ const LoggedIn = () => {
             active
             onClick={() => navigate('/teams')} 
           />
-          <SidebarItem 
-            icon={<img src="/assets/heart.svg" alt="Favs" className="w-6 h-4.5" />}
-            text="Favorites" 
-            onClick={() => navigate('/favs')} 
-            active
-          />
-          <SidebarItem 
-            icon={<img src="/assets/community.svg" alt="Community" className="w-6 h-6" />}
-            text="Community" 
-            onClick={() => navigate('/community')} 
-            active
-          />
+        
         </SideNav>
 
         {/* Right content */}

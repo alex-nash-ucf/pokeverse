@@ -4,11 +4,8 @@ import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import About from "./pages/About.tsx";
 import LoggedIn from "./pages/loggedIn.tsx"; 
-import Favs from "./pages/Favorites.tsx"; 
 import ResetPass from "./pages/resetpass.tsx"; 
 import TeamsPage from "./pages/Teams.tsx"; 
-import Community from "./pages/Community.tsx"; 
-
 
 
 import './App.css';
@@ -27,9 +24,6 @@ function App() {
           <Route path="/loggedIn" element={<LoggedIn/>} />
           <Route path="/resetpass" element={<ResetPass/>} />
           <Route path="/teams" element={<TeamsPage/>} />
-          <Route path="/favs" element={<Favs/>} />
-          <Route path="/community" element={<Community/>} />
-
 
 
         </Routes>

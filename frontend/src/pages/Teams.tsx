@@ -26,14 +26,7 @@ const Teams = () => {
             onClick={() => navigate('/teams')} 
 
           />
-          <SidebarItem 
-            icon={<img src="/assets/heart.svg" alt="Favs" className="w-6 h-4.5" />}
-            text="Favorites" active onClick={() => navigate('/favs')} 
-          />
-          <SidebarItem 
-            icon={<img src="/assets/community.svg" alt="Community" className="w-6 h-6" />}
-            text="Community" active onClick={() => navigate('/community')} 
-          />
+        
         </SideNav>
 
         {/* right content */}

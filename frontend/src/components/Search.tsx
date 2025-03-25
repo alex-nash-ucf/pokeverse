@@ -13,7 +13,6 @@ const Search = () => {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [filteredPokemon, setFilteredPokemon] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [favorites, setFavorites] = useState<Pokemon[]>([]); // Add favorites state
 
   const apiURL =
     import.meta.env.NODE_ENV === 'development'
@@ -73,22 +72,6 @@ const Search = () => {
     setFilteredPokemon(filtered);
   }, [searchQuery, pokemonList]);
 
-  const toggleFavorite = (pokemon: Pokemon) => {
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.some((fav) => fav.pokedexNumber === pokemon.pokedexNumber)) {
-        // Remove from favorites if already in the list
-        return prevFavorites.filter((fav) => fav.pokedexNumber !== pokemon.pokedexNumber);
-      } else {
-        // Add to favorites if not in the list
-        return [...prevFavorites, pokemon];
-      }
-    });
-  };
-
-  const isFavorite = (pokedexNumber: number) => {
-    return favorites.some((fav) => fav.pokedexNumber === pokedexNumber);
-  };
-
   return (
     <div className="p-4 ml-20">
       
@@ -127,17 +110,7 @@ const Search = () => {
               ))}
             </div>
 
-            {/* Heart icon for favorites */}
-            <button
-              onClick={() => toggleFavorite(pokemon)}
-              className="mt-2 text-xl p-1 focus:outline-none"
-            >
-              <img
-                src={isFavorite(pokemon.pokedexNumber) ? "/assets/heart.svg" : "/assets/emptyheart.svg"}
-                alt="favorite"
-                className="w-6 h-6"
-              />
-            </button>
+            
           </div>
         ))}
       </div>
