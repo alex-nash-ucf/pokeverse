@@ -141,56 +141,61 @@ async function getPokemonColor(speciesUrl) {
   }
 }
 
+const DEFAULT_LIMIT = 20;
+
 app.get('/pokemon/search/:query', async (req, res) => {
   const query = req.params.query.toLowerCase();
+  const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;
+  const offset = parseInt(req.query.offset) || 0;
 
   try {
-    const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
-    const speciesUrl = pokemonResponse.data.species.url;
-    const color = await getPokemonColor(speciesUrl);
+      const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
+      const speciesUrl = pokemonResponse.data.species.url;
+      const color = await getPokemonColor(speciesUrl);
 
-    const simplifiedPokemon = {
-      name: pokemonResponse.data.name,
-      types: pokemonResponse.data.types.map(type => type.type.name),
-      pokedexNumber: pokemonResponse.data.id,
-      color: color,
-    };
-    res.json(simplifiedPokemon);
-    return;
+      const simplifiedPokemon = {
+          name: pokemonResponse.data.name,
+          types: pokemonResponse.data.types.map(type => type.type.name),
+          pokedexNumber: pokemonResponse.data.id,
+          color: color,
+      };
+      res.json(simplifiedPokemon); // For direct match, count is 1
+      return;
 
   } catch (nameError) {
-    try {
-      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=50`);
-      const results = speciesResponse.data.results;
-      const matchingPokemon = results.filter(pokemon => pokemon.name.includes(query));
+      try {
+          const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/?limit=10000`); // Get all for counting
+          const allMatchingPokemon = speciesResponse.data.results.filter(pokemon => pokemon.name.includes(query));
+          const totalCount = allMatchingPokemon.length;
+          const paginatedMatchingPokemon = allMatchingPokemon.slice(offset, offset + limit);
 
-      if (matchingPokemon.length > 0) {
-        const simplifiedPokemonList = await Promise.all(
-          matchingPokemon.map(async (pokemon) => {
-            try {
-              const pokemonDataResponse = await axios.get(pokemon.url.replace("-species", ""));
-              const speciesUrl = pokemonDataResponse.data.species.url;
-              const color = await getPokemonColor(speciesUrl);
-              return {
-                name: pokemonDataResponse.data.name,
-                types: pokemonDataResponse.data.types.map(type => type.type.name),
-                pokedexNumber: pokemonDataResponse.data.id,
-                color: color,
-              };
-            } catch (error) {
-              console.error('Error fetching detailed Pokemon data:', error);
-              return null; // Or handle the error as needed
-            }
-          })
-        );
-        res.json(simplifiedPokemonList.filter(p => p !== null)); // Filter out any errors
-      } else {
-        res.status(404).json({ message: 'Pokemon not found' });
+          if (paginatedMatchingPokemon.length > 0) {
+              const simplifiedPokemonList = await Promise.all(
+                  paginatedMatchingPokemon.map(async (pokemon) => {
+                      try {
+                          const pokemonDataResponse = await axios.get(pokemon.url.replace("-species", ""));
+                          const speciesUrl = pokemonDataResponse.data.species.url;
+                          const color = await getPokemonColor(speciesUrl);
+                          return {
+                              name: pokemonDataResponse.data.name,
+                              types: pokemonDataResponse.data.types.map(type => type.type.name),
+                              pokedexNumber: pokemonDataResponse.data.id,
+                              color: color,
+                          };
+                      } catch (error) {
+                          console.error('Error fetching detailed Pokemon data:', error);
+                          return null;
+                      }
+                  })
+              );
+              res.json(simplifiedPokemonList.filter(p => p !== null));
+          } else {
+              res.status(404).json({ message: 'Pokemon not found' });
+          }
+      } catch (speciesError) {
+          console.error('Error during species search:', speciesError);
+          res.status(500).json({ message: 'Internal server error' });
       }
-    } catch (speciesError) {
-      console.error('Error during species search:', speciesError);
-      res.status(500).json({ message: 'Internal server error' });
-    }
   }
 });
 
