@@ -91,6 +91,7 @@ const Search = () => {
 
   return (
     <div className="p-4 ml-20">
+      
       <input
         type="text"
         placeholder="Search Pokémon..."
