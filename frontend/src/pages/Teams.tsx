@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './HomePage.css'; 
 
 
-const LoggedIn = () => {
+const Teams = () => {
   const navigate = useNavigate();
   return (
     <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
@@ -28,7 +28,7 @@ const LoggedIn = () => {
           />
           <SidebarItem 
             icon={<img src="/assets/heart.svg" alt="Favs" className="w-6 h-4.5" />}
-            text="Favorites" active onClick={() => navigate('/teams')} 
+            text="Favorites" active onClick={() => navigate('/favs')} 
           />
           <SidebarItem 
             icon={<img src="/assets/community.svg" alt="Community" className="w-6 h-6" />}
@@ -37,13 +37,13 @@ const LoggedIn = () => {
         </SideNav>
 
         {/* right content */}
-        <div className="flex-1 p-4 h-full flex flex-col rounded bg-white shadow-sm">
+        <div className="flex-1 p-4">
           {/* Page content goes here */}
-          <h1>Welcome to the Dashboard</h1>
+          <h1>Teams</h1>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoggedIn;
+export default Teams;

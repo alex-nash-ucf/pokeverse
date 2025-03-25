@@ -1,8 +1,15 @@
+
 @font-face {
   font-family: 'PokemonFont';
   src: url('/fonts/PokemonFont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+}
+
+.forceImg {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 
 .big-circle{
