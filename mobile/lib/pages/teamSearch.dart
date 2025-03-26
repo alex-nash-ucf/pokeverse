@@ -4,16 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
+
 import 'package:mobile/componenets/pokemonSearchItem.dart';
 
-class PokemonSearch extends StatefulWidget {
-  const PokemonSearch({super.key});
+class TeamSearch extends StatefulWidget {
+  const TeamSearch({super.key});
 
   @override
-  _PokemonSearchState createState() => _PokemonSearchState();
+  _TeamSearchState createState() => _TeamSearchState();
 }
 
-class _PokemonSearchState extends State<PokemonSearch> {
+class _TeamSearchState extends State<TeamSearch> {
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _pokemonResults = [];
   bool _isLoading = false;
@@ -189,54 +190,43 @@ class _PokemonSearchState extends State<PokemonSearch> {
           SizedBox(height: 16),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child:
-                _isLoading
-                    ? SizedBox(height: 16)
-                    : _pokemonResults.isEmpty
+            child: _isLoading
+                ? SizedBox(height: 16)
+                : _pokemonResults.isEmpty
                     ? Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Text(
-                          "No Pokémon found",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: const Color.fromARGB(117, 0, 0, 0),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Text(
+                            "No Pokémon found",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: const Color.fromARGB(117, 0, 0, 0),
+                            ),
                           ),
                         ),
+                      )
+                    : Column(
+                        spacing: 16,
+                        children: List.generate(
+                          _pokemonResults.length,
+                          (index) {
+                            final pokemon = _pokemonResults[index];
+                            return PokemonSearchItem(
+                              color: CssColorConverter.fromCssColorName(
+                                pokemon['color'],
+                              ),
+                              name: pokemon['name'],
+                              index: pokemon['pokedexNumber'],
+                            );
+                          },
+                        ),
                       ),
-                    ) // Show message if no results found
-                    : GridView.builder(
-                      itemCount:
-                          _pokemonResults
-                              .length, // Add an extra item for the loading indicator
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemBuilder: (context, index) {
-                        if (index == _pokemonResults.length &&
-                            _isFetchingMore) {
-                          return SizedBox.shrink(); // Remove the loading spinner from GridView
-                        }
-                        final pokemon = _pokemonResults[index];
-                        return PokemonSearchItem(
-                          color: CssColorConverter.fromCssColorName(
-                            pokemon['color'],
-                          ),
-                          name: pokemon['name'],
-                          index: pokemon['pokedexNumber'],
-                        );
-                      },
-                    ),
           ),
 
-          // BOTTOM LOADER: Positioned outside the GridView
+          // BOTTOM LOADER: Positioned outside the Column
           if ((!_noMoreResults && _pokemonResults.isNotEmpty) || _isLoading)
             Padding(
-              padding:EdgeInsets.fromLTRB(0, 16, 0, 16),
+              padding: EdgeInsets.fromLTRB(0, 16, 0, 24),
               child: Container(
                 width: double.infinity, // Make it stretch across the screen
                 child: Center(

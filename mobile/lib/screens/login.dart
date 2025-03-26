@@ -63,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
         print('User ID: ${responseData['id']}');
         print('Username: ${responseData['user']}');
         print('Email: ${responseData['email']}');
+        print('teams: ${responseData['teams']}');
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else if (response.statusCode == 401) {
         // Invalid credentials
