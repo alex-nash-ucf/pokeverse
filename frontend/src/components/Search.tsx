@@ -157,11 +157,14 @@ const Search = () => {
 
       {loading && (
         <div className="flex justify-center my-8">
-          <div className="animate-spin rounded-full ml-10 h-12 w-12 border-t-2 border-b-2 border-blue-300"></div>
-        </div>
+        <img
+            src= '/assets/redpoke.svg'
+            alt="Loading..."
+            className="animate-spin h-12 w-12 ml-10"
+          />        </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="ml-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {filteredPokemon.map((pokemon) => (
          <div
          key={pokemon.pokedexNumber}
