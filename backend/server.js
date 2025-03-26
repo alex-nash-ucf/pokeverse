@@ -256,6 +256,42 @@ app.get('/pokemon/search/', async (req, res) => {
   }
 );
 
+app.get('/pokemon-abilities/:query', async (req, res) => {
+  const query = req.params.query.toLowerCase();
+
+  try {
+    // 1. Fetch Pokemon Species data by name
+    const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${query}`);
+
+    // 2. Extract the URL of the default Pokemon variant
+    const defaultPokemonUrl = speciesResponse.data.varieties.find(variety => variety.is_default)?.pokemon.url;
+
+    if (!defaultPokemonUrl) {
+      return res.status(404).json({ message: `No default Pokemon found for species: ${query}` });
+    }
+
+    // 3. Fetch the default Pokemon data to get abilities
+    const pokemonResponse = await axios.get(defaultPokemonUrl);
+    const abilities = pokemonResponse.data.abilities.map(abilityEntry => ({
+      name: abilityEntry.ability.name,
+      url: abilityEntry.ability.url,
+      is_hidden: abilityEntry.is_hidden,
+      slot: abilityEntry.slot,
+    }));
+
+    res.json(
+      abilities
+    );
+
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({ message: `Pokemon species not found: ${query}` });
+    }
+    console.error('Error fetching Pokemon abilities:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Auxiliar functions
 
 /* Example of accountData
