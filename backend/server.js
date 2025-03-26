@@ -372,8 +372,86 @@ app.get('/getTeams', verifyToken, async (req, res) => {
   }
 });
 
+app.post('/addTeam', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamName } = req.body;
 
+  if (!teamName) {
+    return res.status(400).json({ error: 'Team name is required.' });
+  }
 
+  try {
+    const account = await Account.findById(userId);
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found for this user.' });
+    }
+
+    const newTeam = { name: teamName, pokemon: [] };
+    account.teams.push(newTeam);
+    await account.save();
+
+    res.status(201).json({ message: 'New empty team added successfully.', team: newTeam });
+  } catch (error) {
+    console.error('Error adding team:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.delete('/deleteTeam/:teamId', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamId } = req.params;
+
+  try {
+    const account = await Account.findById(userId);
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found for this user.' });
+    }
+
+    const initialTeamsLength = account.teams.length;
+    account.teams = account.teams.filter(team => team._id.toString() !== teamId);
+
+    if (account.teams.length === initialTeamsLength) {
+      return res.status(404).json({ error: 'Team not found on this account.' });
+    }
+
+    await account.save();
+    res.json({ message: 'Team deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting team:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.put('/updateTeam/:teamId', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamId } = req.params;
+  const { newTeamName } = req.body;
+
+  if (!newTeamName) {
+    return res.status(400).json({ error: 'New team name is required.' });
+  }
+
+  try {
+    const account = await Account.findById(userId);
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found for this user.' });
+    }
+
+    const teamToUpdate = account.teams.find(team => team._id.toString() === teamId);
+
+    if (!teamToUpdate) {
+      return res.status(404).json({ error: 'Team not found on this account.' });
+    }
+
+    teamToUpdate.name = newTeamName;
+    await account.save();
+
+    res.json({ message: 'Team name updated successfully.', team: teamToUpdate });
+  } catch (error) {
+    console.error('Error updating team name:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
