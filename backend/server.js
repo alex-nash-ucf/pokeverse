@@ -72,6 +72,65 @@ const pokemonSchema = new mongoose.Schema({
 
 const Pokemon = mongoose.model('Pokemon', pokemonSchema);
 
+// Auxiliar functions
+
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided or invalid format.' });
+  }
+
+  const token = authHeader.split(' ')[1]; // Extract the token after "Bearer "
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Failed to authenticate token.' });
+    }
+    req.id = decoded.id;
+    req.username = decoded.username;
+    next();
+  });
+
+}
+/* Example of accountData
+const accountData = { 
+  username: "ash123",
+  password: "hashed_password",
+  email: "ash@example.com",
+};
+*/
+
+
+async function createTemporaryAccount(accountData) {
+  try {
+    
+    const newAccount = new temporaryAccountAccount(accountData);
+    const savedAccount = await newAccount.save();
+    console.log('Temporary Account created:', savedAccount);
+    return savedAccount;
+  } catch (error) {
+    console.error('Error creating account:', error);
+    throw error;
+  }
+}
+
+async function createAccount(accountData) {
+  try {
+    const newAccount = new Account(accountData);
+
+    // Create the initial empty team
+    newAccount.teams = [{ name: "My Team", pokemon: [] }];
+
+    const savedAccount = await newAccount.save();
+    console.log('Account created:', savedAccount);
+    return savedAccount;
+  } catch (error) {
+    console.error('Error creating account:', error);
+    throw error;
+  }
+}
+
 // API Endpoints:
 
 // Login In
@@ -135,6 +194,7 @@ app.delete('/users/:id', async (req, res) => { // Delete user (We probably won't
   }
 });
 
+/*
 app.get('/verify', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   
@@ -148,6 +208,7 @@ app.get('/verify', async (req, res) => {
     res.status(401).json({ error: 'Invalid token' });
   }
 });
+*/
 
 async function getPokemonColor(speciesUrl) {
   try {
@@ -292,44 +353,26 @@ app.get('/pokemon-abilities/:query', async (req, res) => {
   }
 });
 
-// Auxiliar functions
+app.get('/getTeams', verifyToken, async (req, res) => {
+  const userId = req.id;
 
-/* Example of accountData
-const accountData = { 
-  username: "ash123",
-  password: "hashed_password",
-  email: "ash@example.com",
-};
-*/
-
-async function createTemporaryAccount(accountData) {
   try {
-    
-    const newAccount = new temporaryAccountAccount(accountData);
-    const savedAccount = await newAccount.save();
-    console.log('Temporary Account created:', savedAccount);
-    return savedAccount;
+    // Find the account by user ID and select only the teams array
+    const account = await Account.findById(userId).select('teams');
+
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found for this user.' });
+    }
+
+    res.json(account.teams);
+
   } catch (error) {
-    console.error('Error creating account:', error);
-    throw error;
+    console.error('Error fetching teams:', error);
+    res.status(500).json({ message: 'Internal server error while fetching teams.' });
   }
-}
+});
 
-async function createAccount(accountData) {
-  try {
-    const newAccount = new Account(accountData);
 
-    // Create the initial empty team
-    newAccount.teams = [{ name: "My Team", pokemon: [] }];
-
-    const savedAccount = await newAccount.save();
-    console.log('Account created:', savedAccount);
-    return savedAccount;
-  } catch (error) {
-    console.error('Error creating account:', error);
-    throw error;
-  }
-}
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
