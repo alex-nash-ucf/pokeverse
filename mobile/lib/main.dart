@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pokeverse',
       home: ScreenContainer(
-        LoginPage(),
+        HubScreen(),
       ), // INSERT SCREEN HERE FOR UNIVERSAL HEADER
       theme: lightMode,
     );

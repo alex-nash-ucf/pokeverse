@@ -13,7 +13,7 @@ ThemeData lightMode = ThemeData(
     primary: Color.fromRGBO(255, 0, 0, 1), 
     onPrimary: Color.fromRGBO(255, 125, 125, 1), 
     secondary: Color.fromRGBO(20, 16, 16, 1), 
-    onSecondary: Color.fromRGBO(53, 53, 53, 1), 
+    onSecondary: Color.fromRGBO(201, 201, 201, 1), 
     
     error: Color.fromRGBO(0, 213, 255, 1), 
     onError: Color.fromRGBO(0, 13, 255, 1), 

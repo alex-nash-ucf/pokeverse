@@ -59,12 +59,11 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login successful', style: TextStyle(color: Colors.black))),
         );
+
+        
         // Handle the response data (e.g., save user ID, navigate to the next screen)
-        print('User ID: ${responseData['id']}');
-        print('Username: ${responseData['user']}');
-        print('Email: ${responseData['email']}');
-        print('teams: ${responseData['teams']}');
-        print('teams: ${responseData}');
+        print('token: ${responseData['token']}');
+
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else if (response.statusCode == 401) {
         // Invalid credentials
