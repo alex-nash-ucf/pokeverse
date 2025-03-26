@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5001/userlogin'), // Replace with your API endpoint
+        Uri.parse('http://157.230.80.230:5001/userlogin'), // Replace with your API endpoint
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'login': username,
@@ -64,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
         print('Username: ${responseData['user']}');
         print('Email: ${responseData['email']}');
         print('teams: ${responseData['teams']}');
+        print('teams: ${responseData}');
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else if (response.statusCode == 401) {
         // Invalid credentials
