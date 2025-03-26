@@ -36,7 +36,7 @@ export default function Menu() {
     setInputSequence((prev) => {
       const newSequence = [...prev, input].slice(-konamiCode.length);
       if (JSON.stringify(newSequence) === JSON.stringify(konamiCode)) {
-        setGreenBoxContent(<img src="/assets/dratini.svg" alt="Dratini" className="object-contain w-full h-full"/>); 
+        setGreenBoxContent(<img src="/assets/pikachu-running.gif" alt="Dratini" className="object-contain w-full h-full"/>); 
         setTimeout(() => {
           setGreenBoxContent(null); 
         }, 2000);
