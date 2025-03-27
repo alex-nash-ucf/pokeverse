@@ -17,6 +17,9 @@ const Teams = () => {
   const [error, setError] = useState('');
   const [newTeamName, setNewTeamName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [teamToDelete, setTeamToDelete] = useState<{ id: string | null, name: string | null }>({ id: null, name: null });
+  const [popoverPosition, setPopoverPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -40,7 +43,7 @@ const Teams = () => {
         const data = await response.json();
         setTeams(data);
       } catch (err) {
-        setError(error);
+        setError('Error fetching teams');
       } finally {
         setLoading(false);
       }
@@ -76,14 +79,23 @@ const Teams = () => {
       setShowCreateForm(false);
       setError('');
     } catch (err) {
-      setError(error);
+      setError('Error creating team');
     }
   };
 
-  const handleDeleteTeam = async (teamId: string) => {
+  const handleDeleteTeam = (teamId: string, teamName: string, event: React.MouseEvent) => {
+    setTeamToDelete({ id: teamId, name: teamName });
+    const { top, left } = (event.target as HTMLElement).getBoundingClientRect();
+    setPopoverPosition({ top: top + 20, left: left - 80 }); // Adjust positioning as needed
+    setShowModal(true);
+  };
+  
+  const handleConfirmDelete = async () => {
+    if (!teamToDelete.id) return;
+
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5001/deleteTeam/${teamId}`, {
+      const response = await fetch(`http://localhost:5001/deleteTeam/${teamToDelete.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -94,9 +106,12 @@ const Teams = () => {
         throw new Error('Failed to delete team');
       }
 
-      setTeams(teams.filter(team => team._id !== teamId));
+      setTeams(teams.filter(team => team._id !== teamToDelete.id));
+      setShowModal(false); // Close the modal after successful deletion
+      setTeamToDelete({ id: null, name: null }); // Reset the team to delete
     } catch (err) {
-      setError(error);
+      setError('Error deleting team');
+      setShowModal(false); // Close the modal in case of an error
     }
   };
 
@@ -144,7 +159,7 @@ const Teams = () => {
           /> 
         </SideNav>
 
-        <div className="flex-1 p-4">
+        <div className="flex-1 mt-10 p-4">
           <h1 className="text-2xl font-bold mb-2">Your Teams</h1>
                     
           {teams.length === 0 ? (
@@ -160,18 +175,21 @@ const Teams = () => {
           ) : (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Your Teams ({teams.length})</h2>
                 <button 
                   onClick={() => setShowCreateForm(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                  className="!bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded"
                 >
                   Create New Team
                 </button>
               </div>
 
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Your Teams ({teams.length})</h2>
+              </div>
+
               {showCreateForm && (
                 <div className="mb-6 p-4 bg-gray-100 rounded">
-                  <h3 className="font-medium mb-2">Create New Team</h3>
+                  <h3 className="font-medium mb-2">Create A New Team</h3>
                   <input
                     type="text"
                     value={newTeamName}
@@ -182,7 +200,7 @@ const Teams = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={handleCreateTeam}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                      className="!bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
                     >
                       Create
                     </button>
@@ -191,7 +209,7 @@ const Teams = () => {
                         setShowCreateForm(false);
                         setNewTeamName('');
                       }}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                      className="!bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
                     >
                       Cancel
                     </button>
@@ -204,22 +222,32 @@ const Teams = () => {
                   <div key={team._id} className="border rounded-lg p-4 shadow-sm">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-lg font-medium">{team.name}</h3>
-                      <button 
-                        onClick={() => handleDeleteTeam(team._id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        Delete
-                      </button>
                     </div>
                     <p className="text-gray-600 mb-3">
                       {team.pokemon.length} Pokémon
                     </p>
-                    <button 
-                      onClick={() => navigate(`/team/${team._id}`)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      View Team
-                    </button>
+                    <div className="flex justify-between items-center">
+                      <button 
+                        onClick={() => navigate(`/team/${team._id}`)}
+                        className="text-blue-500 w-full"
+                      >
+                        View
+                      </button>
+
+                      <button 
+                        onClick={() => navigate('/search')}
+                        className="ml-4 text-green-500 w-full "
+                      >
+                        Add
+                      </button>
+                      
+                      <button 
+                        onClick={(e) => handleDeleteTeam(team._id, team.name, e)}
+                        className="text-red-500 hover:text-red-700 ml-4"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -227,6 +255,35 @@ const Teams = () => {
           )}
         </div>
       </div>
+
+      {/* Popover Modal */}
+      {showModal && (
+        <div 
+          className="fixed !bg-transparent bg-opacity-50 inset-0 z-10"
+          style={{
+            top: `${popoverPosition.top}px`,
+            left: `${popoverPosition.left}px`,
+          }}
+        >
+          <div className="absolute bg-white p-4 rounded-lg shadow-lg max-w-xs w-full">
+            <h2 className="text-md font-semibold mb-4">Are you sure you want to delete {teamToDelete.name}?</h2>
+            <div className="flex ml-10 justify-center mt-4">
+              <button 
+                onClick={handleConfirmDelete} 
+                className="!bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded"
+              >
+                Confirm
+              </button>
+              <button 
+                onClick={() => setShowModal(false)} 
+                className="ml-3 !bg-gray-300 hover:bg-gray-400 text-black px-2 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

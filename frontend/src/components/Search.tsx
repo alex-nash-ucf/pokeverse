@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 const typeIcons: Record<string, string> = {
   normal: '/assets/icons/normal.svg',
   fire: '/assets/icons/fire.svg',
@@ -52,8 +51,9 @@ const Search = () => {
   interface Team {
     _id: string;
     name: string;
-    pokemon: string[]; //array of pokemon
+    pokemon: string[];
   }
+  
   interface TeamResponse {
     team: {
       _id: string;
@@ -69,10 +69,10 @@ const Search = () => {
     slot: number;
   }
 
-
   interface AbilityResponse {
     abilities: Ability[];
   }
+
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [filteredPokemon, setFilteredPokemon] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,6 +87,8 @@ const Search = () => {
   const [selectedMoves, setSelectedMoves] = useState<string[]>(['', '', '', '']);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showNewTeamInput, setShowNewTeamInput] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const apiURL =
     import.meta.env.NODE_ENV === 'development'
@@ -157,7 +159,7 @@ const Search = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await axios.get<Team[]>(`${apiURL}/getTeams`, {  // <-- Add generic type here
+        const response = await axios.get<Team[]>(`${apiURL}/getTeams`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -175,6 +177,8 @@ const Search = () => {
 
   const handleAddClick = async (pokemon: Pokemon) => {
     setSelectedPokemon(pokemon);
+    setErrorMessage('');
+    setSuccessMessage('');
     
     try {
       // Fetch abilities
@@ -191,19 +195,20 @@ const Search = () => {
       setShowAddModal(true);
     } catch (error) {
       console.error('Error fetching pokemon data:', error);
+      setErrorMessage('Failed to load pokemon data. Please try again.');
     }
   };
 
   const handleAddToTeam = async () => {
     if (!selectedPokemon || !selectedAbility || selectedMoves.some(move => !move)) {
-      alert('Please select all required fields');
+      setErrorMessage('Please select all required fields');
       return;
     }
 
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Please log in first');
+        setErrorMessage('Please log in first');
         return;
       }
 
@@ -211,8 +216,13 @@ const Search = () => {
       
       // Create new team if needed
       if (showNewTeamInput && newTeamName) {
+        if (!newTeamName.trim()) {
+          setErrorMessage('Please enter a team name');
+          return;
+        }
+
         const teamResponse = await axios.post<TeamResponse>(
-      `${apiURL}/addTeam`, 
+          `${apiURL}/addTeam`, 
           { teamName: newTeamName },
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
@@ -220,7 +230,7 @@ const Search = () => {
       }
 
       if (!teamId) {
-        alert('Please select or create a team');
+        setErrorMessage('Please select or create a team');
         return;
       }
 
@@ -233,11 +243,14 @@ const Search = () => {
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
-      alert('Pokemon added to team successfully!');
-      setShowAddModal(false);
+      setSuccessMessage('Pokemon added to team successfully!');
+      setTimeout(() => {
+        setShowAddModal(false);
+        setSuccessMessage('');
+      }, 1500);
     } catch (error) {
       console.error('Error adding pokemon to team:', error);
-      alert('Failed to add pokemon to team');
+      setErrorMessage('Failed to add pokemon to team. Please try again.');
     }
   };
 
@@ -268,10 +281,9 @@ const Search = () => {
     if (!showAddModal || !selectedPokemon) return null;
 
     return (
-<div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-[200] p-4 ml-20 sm:ml-30 md:ml-50 lg:ml-100">
-<div className="bg-white rounded-lg p-6 w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] max-w-md">
-    
-          <h2 className="text-xl font-bold mb-4">  Add {selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)} To Your Team </h2>
+      <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-[200] p-4 ml-100 sm:ml-30 md:ml-50 lg:ml-100">
+        <div className="bg-white rounded-lg p-6 w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] max-w-md">
+          <h2 className="text-xl font-bold mb-4">Add {selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)} To Your Team</h2>
           
           <div className="mb-4">
             <label className="block mb-2 font-medium">Ability:</label>
@@ -356,15 +368,25 @@ const Search = () => {
               <input
                 type="text"
                 value={newTeamName}
-                onChange={(e) => setNewTeamName(e.target.value)}
+                onChange={(e) => {
+                  setNewTeamName(e.target.value);
+                  setErrorMessage('');
+                }}
                 placeholder="Enter New Team Name"
                 className="w-full p-2 border rounded mt-2"
               />
             )}
           </div>
 
+          {/* Error and success messages */}
+          {errorMessage && (
+            <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>
+          )}
+          {successMessage && (
+            <div className="mb-4 text-green-500 text-sm">{successMessage}</div>
+          )}
+
           <div className="flex justify-end space-x-2">
-            
             <button
               onClick={handleAddToTeam}
               className="px-4 py-2 !bg-blue-400 text-white rounded"
@@ -372,7 +394,11 @@ const Search = () => {
               Add to Team
             </button>
             <button
-              onClick={() => setShowAddModal(false)}
+              onClick={() => {
+                setShowAddModal(false);
+                setErrorMessage('');
+                setSuccessMessage('');
+              }}
               className="px-4 py-2 !bg-gray-300 rounded"
             >
               Cancel
@@ -384,8 +410,8 @@ const Search = () => {
   };
 
   return (
-<div className="p-2 sm:p-3 md:p-4 lg:p-6 xl:p-8 ml-2 sm:ml-3 md:ml-5 lg:ml-8 xl:ml-10">
-<div className="flex items-center space-x-2 mb-4">
+    <div className="p-2 sm:p-3 md:p-4 lg:p-6 xl:p-8 ml-2 sm:ml-3 md:ml-5 lg:ml-8 xl:ml-10">
+      <div className="flex items-center space-x-2 mb-4">
         <img src="/assets/search.svg" alt="Dashboard" className="w-5 h-7" />
         <input
           type="text"
