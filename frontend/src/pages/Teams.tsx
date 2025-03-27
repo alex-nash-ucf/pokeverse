@@ -14,18 +14,20 @@ const Teams = () => {
       {/* sideNav*/}
       <div className="flex flex-1">
         <SideNav>
-        <SidebarItem
-            icon={<img src="/assets/home.svg" alt="Dashboard" className="w-5 h-5" />}
-            text="Dashboard"
-            onClick={() => navigate('/loggedIn')} 
-            active
-          /> 
+        
           <SidebarItem 
             icon={<img src="/assets/teams.png" alt="Teams" className="w-6 h-4" />}
             text="Teams" active 
             onClick={() => navigate('/teams')} 
 
           />
+
+          <SidebarItem
+            icon={<img src="/assets/search.svg" alt="Dashboard" className="w-5 h-5" />}
+            text="Dashboard"
+            onClick={() => navigate('/search')} 
+            active
+          /> 
         
         </SideNav>
 

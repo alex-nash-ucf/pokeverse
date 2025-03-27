@@ -53,7 +53,7 @@ const LoginForm = () => {
       
       login(res.token);
       setMessage("");
-      navigate("/loggedIn"); 
+      navigate("/teams"); 
     } catch (error) {
       setMessage("Error occurred during login");
       console.error("Login error:", error);

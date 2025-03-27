@@ -8,6 +8,7 @@ const LoggedIn = () => {
   const navigate = useNavigate();
 
   return (
+
     <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
       {/* top nav */}
       <Navbar />
@@ -16,18 +17,20 @@ const LoggedIn = () => {
       <div className="flex flex-1">
         {/* Left Sidebar */}
         <SideNav>
-          <SidebarItem
-            icon={<img src="/assets/home.svg" alt="Dashboard" className="w-5 h-5" />}
-            text="Dashboard"
-            onClick={() => navigate('/loggedIn')} 
-            active
-          /> 
+        
           <SidebarItem 
             icon={<img src="/assets/teams.png" alt="Teams" className="w-6 h-4" />}
             text="Teams" 
             active
             onClick={() => navigate('/teams')} 
           />
+
+        <SidebarItem
+            icon={<img src="/assets/search.svg" alt="Dashboard" className="w-5 h-5" />}
+            text="Search"
+            onClick={() => navigate('/search')} 
+            active
+          /> 
         
         </SideNav>
 

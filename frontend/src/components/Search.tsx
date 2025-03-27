@@ -143,6 +143,7 @@ const Search = () => {
   };
 
   return (
+
     <div className="p-4 ml-5">
       <div className="flex items-center space-x-2 mb-4">
         <img src="/assets/search.svg" alt="Dashboard" className="w-5 h-7" />
