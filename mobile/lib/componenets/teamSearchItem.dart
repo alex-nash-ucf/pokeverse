@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mobile/classes/ApiService.dart';
 
 class TeamSearchItem extends StatefulWidget {
   final Color color;
   final String name;
-  final List<dynamic> pokemon;
+  final List<dynamic>? pokemon;
 
   const TeamSearchItem({
     super.key,
@@ -95,7 +98,10 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Stack(
-                  children: List.generate(widget.pokemon.length, (index) {
+                  children: List.generate(widget.pokemon!.length, (index) {
+                    
+                    int pokemon_index = widget.pokemon?[index]["index"];
+
                     return Transform.translate(
                       offset: Offset((index * -50) + 24, 20),
                       child: Transform.scale(
@@ -103,7 +109,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                         child: Image(
                           filterQuality: FilterQuality.none,
                           image: NetworkImage(
-                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${Random().nextInt(999 - 0 + 1)}.png",
+                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemon_index.png",
                           ),
                         ),
                       ),
@@ -135,16 +141,28 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: !isDarkBackground ? const Color.fromARGB(119, 255, 255, 255)
-                                : const Color.fromARGB(144, 5, 19, 53), 
-                            offset: Offset(2, 2), 
-                            blurRadius: 4, 
-                            
-                          ),]
+                            color:
+                                !isDarkBackground
+                                    ? const Color.fromARGB(119, 255, 255, 255)
+                                    : const Color.fromARGB(144, 5, 19, 53),
+                            offset: Offset(2, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
                       textAlign: TextAlign.left,
-                      
                     ),
+
+                    Divider(
+                      color: isDarkBackground
+                          ? Colors.white.withOpacity(0.5)
+                          : Colors.black.withOpacity(0.5),
+                      thickness: 3, 
+                      indent: 0, 
+                      endIndent: 0, 
+                      height: 5, 
+                    ),
+
                   ],
                 ),
               ),

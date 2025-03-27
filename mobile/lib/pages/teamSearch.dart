@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
-
-import 'package:mobile/componenets/pokemonSearchItem.dart';
 import 'package:mobile/componenets/teamSearchItem.dart';
 
 class TeamSearch extends StatefulWidget {
@@ -24,6 +21,9 @@ class _TeamSearchState extends State<TeamSearch> {
   int _offset = 0; // To handle pagination offset
   Timer? _debounce; // Timer for debounce
   String _isRequestInProgress = ''; // To track if a request is in progress
+
+  // Create an instance of ApiService
+  final ApiService _apiService = ApiService();
 
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
@@ -48,37 +48,23 @@ class _TeamSearchState extends State<TeamSearch> {
     });
 
     try {
-      final response = await http.get(
-        Uri.parse(
-          'http://157.230.80.230:5001/getTeams',
-        ),
-        headers: {'Authorization': 'Bearer '},
-      );
+      final result = await _apiService.fetchTeams(query, offset: offset);
 
       if (_isRequestInProgress == query) {
         // Proceed only if the request was not canceled
-        if (response.statusCode == 200) {
-          final List<dynamic> result = json.decode(response.body);
-          setState(() {
-            if (offset == 0) {
-              _teamResults = result; // Initial results
-            } else {
-              _teamResults.addAll(
-                result,
-              ); // Append new results for lazy loading
-            }
-            _offset = offset + result.length; // Update the offset
+        setState(() {
+          if (offset == 0) {
+            _teamResults = result; // Initial results
+          } else {
+            _teamResults.addAll(result); // Append new results for lazy loading
+          }
+          _offset = offset + result.length; // Update the offset
 
-            // Check if there are no more results to fetch
-            if (result.length < 8) {
-              _noMoreResults = true; // No more results to load
-            }
-          });
-        } else {
-          setState(() {
-            _teamResults = [];
-          });
-        }
+          // Check if there are no more results to fetch
+          if (result.length < 8) {
+            _noMoreResults = true; // No more results to load
+          }
+        });
       }
     } catch (error) {
       setState(() {
@@ -191,14 +177,13 @@ class _TeamSearchState extends State<TeamSearch> {
           // POKEMON DISPLAY
           SizedBox(height: 32),
 
-          //ADD MORE TEAMS
+          // ADD MORE TEAMS
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
               onPressed: () {
                 // Action for button press
               },
-
               style: ElevatedButton.styleFrom(
                 elevation: 6,
                 backgroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -229,10 +214,32 @@ class _TeamSearchState extends State<TeamSearch> {
                     : Column(
                       spacing: 16,
                       children: List.generate(_teamResults.length, (index) {
-
                         final team = _teamResults[index];
 
-                        return TeamSearchItem(name: team["name"], pokemon: team["pokemon"],);
+                        return FutureBuilder(
+                          future: ApiService().getPokemonByTeamId(team["_id"]),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.symmetric(
+                                  vertical: (96 / 2) ,
+                                ), 
+                                child: PokeballLoader(),
+                              );
+                            }
+
+                            if (snapshot.hasData) {
+                              final pokemon = snapshot.data;
+                              return TeamSearchItem(
+                                name: team["name"],
+                                pokemon: pokemon,
+                              );
+                            }
+
+                            return SizedBox();
+                          },
+                        );
                       }),
                     ),
           ),

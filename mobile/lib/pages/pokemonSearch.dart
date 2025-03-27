@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
 import 'package:mobile/componenets/pokemonSearchItem.dart';
@@ -23,6 +22,9 @@ class _PokemonSearchState extends State<PokemonSearch> {
   Timer? _debounce; // Timer for debounce
   String _isRequestInProgress = ''; // To track if a request is in progress
 
+  // Instance of ApiService to fetch data
+  final ApiService apiService = ApiService();
+
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
     // Reset pagination and results if a new search is performed
@@ -31,51 +33,32 @@ class _PokemonSearchState extends State<PokemonSearch> {
       _noMoreResults = false; // Reset noMoreResults flag for new search
     }
 
-    // Cancel the previous request if there is an ongoing one
     if (_isRequestInProgress != '') {
-      _isRequestInProgress = ''; // Mark previous request as canceled
+      _isRequestInProgress = '';
     }
 
     setState(() {
       if (offset == 0) {
-        _isLoading = true; // Show loading indicator for initial fetch
+        _isLoading = true;
       } else {
-        _isFetchingMore = true; // Show loading indicator for more results
+        _isFetchingMore = true;
       }
-      _isRequestInProgress = query; // Mark new request as in progress
+      _isRequestInProgress = query;
     });
 
     try {
-      final response = await http.get(
-        Uri.parse(
-          'http://157.230.80.230:5001/pokemon/search/$query?limit=8&offset=$offset',
-        ),
-      );
+      final results = await apiService.searchPokemon(query, offset: offset);
 
+      // request relevant?
       if (_isRequestInProgress == query) {
-        // Proceed only if the request was not canceled
-        if (response.statusCode == 200) {
-          final List<dynamic> result = json.decode(response.body);
-          setState(() {
-            if (offset == 0) {
-              _pokemonResults = result; // Initial results
-            } else {
-              _pokemonResults.addAll(
-                result,
-              ); // Append new results for lazy loading
-            }
-            _offset = offset + result.length; // Update the offset
+        setState(() {
+          _pokemonResults.addAll(results);
+          _offset = offset + results.length;
 
-            // Check if there are no more results to fetch
-            if (result.length < 8) {
-              _noMoreResults = true; // No more results to load
-            }
-          });
-        } else {
-          setState(() {
-            _pokemonResults = [];
-          });
-        }
+          if (results.length < 8) {
+            _noMoreResults = true;
+          }
+        });
       }
     } catch (error) {
       setState(() {
@@ -127,7 +110,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
     _scrollController.addListener(_scrollListener);
 
     // Trigger the initial search when the widget is loaded
-    _searchPokemon('', offset: 0);  // Ensure the first fetch happens
+    _searchPokemon('', offset: 0); // Ensure the first fetch happens
   }
 
   @override
@@ -236,7 +219,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
           // BOTTOM LOADER: Positioned outside the GridView
           if ((!_noMoreResults && _pokemonResults.isNotEmpty) || _isLoading)
             Padding(
-              padding:EdgeInsets.fromLTRB(0, 16, 0, 16),
+              padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
               child: Container(
                 width: double.infinity, // Make it stretch across the screen
                 child: Center(
