@@ -6,16 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
 
 class TeamSearchItem extends StatefulWidget {
+  final Map<String, dynamic>? team;
   final Color color;
-  final String name;
-  final List<dynamic>? pokemon;
 
-  const TeamSearchItem({
-    super.key,
-    this.color = Colors.blue,
-    this.name = "Team NAME",
-    this.pokemon = const [],
-  });
+  const TeamSearchItem({super.key, this.color = Colors.blue, this.team});
 
   @override
   _TeamSearchItemState createState() => _TeamSearchItemState();
@@ -98,9 +92,10 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Stack(
-                  children: List.generate(widget.pokemon!.length, (index) {
-                    
-                    int pokemon_index = widget.pokemon?[index]["index"];
+                  children: List.generate(widget.team?["pokemon"].length, (
+                    index,
+                  ) {
+                    int pokemon_index = widget.team?["pokemon"][index]["index"];
 
                     return Transform.translate(
                       offset: Offset((index * -50) + 24, 20),
@@ -124,11 +119,16 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Safely accessing 'name' with null check and fallback
                     Text(
-                      widget.name.isNotEmpty
-                          ? widget.name[0].toUpperCase() +
-                              widget.name.substring(1)
-                          : widget.name,
+                      // Check if 'name' is null or empty, provide fallback text if necessary
+                      widget.team?["name"]?.isNotEmpty ?? false
+                          ? (widget.team?["name"]
+                                      ?.substring(0, 1)
+                                      .toUpperCase() ??
+                                  '') +
+                              (widget.team?["name"]?.substring(1) ?? '')
+                          : 'No Name', // Fallback text if name is null or empty
                       style: TextStyle(
                         fontFamily: 'Pokemon GB',
                         wordSpacing: 0,
@@ -154,15 +154,15 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                     ),
 
                     Divider(
-                      color: isDarkBackground
-                          ? Colors.white.withOpacity(0.5)
-                          : Colors.black.withOpacity(0.5),
-                      thickness: 3, 
-                      indent: 0, 
-                      endIndent: 0, 
-                      height: 5, 
+                      color:
+                          isDarkBackground
+                              ? Colors.white.withOpacity(0.5)
+                              : Colors.black.withOpacity(0.5),
+                      thickness: 3,
+                      indent: 0,
+                      endIndent: 0,
+                      height: 5,
                     ),
-
                   ],
                 ),
               ),

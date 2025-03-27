@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
+import 'package:mobile/pages/editTeam.dart';
 import 'package:mobile/pages/pokemonSearch.dart';
 import 'package:mobile/pages/teamSearch.dart';
 
@@ -37,7 +38,7 @@ class _HubScreenState extends State<HubScreen> {
               children: [
                 PokemonSearch(),
                 TeamSearch(),
-                CarouselItem()
+                EditTeam()
               ],
             ),
           ),

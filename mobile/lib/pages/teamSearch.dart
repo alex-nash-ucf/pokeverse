@@ -231,9 +231,10 @@ class _TeamSearchState extends State<TeamSearch> {
 
                             if (snapshot.hasData) {
                               final pokemon = snapshot.data;
+
+                              team["pokemon"] = pokemon;
                               return TeamSearchItem(
-                                name: team["name"],
-                                pokemon: pokemon,
+                                team: team,
                               );
                             }
 
