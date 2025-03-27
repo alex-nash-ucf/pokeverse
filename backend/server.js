@@ -114,7 +114,7 @@ const fetchAbilities = async (speciesName) => {
 // Helper function to fetch moves for a Pokemon species from your /pokemon-moves endpoint
 const fetchDefaultMoves = async (speciesName) => {
   try {
-    const response = await axios.get(`/api/pokemon-moves/${speciesName}`); // Adjust path if needed
+    const response = await axios.get(`http://localhost:5001/pokemon-moves/${speciesName}`); // Adjust path if needed
     return response.data.slice(0, 4).map(move => move.name);
   } catch (error) {
     console.error('Error fetching default moves:', error);
@@ -420,7 +420,7 @@ app.post('/addTeam', verifyToken, async (req, res) => {
 
 app.delete('/deleteTeam/:teamId', verifyToken, async (req, res) => {
   const userId = req.id;
-  const { teamId } = req.params;
+  const teamId = req.params.teamId;
 
   try {
     const account = await Account.findById(userId);
@@ -445,7 +445,7 @@ app.delete('/deleteTeam/:teamId', verifyToken, async (req, res) => {
 
 app.put('/updateTeam/:teamId', verifyToken, async (req, res) => {
   const userId = req.id;
-  const { teamId } = req.params;
+  const teamId = req.params.teamId;
   const { newTeamName } = req.body;
 
   if (!newTeamName) {
@@ -539,16 +539,21 @@ app.get('/getTeams', verifyToken, async (req, res) => {
 
 app.post('/addPokemon', verifyToken, async (req, res) => {
   const userId = req.id;
-  const { teamId } = req.params;
-  const { speciesName } = req.body;
+  const { speciesName, teamId } = req.body;
 
   if (!speciesName) {
     return res.status(400).json({ message: 'Species name is required to add a Pokemon.' });
   }
 
+  if (!teamId || !mongoose.isValidObjectId(teamId)) {
+    return res.status(400).json({ message: 'Invalid team ID provided.' });
+  }
+
   try {
-    const abilities = await fetchAbilities(speciesName);
-    const defaultMoves = await fetchDefaultMoves(speciesName);
+    const abilities = ["test"];
+    //await fetchAbilities(speciesName);
+    const defaultMoves = [null, null, null, null];
+    // await fetchDefaultMoves(speciesName);
 
     if (abilities.length === 0) {
       return res.status(404).json({ message: `Abilities not found for species: ${speciesName}` });
