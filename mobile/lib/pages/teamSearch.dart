@@ -16,7 +16,7 @@ class TeamSearch extends StatefulWidget {
 
 class _TeamSearchState extends State<TeamSearch> {
   final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _pokemonResults = [];
+  List<dynamic> _teamResults = [];
   bool _isLoading = false;
   bool _isFetchingMore = false; // Flag to track fetching more data
   bool _noMoreResults = false; // Flag to indicate no more results
@@ -59,9 +59,9 @@ class _TeamSearchState extends State<TeamSearch> {
           final List<dynamic> result = json.decode(response.body);
           setState(() {
             if (offset == 0) {
-              _pokemonResults = result; // Initial results
+              _teamResults = result; // Initial results
             } else {
-              _pokemonResults.addAll(
+              _teamResults.addAll(
                 result,
               ); // Append new results for lazy loading
             }
@@ -74,13 +74,13 @@ class _TeamSearchState extends State<TeamSearch> {
           });
         } else {
           setState(() {
-            _pokemonResults = [];
+            _teamResults = [];
           });
         }
       }
     } catch (error) {
       setState(() {
-        _pokemonResults = [];
+        _teamResults = [];
       });
     } finally {
       if (_isRequestInProgress == query) {
@@ -112,7 +112,7 @@ class _TeamSearchState extends State<TeamSearch> {
       // Fetch more data when scrolled to the bottom
       if (!_isFetchingMore && !_noMoreResults) {
         final query = _searchController.text;
-        if (query.isNotEmpty || _pokemonResults.isNotEmpty) {
+        if (query.isNotEmpty || _teamResults.isNotEmpty) {
           _searchPokemon(query, offset: _offset); // Fetch more data
         }
       }
@@ -128,7 +128,7 @@ class _TeamSearchState extends State<TeamSearch> {
     _scrollController.addListener(_scrollListener);
 
     // Trigger the initial search when the widget is loaded
-    _searchPokemon('', offset: 0);  // Ensure the first fetch happens
+    _searchPokemon('leafeon', offset: 0); // Ensure the first fetch happens
   }
 
   @override
@@ -187,51 +187,56 @@ class _TeamSearchState extends State<TeamSearch> {
           ),
 
           // POKEMON DISPLAY
-          SizedBox(height: 16),
+          SizedBox(height: 32),
+
+          //ADD MORE TEAMS
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: _isLoading
-                ? SizedBox(height: 16)
-                : _pokemonResults.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Text(
-                            "No Pokémon found",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: const Color.fromARGB(117, 0, 0, 0),
-                            ),
-                          ),
-                        ),
-                      )
+            child: ElevatedButton(
+              onPressed: () {
+                // Action for button press
+              },
+              
+              style: ElevatedButton.styleFrom(
+                elevation: 6,
+                backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                minimumSize: Size(double.infinity, 64 + 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                surfaceTintColor: Theme.of(context).scaffoldBackgroundColor
+              ),
+              child: Text(
+                '+',
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,
+                color: Theme.of(context).scaffoldBackgroundColor,),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 16),
+
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child:
+                _isLoading
+                    ? SizedBox(height: 16)
                     : Column(
-                        spacing: 16,
-                        children: List.generate(
-                          _pokemonResults.length,
-                          (index) {
-                            final pokemon = _pokemonResults[index];
-                            return PokemonSearchItem(
-                              color: CssColorConverter.fromCssColorName(
-                                pokemon['color'],
-                              ),
-                              name: pokemon['name'],
-                              index: pokemon['pokedexNumber'],
-                            );
-                          },
-                        ),
-                      ),
+                      spacing: 16,
+                      children: List.generate(_teamResults.length, (index) {
+                        final teams = _teamResults[index];
+                        return PokemonSearchItem();
+                      }),
+                    ),
           ),
 
           // BOTTOM LOADER: Positioned outside the Column
-          if ((!_noMoreResults && _pokemonResults.isNotEmpty) || _isLoading)
+          if ((!_noMoreResults && _teamResults.isNotEmpty) || _isLoading)
             Padding(
               padding: EdgeInsets.fromLTRB(0, 16, 0, 24),
               child: Container(
-                width: double.infinity, // Make it stretch across the screen
-                child: Center(
-                  child: PokeballLoader(),
-                ), // Show loading indicator
+                width: double.infinity,
+                child: Center(child: PokeballLoader()),
               ),
             ),
         ],
