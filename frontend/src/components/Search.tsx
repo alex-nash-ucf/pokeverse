@@ -89,11 +89,12 @@ const Search = () => {
   const [showNewTeamInput, setShowNewTeamInput] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  var apiURL="";
 
-  const apiURL =
-    import.meta.env.NODE_ENV === 'development'
-      ? 'http://localhost:5001'
-      : 'http://pokeverse.space:5001';
+  if (import.meta.env.NODE_ENV === 'development') {
+    apiURL="http://localhost:5001";
+  }
+  else apiURL="http://pokeverse.space:5001";
 
   useEffect(() => {
     const fetchPokemon = async () => {
@@ -204,23 +205,22 @@ const Search = () => {
       setErrorMessage('Please select all required fields');
       return;
     }
-
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         setErrorMessage('Please log in first');
         return;
       }
-
+  
       let teamId = selectedTeamId;
       
-      // Create new team if needed
       if (showNewTeamInput && newTeamName) {
         if (!newTeamName.trim()) {
           setErrorMessage('Please enter a team name');
           return;
         }
-
+  
         const teamResponse = await axios.post<TeamResponse>(
           `${apiURL}/addTeam`, 
           { teamName: newTeamName },
@@ -229,20 +229,16 @@ const Search = () => {
         teamId = teamResponse.data.team._id;
       }
 
-      if (!teamId) {
-        setErrorMessage('Please select or create a team');
-        return;
-      }
-
-      // Add to team
       await axios.post(`${apiURL}/addPokemon`, 
         {
           speciesName: selectedPokemon.name,
-          teamId: teamId
+          teamId: teamId,
+          ability: selectedAbility,  
+          moves: selectedMoves     
         },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
-
+  
       setSuccessMessage('Pokemon added to team successfully!');
       setTimeout(() => {
         setShowAddModal(false);
@@ -325,6 +321,7 @@ const Search = () => {
 
           <div className="mb-4">
             <label className="block mb-2 font-medium">Add to:</label>
+            {/* 
             <div className="flex items-center mb-2">
               <input
                 type="radio"
@@ -336,6 +333,8 @@ const Search = () => {
               />
               <label htmlFor="existingTeam">Existing Team</label>
             </div>
+            
+            */}
             
             {!showNewTeamInput && (
               <select
@@ -351,31 +350,36 @@ const Search = () => {
                 ))}
               </select>
             )}
+            {/* 
+              <div className="flex items-center mt-2">
+                <input
+                  type="radio"
+                  id="newTeam"
+                  name="teamOption"
+                  checked={showNewTeamInput}
+                  onChange={() => setShowNewTeamInput(true)}
+                  className="mr-2"
+                />
+                <label htmlFor="newTeam">New Team</label>
+              </div>
 
-            <div className="flex items-center mt-2">
-              <input
-                type="radio"
-                id="newTeam"
-                name="teamOption"
-                checked={showNewTeamInput}
-                onChange={() => setShowNewTeamInput(true)}
-                className="mr-2"
-              />
-              <label htmlFor="newTeam">New Team</label>
-            </div>
+              {showNewTeamInput && (
+                <input
+                  key="newTeamInput"
+                  type="text"
+                  value={newTeamName}
+                  onChange={(e) => {
+                    setNewTeamName(e.target.value);
+                    setErrorMessage('');
+                  }}
+                  placeholder="Enter New Team Name"
+                  className="w-full p-2 border rounded mt-2"
+                />
+              )}
+            */}
 
-            {showNewTeamInput && (
-              <input
-                type="text"
-                value={newTeamName}
-                onChange={(e) => {
-                  setNewTeamName(e.target.value);
-                  setErrorMessage('');
-                }}
-                placeholder="Enter New Team Name"
-                className="w-full p-2 border rounded mt-2"
-              />
-            )}
+           
+          
           </div>
 
           {/* Error and success messages */}
