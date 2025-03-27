@@ -17,7 +17,7 @@ export const SideNav = ({ children }: SideNavProps) => {
   const {logout}=useAuth();
 
   return (
-    <aside className={`fixed top-23 left-0 h-[85vh] transition-all duration-300 ${expanded ? 'w-60' : 'w-16'}`}>
+    <aside className={`z-1 fixed top-23 left-0 h-[85vh] transition-all duration-300 ${expanded ? 'w-60' : 'w-16'}`}>
     <nav className="rounded h-full flex flex-col bg-white shadow-sm">
       
       <div className="mt-2 mb-5 flex justify-between items-center">

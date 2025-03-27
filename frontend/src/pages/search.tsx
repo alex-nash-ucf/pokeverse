@@ -9,9 +9,9 @@ const LoggedIn = () => {
 
   return (
 
-    <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
+    <div className="hero-class flex flex-col min-h-screen w-screen bg-white">
       {/* top nav */}
-      <Navbar />
+      <Navbar/>
 
       {/* sideNav and content container */}
       <div className="flex flex-1">
@@ -31,13 +31,12 @@ const LoggedIn = () => {
             onClick={() => navigate('/search')} 
             active
           /> 
-        
         </SideNav>
 
         {/* Right content */}
-        <div className="top-23 right-40 left-0 h-[85vh] w-full sm:w-auto rounded bg-white shadow-sm overflow-y-auto">
-          <div className="p-4 bg-white shadow-sm rounded">
-            <h1 className="ml-25 flex text-2xl font-bold mb-4">Search, Build, and Share!</h1>
+        <div className="top-23 fixed ml-20 right-40 left-0 h-[85vh] w-full sm:w-auto rounded bg-white shadow-sm overflow-y-auto">
+          <div className="p-4  bg-white shadow-sm  w-full rounded">
+            <h1 className= "ml-20 flex text-sm w-full font-bold mb-4">Search & Add To Your Team!</h1>
             <Search />
             {/* Your page content goes here */}
           </div>
