@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/carouselItem.dart';
+import 'package:mobile/pages/editTeam.dart';
 import 'package:mobile/pages/pokemonSearch.dart';
+import 'package:mobile/pages/teamSearch.dart';
 
 class HubScreen extends StatefulWidget {
   const HubScreen({super.key});
@@ -10,19 +12,15 @@ class HubScreen extends StatefulWidget {
 }
 
 class _HubScreenState extends State<HubScreen> {
-  final PageController _pageController = PageController();
-  int _selectedIndex = 0;
+    final PageController _pageController = PageController(initialPage: 1);
 
   // CONTROLS SCROLL ANIMATION
-  void _onNavBarTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _pageController.animateToPage(
-        index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
+  void slideToPage(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -31,87 +29,20 @@ class _HubScreenState extends State<HubScreen> {
       // BODY
       body: Column(
         children: [
-
           // CAROUSEL
           Expanded(
             child: PageView(
               controller: _pageController,
+              physics:
+                  NeverScrollableScrollPhysics(), // Disable manual scrolling
               children: [
                 PokemonSearch(),
-                ...List.generate(4, (index) => CarouselItem()),
+                TeamSearch(),
+                EditTeam()
               ],
-
-              onPageChanged: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-            ),
-          ),
-
-          // NAVBAR
-          Container(
-            height: 64,
-            color: Theme.of(context).primaryColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
-                children: List.generate(5, (index) {
-                  return NavBarButton(
-                    icon_unpressed:
-                        [
-                          Icons.home_outlined,
-                          Icons.table_rows_outlined,
-                          Icons.favorite_border_outlined,
-                          Icons.people_alt_outlined,
-                          Icons.settings_outlined,
-                        ][index],
-                    icon_pressed:
-                        [
-                          Icons.home,
-                          Icons.table_rows,
-                          Icons.favorite,
-                          Icons.people_alt,
-                          Icons.settings,
-                        ][index],
-                    isSelected: _selectedIndex == index,
-                    onPressed: () => _onNavBarTap(index),
-                  );
-                }),
-              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-///////////////////////////  NAVBAR  //////////////////////////////////
-
-class NavBarButton extends StatelessWidget {
-  final IconData icon_pressed;
-  final IconData icon_unpressed;
-  final VoidCallback onPressed;
-  final bool isSelected;
-
-  const NavBarButton({
-    super.key,
-    required this.icon_pressed,
-    required this.icon_unpressed,
-    required this.onPressed,
-    required this.isSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onPressed,
-      icon: Icon(
-        isSelected ? icon_pressed : icon_unpressed,
-        color: Theme.of(context).scaffoldBackgroundColor,
       ),
     );
   }

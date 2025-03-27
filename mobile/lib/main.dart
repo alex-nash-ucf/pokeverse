@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/header.dart';
+import 'package:mobile/screens/SignUp.dart';
 import 'package:mobile/screens/hub.dart';
 import 'package:mobile/screens/login.dart';
 import 'package:mobile/themes/theme.dart';
@@ -14,9 +15,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Pokeverse', 
-        home: ScreenContainer(HubScreen()), // INSERT SCREEN HERE FOR UNIVERSAL HEADER
-        theme: lightMode
+      title: 'Pokeverse',
+      home: ScreenContainer(
+        HubScreen(),
+      ), // INSERT SCREEN HERE FOR UNIVERSAL HEADER
+      theme: lightMode,
     );
   }
 }
@@ -35,13 +38,13 @@ class _ScreenContainerState extends State<ScreenContainer> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-
         // BODY ////////////////////////////////////////////////////////
-        Positioned.fill(
-          top: 64.0, 
-          child: widget.screen,
+        Column(
+          children: [
+            SizedBox(height: 64), 
+            Expanded(child: widget.screen), 
+          ],
         ),
-
 
         // HEADER ////////////////////////////////////////////////////////
         Column(
@@ -53,9 +56,11 @@ class _ScreenContainerState extends State<ScreenContainer> {
             ),
 
             CustomPaint(
-                size: Size(MediaQuery.of(context).size.width, 128),
-                painter: Header(Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary),
-                
+              size: Size(MediaQuery.of(context).size.width, 128),
+              painter: Header(
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary,
+              ),
             ),
           ],
         ),

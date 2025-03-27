@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5001/userlogin'), // Replace with your API endpoint
+        Uri.parse('http://157.230.80.230:5001/userlogin'), // Replace with your API endpoint
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'login': username,
@@ -59,10 +59,11 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login successful', style: TextStyle(color: Colors.black))),
         );
+
+        
         // Handle the response data (e.g., save user ID, navigate to the next screen)
-        print('User ID: ${responseData['id']}');
-        print('Username: ${responseData['user']}');
-        print('Email: ${responseData['email']}');
+        print('token: ${responseData['token']}');
+
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else if (response.statusCode == 401) {
         // Invalid credentials

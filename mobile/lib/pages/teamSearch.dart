@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
-import 'package:mobile/componenets/pokemonSearchItem.dart';
+import 'package:mobile/componenets/teamSearchItem.dart';
 
-class PokemonSearch extends StatefulWidget {
-  const PokemonSearch({super.key});
+class TeamSearch extends StatefulWidget {
+  const TeamSearch({super.key});
 
   @override
-  _PokemonSearchState createState() => _PokemonSearchState();
+  _TeamSearchState createState() => _TeamSearchState();
 }
 
-class _PokemonSearchState extends State<PokemonSearch> {
+class _TeamSearchState extends State<TeamSearch> {
   final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _pokemonResults = [];
+  List<dynamic> _teamResults = [];
   bool _isLoading = false;
   bool _isFetchingMore = false; // Flag to track fetching more data
   bool _noMoreResults = false; // Flag to indicate no more results
@@ -22,8 +22,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
   Timer? _debounce; // Timer for debounce
   String _isRequestInProgress = ''; // To track if a request is in progress
 
-  // Instance of ApiService to fetch data
-  final ApiService apiService = ApiService();
+  // Create an instance of ApiService
+  final ApiService _apiService = ApiService();
 
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
@@ -33,36 +33,42 @@ class _PokemonSearchState extends State<PokemonSearch> {
       _noMoreResults = false; // Reset noMoreResults flag for new search
     }
 
+    // Cancel the previous request if there is an ongoing one
     if (_isRequestInProgress != '') {
-      _isRequestInProgress = '';
+      _isRequestInProgress = ''; // Mark previous request as canceled
     }
 
     setState(() {
       if (offset == 0) {
-        _isLoading = true;
+        _isLoading = true; // Show loading indicator for initial fetch
       } else {
-        _isFetchingMore = true;
+        _isFetchingMore = true; // Show loading indicator for more results
       }
-      _isRequestInProgress = query;
+      _isRequestInProgress = query; // Mark new request as in progress
     });
 
     try {
-      final results = await apiService.searchPokemon(query, offset: offset);
+      final result = await _apiService.fetchTeams(query, offset: offset);
 
-      // request relevant?
       if (_isRequestInProgress == query) {
+        // Proceed only if the request was not canceled
         setState(() {
-          _pokemonResults.addAll(results);
-          _offset = offset + results.length;
+          if (offset == 0) {
+            _teamResults = result; // Initial results
+          } else {
+            _teamResults.addAll(result); // Append new results for lazy loading
+          }
+          _offset = offset + result.length; // Update the offset
 
-          if (results.length < 8) {
-            _noMoreResults = true;
+          // Check if there are no more results to fetch
+          if (result.length < 8) {
+            _noMoreResults = true; // No more results to load
           }
         });
       }
     } catch (error) {
       setState(() {
-        _pokemonResults = [];
+        _teamResults = [];
       });
     } finally {
       if (_isRequestInProgress == query) {
@@ -94,7 +100,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
       // Fetch more data when scrolled to the bottom
       if (!_isFetchingMore && !_noMoreResults) {
         final query = _searchController.text;
-        if (query.isNotEmpty || _pokemonResults.isNotEmpty) {
+        if (query.isNotEmpty || _teamResults.isNotEmpty) {
           _searchPokemon(query, offset: _offset); // Fetch more data
         }
       }
@@ -169,62 +175,83 @@ class _PokemonSearchState extends State<PokemonSearch> {
           ),
 
           // POKEMON DISPLAY
+          SizedBox(height: 32),
+
+          // ADD MORE TEAMS
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Action for button press
+              },
+              style: ElevatedButton.styleFrom(
+                elevation: 6,
+                backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                minimumSize: Size(double.infinity, 64 + 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              child: Text(
+                '+',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
+              ),
+            ),
+          ),
+
           SizedBox(height: 16),
+
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child:
                 _isLoading
                     ? SizedBox(height: 16)
-                    : _pokemonResults.isEmpty
-                    ? Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Text(
-                          "No Pokémon found",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: const Color.fromARGB(117, 0, 0, 0),
-                          ),
-                        ),
-                      ),
-                    ) // Show message if no results found
-                    : GridView.builder(
-                      itemCount:
-                          _pokemonResults
-                              .length, // Add an extra item for the loading indicator
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemBuilder: (context, index) {
-                        if (index == _pokemonResults.length &&
-                            _isFetchingMore) {
-                          return SizedBox.shrink(); // Remove the loading spinner from GridView
-                        }
-                        final pokemon = _pokemonResults[index];
-                        return PokemonSearchItem(
-                          color: CssColorConverter.fromCssColorName(
-                            pokemon['color'],
-                          ),
-                          name: pokemon['name'],
-                          index: pokemon['pokedexNumber'],
+                    : Column(
+                      spacing: 16,
+                      children: List.generate(_teamResults.length, (index) {
+                        final team = _teamResults[index];
+
+                        return FutureBuilder(
+                          future: ApiService().getPokemonByTeamId(team["_id"]),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.symmetric(
+                                  vertical: (96 / 2) ,
+                                ), 
+                                child: PokeballLoader(),
+                              );
+                            }
+
+                            if (snapshot.hasData) {
+                              final pokemon = snapshot.data;
+
+                              team["pokemon"] = pokemon;
+                              return TeamSearchItem(
+                                team: team,
+                              );
+                            }
+
+                            return SizedBox();
+                          },
                         );
-                      },
+                      }),
                     ),
           ),
 
-          // BOTTOM LOADER: Positioned outside the GridView
-          if ((!_noMoreResults && _pokemonResults.isNotEmpty) || _isLoading)
+          // BOTTOM LOADER: Positioned outside the Column
+          if ((!_noMoreResults && _teamResults.isNotEmpty) || _isLoading)
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+              padding: EdgeInsets.fromLTRB(0, 16, 0, 24),
               child: Container(
-                width: double.infinity, // Make it stretch across the screen
-                child: Center(
-                  child: PokeballLoader(),
-                ), // Show loading indicator
+                width: double.infinity,
+                child: Center(child: PokeballLoader()),
               ),
             ),
         ],

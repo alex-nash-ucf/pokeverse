@@ -1,22 +1,21 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mobile/classes/ApiService.dart';
 
-class PokemonSearchItem extends StatefulWidget {
+class TeamSearchItem extends StatefulWidget {
+  final Map<String, dynamic>? team;
   final Color color;
-  final String name;
-  final int index;
 
-  const PokemonSearchItem({
-    super.key,
-    this.color = Colors.blue,
-    this.name = "PokemonName",
-    this.index = 0,
-  });
+  const TeamSearchItem({super.key, this.color = Colors.blue, this.team});
 
   @override
-  _PokemonSearchItemState createState() => _PokemonSearchItemState();
+  _TeamSearchItemState createState() => _TeamSearchItemState();
 }
 
-class _PokemonSearchItemState extends State<PokemonSearchItem> {
+class _TeamSearchItemState extends State<TeamSearchItem> {
   // Function to darken a color
   Color darkenColor(Color color, double amount) {
     assert(amount >= 0 && amount <= 1);
@@ -36,13 +35,11 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
 
     // If the background is light, darken the color
     final Color backgroundColor =
-        isDarkBackground
-            ? widget.color
-            : darkenColor(widget.color, 0.11); // Darken by 30%
+        isDarkBackground ? widget.color : darkenColor(widget.color, 0.11);
 
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 96,
+      height: 128 + 32,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -72,11 +69,11 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Transform.rotate(
-                  angle: 0.0,
+                  angle: 0.25,
                   child: Transform.translate(
-                    offset: Offset(32, 59.5),
+                    offset: Offset(-32, 25),
                     child: Transform.scale(
-                      scale: 2.5,
+                      scale: 4.5,
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
                           isDarkBackground
@@ -91,63 +88,80 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                 ),
               ),
 
+              // Generate Pokémon images in a row
               Align(
                 alignment: Alignment.bottomRight,
-                child: Transform.translate(
-                  offset: Offset(32, 0),
-                  child: Transform.scale(
-                    scale: 2.25,
-                    child: Image(
-                      filterQuality: FilterQuality.none,
-                      image: NetworkImage(
-                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.index}.png",
+                child: Stack(
+                  children: List.generate(widget.team?["pokemon"].length, (
+                    index,
+                  ) {
+                    int pokemon_index = widget.team?["pokemon"][index]["index"];
+
+                    return Transform.translate(
+                      offset: Offset((index * -50) + 24, 20),
+                      child: Transform.scale(
+                        scale: 1.5,
+                        child: Image(
+                          filterQuality: FilterQuality.none,
+                          image: NetworkImage(
+                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemon_index.png",
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ),
               ),
+
               // Pokemon Name with dynamic text color
               Align(
                 alignment: Alignment.topLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Safely accessing 'name' with null check and fallback
                     Text(
-                      widget.name.isNotEmpty
-                          ? widget.name[0].toUpperCase() +
-                              widget.name.substring(1)
-                          : widget.name,
+                      // Check if 'name' is null or empty, provide fallback text if necessary
+                      widget.team?["name"]?.isNotEmpty ?? false
+                          ? (widget.team?["name"]
+                                      ?.substring(0, 1)
+                                      .toUpperCase() ??
+                                  '') +
+                              (widget.team?["name"]?.substring(1) ?? '')
+                          : 'No Name', // Fallback text if name is null or empty
                       style: TextStyle(
-                        
+                        fontFamily: 'Pokemon GB',
+                        wordSpacing: 0,
+                        letterSpacing: 0,
                         color:
                             isDarkBackground
                                 ? Colors.white
                                 : const Color.fromARGB(255, 5, 19, 53),
-                        fontSize: 20,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: !isDarkBackground ? const Color.fromARGB(119, 255, 255, 255)
-                                : const Color.fromARGB(144, 5, 19, 53), 
-                            offset: Offset(2, 2), 
-                            blurRadius: 4, 
-                            
-                          ),]
+                            color:
+                                !isDarkBackground
+                                    ? const Color.fromARGB(119, 255, 255, 255)
+                                    : const Color.fromARGB(144, 5, 19, 53),
+                            offset: Offset(2, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    Text(
-                      "#${widget.index}",
-                      style: TextStyle(
-                        color:
-                            isDarkBackground
-                                ? const Color.fromARGB(200, 255, 255, 255)
-                                : const Color.fromARGB(100, 0, 0, 0),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        
-                      ),
-                      textAlign: TextAlign.left,
+
+                    Divider(
+                      color:
+                          isDarkBackground
+                              ? Colors.white.withOpacity(0.5)
+                              : Colors.black.withOpacity(0.5),
+                      thickness: 3,
+                      indent: 0,
+                      endIndent: 0,
+                      height: 5,
                     ),
                   ],
                 ),
