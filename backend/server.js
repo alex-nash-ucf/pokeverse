@@ -393,6 +393,37 @@ app.get('/getTeams', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/searchTeams/:name', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const query = req.params.name.toLowerCase(); 
+  const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;  
+  const offset = parseInt(req.query.offset) || 0;  
+
+  try {
+    const account = await Account.findById(userId).select('teams');
+
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found for this user.' });
+    }
+
+    const matchingTeams = account.teams.filter(team =>
+      team.name.toLowerCase().includes(query)
+    );
+
+    const paginatedTeams = matchingTeams.slice(offset, offset + limit);
+    
+    if (paginatedTeams.length > 0) {
+      res.json(paginatedTeams);
+    } else {
+      res.status(404).json({ message: 'No teams found matching the search criteria.' });
+    }
+
+  } catch (error) {
+    console.error('Error searching teams:', error);
+    res.status(500).json({ message: 'Internal server error while searching teams.' });
+  }
+});
+
 app.post('/addTeam', verifyToken, async (req, res) => {
   const userId = req.id;
   const { teamName } = req.body;
