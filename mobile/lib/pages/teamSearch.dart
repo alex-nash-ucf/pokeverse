@@ -52,7 +52,7 @@ class _TeamSearchState extends State<TeamSearch> {
         Uri.parse(
           'http://157.230.80.230:5001/getTeams',
         ),
-        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YmY1MzAwYTcyOGM5M2VmNDdhYzc5YiIsInVzZXJuYW1lIjoicG9rZW1vbm1hc3RlciIsImlhdCI6MTc0MzA0MDI0NCwiZXhwIjoxNzQzMDQzODQ0fQ.x1ewvJzlgPwKfYH9p-u6yf0I6eFv1ovwtQeQCOSljb4'},
+        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YmY1MzAwYTcyOGM5M2VmNDdhYzc5YiIsInVzZXJuYW1lIjoicG9rZW1vbm1hc3RlciIsImlhdCI6MTc0MzA0OTQ2MCwiZXhwIjoxNzQzMDUzMDYwfQ.ieDjByhrxPm8Uqzg9CjoW5jQPtbpnJI8L8qFS-z78WA'},
       );
 
       if (_isRequestInProgress == query) {
@@ -232,7 +232,7 @@ class _TeamSearchState extends State<TeamSearch> {
 
                         final team = _teamResults[index];
 
-                        return TeamSearchItem(name: team["name"],);
+                        return TeamSearchItem(name: team["name"], pokemon: team["pokemon"],);
                       }),
                     ),
           ),

@@ -118,12 +118,21 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                               widget.name.substring(1)
                           : widget.name,
                       style: TextStyle(
+                        
                         color:
                             isDarkBackground
                                 ? Colors.white
                                 : const Color.fromARGB(255, 5, 19, 53),
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            color: !isDarkBackground ? const Color.fromARGB(119, 255, 255, 255)
+                                : const Color.fromARGB(144, 5, 19, 53), 
+                            offset: Offset(2, 2), 
+                            blurRadius: 4, 
+                            
+                          ),]
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -136,6 +145,7 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                                 : const Color.fromARGB(100, 0, 0, 0),
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        
                       ),
                       textAlign: TextAlign.left,
                     ),
