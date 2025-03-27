@@ -604,7 +604,7 @@ app.get('/getPokemon/:teamId', verifyToken, async (req, res) => {
 
 app.post('/addPokemon', verifyToken, async (req, res) => {
   const userId = req.id;
-  const { speciesName, teamId } = req.body;
+  const { speciesName, teamId, pokedexNumber } = req.body;
   if (!speciesName) {
     return res.status(400).json({ message: 'Species name is required to add a Pokemon.' });
   }
@@ -627,6 +627,7 @@ app.post('/addPokemon', verifyToken, async (req, res) => {
       name: speciesName,
       ability: abilities[0], // Assign the first ability
       moves: defaultMoves,
+      index: pokedexNumber
     });
 
     const savedPokemon = await newPokemon.save();
