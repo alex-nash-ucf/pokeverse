@@ -38,7 +38,7 @@ const accountSchema = new mongoose.Schema({
   teams: [{
     name: { type: String, required: true },
     pokemon: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'pokemonSchema' }],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'pokemonSchema' }],
       validate: {
         validator: function(array) {
           return array.length <= 6;
