@@ -6,6 +6,7 @@ import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
 
 import 'package:mobile/componenets/pokemonSearchItem.dart';
+import 'package:mobile/componenets/teamSearchItem.dart';
 
 class TeamSearch extends StatefulWidget {
   const TeamSearch({super.key});
@@ -49,8 +50,9 @@ class _TeamSearchState extends State<TeamSearch> {
     try {
       final response = await http.get(
         Uri.parse(
-          'http://157.230.80.230:5001/pokemon/search/$query?limit=8&offset=$offset',
+          'http://157.230.80.230:5001/getTeams',
         ),
+        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YmY1MzAwYTcyOGM5M2VmNDdhYzc5YiIsInVzZXJuYW1lIjoicG9rZW1vbm1hc3RlciIsImlhdCI6MTc0MzA0MDI0NCwiZXhwIjoxNzQzMDQzODQ0fQ.x1ewvJzlgPwKfYH9p-u6yf0I6eFv1ovwtQeQCOSljb4'},
       );
 
       if (_isRequestInProgress == query) {
@@ -128,7 +130,7 @@ class _TeamSearchState extends State<TeamSearch> {
     _scrollController.addListener(_scrollListener);
 
     // Trigger the initial search when the widget is loaded
-    _searchPokemon('leafeon', offset: 0); // Ensure the first fetch happens
+    _searchPokemon('', offset: 0); // Ensure the first fetch happens
   }
 
   @override
@@ -196,7 +198,7 @@ class _TeamSearchState extends State<TeamSearch> {
               onPressed: () {
                 // Action for button press
               },
-              
+
               style: ElevatedButton.styleFrom(
                 elevation: 6,
                 backgroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -204,12 +206,15 @@ class _TeamSearchState extends State<TeamSearch> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                surfaceTintColor: Theme.of(context).scaffoldBackgroundColor
+                surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               child: Text(
                 '+',
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,
-                color: Theme.of(context).scaffoldBackgroundColor,),
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
               ),
             ),
           ),
@@ -224,8 +229,10 @@ class _TeamSearchState extends State<TeamSearch> {
                     : Column(
                       spacing: 16,
                       children: List.generate(_teamResults.length, (index) {
-                        final teams = _teamResults[index];
-                        return PokemonSearchItem();
+
+                        final team = _teamResults[index];
+
+                        return TeamSearchItem(name: team["name"],);
                       }),
                     ),
           ),

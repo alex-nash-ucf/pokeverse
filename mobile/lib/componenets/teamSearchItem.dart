@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class PokemonSearchItem extends StatefulWidget {
+class TeamSearchItem extends StatefulWidget {
   final Color color;
   final String name;
-  final int index;
+  final List<dynamic> items;
 
-  const PokemonSearchItem({
+  const TeamSearchItem({
     super.key,
     this.color = Colors.blue,
-    this.name = "PokemonName",
-    this.index = 0,
+    this.name = "Team NAME",
+    this.items = const [],
   });
 
   @override
-  _PokemonSearchItemState createState() => _PokemonSearchItemState();
+  _TeamSearchItemState createState() => _TeamSearchItemState();
 }
 
-class _PokemonSearchItemState extends State<PokemonSearchItem> {
+class _TeamSearchItemState extends State<TeamSearchItem> {
   // Function to darken a color
   Color darkenColor(Color color, double amount) {
     assert(amount >= 0 && amount <= 1);
@@ -31,14 +31,14 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if the background is light or dark
+    // dtermine if the background is light or dark
     final bool isDarkBackground = widget.color.computeLuminance() < 0.5;
 
-    // If the background is light, darken the color
+    // if the background is light, darken the color
     final Color backgroundColor =
         isDarkBackground
             ? widget.color
-            : darkenColor(widget.color, 0.11); // Darken by 30%
+            : darkenColor(widget.color, 0.11); 
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -72,11 +72,12 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Transform.rotate(
-                  angle: 0.0,
+                  angle:
+                      0.25,
                   child: Transform.translate(
-                    offset: Offset(32, 59.5),
+                    offset: Offset(-32, 25),
                     child: Transform.scale(
-                      scale: 2.5,
+                      scale: 4.5,
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
                           isDarkBackground
@@ -90,22 +91,22 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                   ),
                 ),
               ),
-
               Align(
                 alignment: Alignment.bottomRight,
                 child: Transform.translate(
-                  offset: Offset(32, 0),
+                  offset: Offset(0, 16),
                   child: Transform.scale(
                     scale: 2.25,
                     child: Image(
                       filterQuality: FilterQuality.none,
                       image: NetworkImage(
-                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${widget.index}.png",
+                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${470}.png",
                       ),
                     ),
                   ),
                 ),
               ),
+
               // Pokemon Name with dynamic text color
               Align(
                 alignment: Alignment.topLeft,
@@ -127,23 +128,13 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                       ),
                       textAlign: TextAlign.left,
                     ),
-                    Text(
-                      "#${widget.index}",
-                      style: TextStyle(
-                        color:
-                            isDarkBackground
-                                ? const Color.fromARGB(200, 255, 255, 255)
-                                : const Color.fromARGB(100, 0, 0, 0),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
                   ],
                 ),
               ),
             ],
           ),
+
+
           onPressed: () {
             print("Button Pressed");
           },

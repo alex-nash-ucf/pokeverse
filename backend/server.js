@@ -55,6 +55,7 @@ const Account = mongoose.model('Account', accountSchema);
 
 const pokemonSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Pokemon name
+    index: { type: Number, required: true }, 
     nickname: { type: String, default: null },
     ability: { type: String, required: true },
     moves: {
