@@ -7,12 +7,15 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Enable Cross-Origin Resource Sharing
-const jwt =require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+const sendgrid = require('@sendgrid/mail')
 const app = express();
 const PORT = 5001; // Choose a port
 
 require('dotenv').config();
 const MONGODB_URI = process.env.MONGODB_URI;
+
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 mongoose.connect(MONGODB_URI, {
 }).then(() =>
@@ -73,7 +76,6 @@ const pokemonSchema = new mongoose.Schema({
 const Pokemon = mongoose.model('Pokemon', pokemonSchema);
 
 // API Endpoints:
-
 // Login In
 app.post("/userlogin", async (req, res) =>{
   try
@@ -98,8 +100,87 @@ app.post("/userlogin", async (req, res) =>{
 
   catch(error)
   {
-    console.error = ('Invalid user name/password', error);
-    res.status(500).json({error: 'Failed to login'});
+    console.error = ("Invalid user name/password", error);
+    res.status(500).json({ error: "Failed to login" });
+  }
+
+});
+
+// API sending email for password reset
+app.post('/users/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try
+  {
+    const user = await Account.findOne({ email }); // Get user info from email
+    if(!user)
+    {
+      return res.status(404).json({ error: "User does not exist"});
+    }
+
+    const userData = {
+      email: user.email,
+      username: user.username
+    };
+
+    const token = jwt.sign(
+      userData, 
+      process.env.JWT_SECRET, 
+      { expiresIn: "1w" }
+    );
+    
+    const link = `https://localhost:5001/reset-password/${token}`;
+
+    const email_msg =
+    {
+      to: email,
+      from: 'noreply@pokeverse.space',
+      subject: 'Password Reset',
+      text: `Hello ${user.username}!\n\n
+             A request to reset the password for your account has been made at Pokeverse.\n
+             Please click on the link below to continue:
+             ${link}\n\n
+             Thank you,
+             The Pokeverse Team`
+    }
+
+    await sendgrid.send(email_msg);
+    return res.json({ message: 'Password reset link has been sent to your email'});
+  }
+
+  catch(error)
+  {
+    console.error(error);
+    return res.status(500).json({ error: "Error sending email for password reset"});
+  }
+
+});
+
+// API resetting old password to newPassword
+app.post('/users/reset-password', async (req, res) =>{
+  const { token, newPassword } = req.body;
+  
+  try
+  {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token
+    const { email } = decoded; // Extract email
+
+    const user = await Account.findOne({ email });
+    if (!user)
+    {
+      return res.status(400).json({ error: "User does not exist"});
+    }
+
+    user.password = newPassword; // Update password
+
+    await user.save();
+    return res.json({ message: "Password reset successfully!"});
+  }
+
+  catch(error)
+  {
+    console.error(error);
+    return res.status(401).json({ error: "Token conflict" });
   }
 
 });
