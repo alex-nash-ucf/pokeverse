@@ -55,7 +55,7 @@ const Account = mongoose.model('Account', accountSchema);
 
 const pokemonSchema = new mongoose.Schema({
     name: { type: String, required: true }, // Pokemon name
-    nickname: { type: String },
+    nickname: { type: String, default: null },
     ability: { type: String, required: true },
     moves: {
       type: [String],
@@ -100,6 +100,27 @@ const accountData = {
   email: "ash@example.com",
 };
 */
+// Helper function to fetch moves for a Pokemon species from your /pokemon-moves endpoint
+const fetchAbilities = async (speciesName) => {
+  try {
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${speciesName.toLowerCase()}`);
+    return response.data.abilities.map(ab => ab.ability.name);
+  } catch (error) {
+    console.error('Error fetching abilities:', error);
+    return [];
+  }
+};
+
+// Helper function to fetch moves for a Pokemon species from your /pokemon-moves endpoint
+const fetchDefaultMoves = async (speciesName) => {
+  try {
+    const response = await axios.get(`/api/pokemon-moves/${speciesName}`); // Adjust path if needed
+    return response.data.slice(0, 4).map(move => move.name);
+  } catch (error) {
+    console.error('Error fetching default moves:', error);
+    return [null, null, null, null];
+  }
+};
 
 
 async function createTemporaryAccount(accountData) {
@@ -450,6 +471,176 @@ app.put('/updateTeam/:teamId', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating team name:', error);
     res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.get('/pokemon-moves/:speciesName', async (req, res) => {
+  const speciesName = req.params.speciesName.toLowerCase();
+
+  try {
+    // 1. Fetch Pokemon Species data by name
+    const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${speciesName}`);
+
+    // 2. Extract the URL of the default Pokemon variant
+    const defaultPokemonUrl = speciesResponse.data.varieties.find(variety => variety.is_default)?.pokemon.url;
+
+    if (!defaultPokemonUrl) {
+      return res.status(404).json({ message: `No default Pokemon found for species: ${speciesName}` });
+    }
+
+    // 3. Fetch the default Pokemon data to get its moves
+    const pokemonResponse = await axios.get(defaultPokemonUrl);
+    const moves = pokemonResponse.data.moves.map(moveEntry => ({
+      name: moveEntry.move.name,
+      url: moveEntry.move.url,
+      version_group_details: moveEntry.version_group_details.map(vgDetail => ({
+        level_learned_at: vgDetail.level_learned_at,
+        move_learn_method: vgDetail.move_learn_method.name,
+        version_group: vgDetail.version_group.name,
+      })),
+    }));
+
+    res.json(moves);
+
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({ message: `Pokemon species not found: ${speciesName}` });
+    }
+    console.error('Error fetching Pokemon moves:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/getTeams', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamId } = req.params;
+  try {
+    const account = await Account.findById(userId).populate({
+      path: 'teams',
+      match: { _id: teamId },
+      populate: { path: 'pokemon', model: 'Pokemon' },
+    });
+
+    if (!account) {
+      return res.status(404).json({ message: 'Account not found for this user.' });
+    }
+
+    const team = account.teams.find(t => t._id.toString() === teamId);
+    if (!team) {
+      return res.status(404).json({ message: 'Team not found for this user.' });
+    }
+
+    res.json(team.pokemon);
+  } catch (error) {
+    console.error('Error getting team Pokemon:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+app.post('/addPokemon', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamId } = req.params;
+  const { speciesName } = req.body;
+
+  if (!speciesName) {
+    return res.status(400).json({ message: 'Species name is required to add a Pokemon.' });
+  }
+
+  try {
+    const abilities = await fetchAbilities(speciesName);
+    const defaultMoves = await fetchDefaultMoves(speciesName);
+
+    if (abilities.length === 0) {
+      return res.status(404).json({ message: `Abilities not found for species: ${speciesName}` });
+    }
+
+    const newPokemon = new Pokemon({
+      name: speciesName,
+      ability: abilities[0], // Assign the first ability
+      moves: defaultMoves,
+    });
+
+    const savedPokemon = await newPokemon.save();
+
+    const account = await Account.findByIdAndUpdate(
+      userId,
+      { $push: { 'teams.$[team].pokemon': savedPokemon._id } },
+      { new: true, arrayFilters: [{ 'team._id': teamId }, { 'team.pokemon': { $size: { $lt: 6 } } }] }
+    );
+
+    if (!account) {
+      await Pokemon.findByIdAndDelete(savedPokemon._id); // Remove the created Pokemon if team not found or full
+      return res.status(404).json({ message: 'Account or team not found, or team is full for this user.' });
+    }
+
+    res.status(201).json({ message: 'Pokemon added to team successfully.', pokemon: savedPokemon });
+  } catch (error) {
+    console.error('Error adding Pokemon to team:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+app.delete('deletePokemon/:teamId/:pokemonId', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamId, pokemonId } = req.params;
+
+  try {
+    const account = await Account.findByIdAndUpdate(
+      userId,
+      { $pull: { 'teams.$[team].pokemon': pokemonId } },
+      { new: true, arrayFilters: [{ 'team._id': teamId }] }
+    );
+
+    if (!account) {
+      return res.status(404).json({ message: 'Account or team not found for this user.' });
+    }
+
+    const pokemon = await Pokemon.findByIdAndDelete(pokemonId);
+    if (pokemon) {
+       console.log(`Pokemon ${pokemon.name} (ID: ${pokemonId}) deleted.`);
+    }
+
+    res.json({ message: 'Pokemon removed from team successfully.' });
+  } catch (error) {
+    console.error('Error deleting Pokemon from team:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+app.put('/updatePokemon/:teamId/:pokemonId', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const { teamId, pokemonId } = req.params;
+  const { nickname, ability, moves } = req.body;
+
+  try {
+    const account = await Account.findOne({ _id: userId, 'teams._id': teamId, 'teams.pokemon': pokemonId });
+    if (!account) {
+      return res.status(404).json({ message: 'Account, team, or Pokemon not found for this user.' });
+    }
+
+    const updateFields = {};
+    if (nickname !== undefined) {
+      updateFields.nickname = nickname;
+    }
+    if (ability !== undefined) {
+      updateFields.ability = ability;
+    }
+    if (Array.isArray(moves) && moves.length === 4) {
+      updateFields.moves = moves;
+    } else if (moves !== undefined) {
+      return res.status(400).json({ message: 'Moves must be an array of 4 elements.' });
+    }
+
+    const updatedPokemon = await Pokemon.findByIdAndUpdate(pokemonId, updateFields, { new: true });
+
+    if (!updatedPokemon) {
+      return res.status(404).json({ message: 'Pokemon not found (after account verification).' });
+    }
+
+    res.json({ message: 'Pokemon updated successfully.', pokemon: updatedPokemon });
+  } catch (error) {
+    console.error('Error updating Pokemon:', error);
+    res.status(500).json({ message: 'Internal server error.' });
   }
 });
 
