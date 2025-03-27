@@ -6,6 +6,8 @@ import About from "./pages/About.tsx";
 import Search from "./pages/search.tsx"; 
 import ResetPass from "./pages/resetpass.tsx"; 
 import TeamsPage from "./pages/Teams.tsx"; 
+import ResetPassPage from "./pages/ResetPassPage.tsx"; 
+
 
 
 import './App.css';
@@ -23,7 +25,9 @@ function App() {
           <Route path="/about" element={<About/>} />
           <Route path="/search" element={<ProtectedRoute> <Search/> </ProtectedRoute>}/>
           <Route path="/resetpass" element={<ResetPass/>} />
-          <Route path="/teams" element={<TeamsPage/>} />
+          <Route path="/teams" element={<ProtectedRoute><TeamsPage/> </ProtectedRoute>} />
+          <Route path="/forgot-password" element={<ResetPassPage/>} />
+
 
         </Routes>
       </div>
