@@ -35,21 +35,21 @@ const accountSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  teams: [{ // Array of teams
-    name: { type: String, required: true }, // Name of the team (e.g., "Main Team", "Battle Team")
-    pokemon: [{ type: mongoose.Schema.Types.ObjectId, ref: 'pokemonSchema' }] // Array of Pokemon references
+  teams: [{
+    name: { type: String, required: true },
+    pokemon: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'pokemonSchema' }],
+      validate: {
+        validator: function(array) {
+          return array.length <= 6;
+        },
+        message: 'Teams cannot have more than 6 Pokemon.'
+      }
+    }
   }],
 
 });
 
-accountSchema.pre('save', function (next) {
-  for (const team of this.teams) {
-    if (team.pokemon.length > 6) {
-      return next(new Error(`Team "${team.name}" exceeds the maximum of 6 Pokemon.`));
-    }
-  }
-  next();
-});
 
 const Account = mongoose.model('Account', accountSchema);
 
@@ -537,10 +537,42 @@ app.get('/getTeams', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/getPokemon/:teamId', verifyToken, async (req, res) => {
+  const userId = req.id;
+  const teamId = req.params.teamId;
+
+  try {
+    const account = await Account.findOne({ _id: userId, 'teams._id': teamId }).populate({
+      path: 'teams',
+      match: { _id: teamId },
+      populate: {
+        path: 'pokemon',
+        model: 'Pokemon' // Ensure 'Pokemon' matches the name of your Pokemon model
+      }
+    });
+
+    if (!account) {
+      return res.status(404).json({ message: 'Account or team not found for this user.' });
+    }
+
+    // Find the specific team from the account's teams array
+    const team = account.teams.find(team => team._id.toString() === teamId);
+
+    if (!team) {
+      return res.status(404).json({ message: 'Team not found for this user.' });
+    }
+
+    res.json(team.pokemon);
+
+  } catch (error) {
+    console.error('Error fetching Pokemon for team:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
 app.post('/addPokemon', verifyToken, async (req, res) => {
   const userId = req.id;
   const { speciesName, teamId } = req.body;
-
   if (!speciesName) {
     return res.status(400).json({ message: 'Species name is required to add a Pokemon.' });
   }
@@ -550,10 +582,10 @@ app.post('/addPokemon', verifyToken, async (req, res) => {
   }
 
   try {
-    const abilities = ["test"];
-    //await fetchAbilities(speciesName);
-    const defaultMoves = [null, null, null, null];
-    // await fetchDefaultMoves(speciesName);
+    const abilities = 
+    await fetchAbilities(speciesName);
+    const defaultMoves =
+     await fetchDefaultMoves(speciesName);
 
     if (abilities.length === 0) {
       return res.status(404).json({ message: `Abilities not found for species: ${speciesName}` });
@@ -570,7 +602,7 @@ app.post('/addPokemon', verifyToken, async (req, res) => {
     const account = await Account.findByIdAndUpdate(
       userId,
       { $push: { 'teams.$[team].pokemon': savedPokemon._id } },
-      { new: true, arrayFilters: [{ 'team._id': teamId }, { 'team.pokemon': { $size: { $lt: 6 } } }] }
+      { new: true, arrayFilters: [{ 'team._id': teamId }]}
     );
 
     if (!account) {
@@ -585,10 +617,10 @@ app.post('/addPokemon', verifyToken, async (req, res) => {
   }
 });
 
-app.delete('deletePokemon/:teamId/:pokemonId', verifyToken, async (req, res) => {
+app.delete('/deletePokemon/:teamId/:pokemonId', verifyToken, async (req, res) => {
   const userId = req.id;
   const { teamId, pokemonId } = req.params;
-
+  
   try {
     const account = await Account.findByIdAndUpdate(
       userId,
