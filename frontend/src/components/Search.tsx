@@ -268,9 +268,10 @@ const Search = () => {
     if (!showAddModal || !selectedPokemon) return null;
 
     return (
-      <div className="ml-100 fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-[100]">
-        <div className="bg-white rounded-lg p-6 w-full max-w-md">
-          <h2 className="text-xl font-bold mb-4">Add {selectedPokemon.name} to Team</h2>
+<div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-[200] p-4 ml-20 sm:ml-30 md:ml-50 lg:ml-100">
+<div className="bg-white rounded-lg p-6 w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] max-w-md">
+    
+          <h2 className="text-xl font-bold mb-4">  Add {selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)} To Your Team </h2>
           
           <div className="mb-4">
             <label className="block mb-2 font-medium">Ability:</label>
@@ -356,24 +357,25 @@ const Search = () => {
                 type="text"
                 value={newTeamName}
                 onChange={(e) => setNewTeamName(e.target.value)}
-                placeholder="Enter new team name"
+                placeholder="Enter New Team Name"
                 className="w-full p-2 border rounded mt-2"
               />
             )}
           </div>
 
           <div className="flex justify-end space-x-2">
-            <button
-              onClick={() => setShowAddModal(false)}
-              className="px-4 py-2 bg-gray-300 rounded"
-            >
-              Cancel
-            </button>
+            
             <button
               onClick={handleAddToTeam}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 !bg-blue-400 text-white rounded"
             >
               Add to Team
+            </button>
+            <button
+              onClick={() => setShowAddModal(false)}
+              className="px-4 py-2 !bg-gray-300 rounded"
+            >
+              Cancel
             </button>
           </div>
         </div>
@@ -382,8 +384,8 @@ const Search = () => {
   };
 
   return (
-    <div className="p-4 ml-5">
-      <div className="flex items-center space-x-2 mb-4">
+<div className="p-2 sm:p-3 md:p-4 lg:p-6 xl:p-8 ml-2 sm:ml-3 md:ml-5 lg:ml-8 xl:ml-10">
+<div className="flex items-center space-x-2 mb-4">
         <img src="/assets/search.svg" alt="Dashboard" className="w-5 h-7" />
         <input
           type="text"
