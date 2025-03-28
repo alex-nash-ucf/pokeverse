@@ -10,50 +10,51 @@ class Header extends CustomPainter {
 
   double slope_height = 64;
   double slope_width = 128;
-  double line_width = 8;
+  double line_width = 6;
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Calculate the offset based on the screen width
-    double offset = top_height - 16;
+@override
+void paint(Canvas canvas, Size size) {
+  // Calculate the offset based on the screen width
+  double offset = top_height - 16;
 
-    // SHAPE FILL
-    Paint fillPaint =
-        Paint()
-          ..color = primary_color
-          ..style = PaintingStyle.fill;
+  // SHADOW
+  Paint shadowPaint = Paint()
+    ..color = Colors.black.withOpacity(0.3)  // Shadow color (e.g., black with some transparency)
+    ..maskFilter = MaskFilter.blur(BlurStyle.normal, 32);  // Blur effect for the shadow
+  
+  // SHAPE FILL
+  Paint fillPaint = Paint()
+    ..color = primary_color
+    ..style = PaintingStyle.fill;
 
-    // SHAPE OUTLINE
-    Paint outlinePaint =
-        Paint()
-          ..color = secondary_color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = line_width
-          ..strokeCap = StrokeCap.round
-          ..isAntiAlias = true;
+  // SHAPE OUTLINE
+  Paint outlinePaint = Paint()
+    ..color = secondary_color
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = line_width
+    ..strokeCap = StrokeCap.round
+    ..isAntiAlias = true;
 
-    // DRAW THE PATH WITH OFFSET
-    Path path = Path();
-    path.moveTo(-16, 0 - offset); // Shift the starting point up by the offset
-    path.lineTo(-16, slope_height + top_height - offset); // Shift the Y values
-    path.lineTo(
-      (size.width / 2) - (slope_width / 2),
-      slope_height + top_height - offset,
-    ); // Shift the Y values
-    path.lineTo(
-      (size.width / 2) + (slope_width / 2),
-      top_height - offset,
-    ); // Shift the Y values
-    path.lineTo(size.width + 16, top_height - offset); // Shift the Y values
-    path.lineTo(size.width + 16, 0 - offset); // Shift the Y values
-    path.close();
+  // DRAW THE PATH WITH OFFSET
+  Path path = Path();
+  path.moveTo(-16, 0 - offset);
+  path.lineTo(-16, slope_height + top_height - offset);
+  path.lineTo((size.width / 2) - (slope_width / 2), slope_height + top_height - offset);
+  path.lineTo((size.width / 2) + (slope_width / 2), top_height - offset);
+  path.lineTo(size.width + 16, top_height - offset);
+  path.lineTo(size.width + 16, 0 - offset);
+  path.close();
 
-    // DRAW THE FILL
-    canvas.drawPath(path, fillPaint);
+  // DRAW THE SHADOW (apply before fill and outline)
+  canvas.drawPath(path, shadowPaint);
 
-    // DRAW THE OUTLINE
-    canvas.drawPath(path, outlinePaint);
-  }
+  // DRAW THE FILL
+  canvas.drawPath(path, fillPaint);
+
+  // DRAW THE OUTLINE
+  canvas.drawPath(path, outlinePaint);
+}
+
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
@@ -129,7 +130,7 @@ class Footer extends CustomPainter {
 
   double slope_height = 64;
   double slope_width = 128;
-  double line_width = 8;
+  double line_width = 6;
   double extra_height = 48;
 
   @override
@@ -204,7 +205,7 @@ class FooterWithSvg extends StatelessWidget {
                 alignment: Alignment.bottomRight, // Align the SVG elements to the top
                 child: Transform.translate(
                   offset: Offset(0, -4), // Adjust to align better in footer
-                  child: Container(
+                  child: Container( 
                     width: (width / 2) - (128 / 2), 
                     height: 64 + 14,
                     child: Column(

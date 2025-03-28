@@ -4,7 +4,6 @@ import 'package:mobile/componenets/teamEditItem.dart';
 
 class EditTeam extends StatelessWidget {
   final Map<String, dynamic>? team;
-
   const EditTeam({super.key, this.team});
 
   @override

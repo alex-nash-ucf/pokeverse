@@ -38,7 +38,6 @@ class _HubScreenState extends State<HubScreen> {
               children: [
                 PokemonSearch(),
                 TeamSearch(),
-                EditTeam()
               ],
             ),
           ),
