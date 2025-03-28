@@ -4,38 +4,32 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
+import 'package:mobile/classes/ColorConverter.dart';
 
 class TeamSearchItem extends StatefulWidget {
   final Map<String, dynamic>? team;
-  final Color color;
 
-  const TeamSearchItem({super.key, this.color = Colors.blue, this.team});
+  const TeamSearchItem({super.key, 
+  this.team});
 
   @override
   _TeamSearchItemState createState() => _TeamSearchItemState();
 }
 
 class _TeamSearchItemState extends State<TeamSearchItem> {
-  // Function to darken a color
-  Color darkenColor(Color color, double amount) {
-    assert(amount >= 0 && amount <= 1);
-    final double factor = 1 - amount;
-    return Color.fromRGBO(
-      (color.red * factor).toInt(),
-      (color.green * factor).toInt(),
-      (color.blue * factor).toInt(),
-      1,
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
+
+    Color color = widget.team?["color"];
+    
     // Determine if the background is light or dark
-    final bool isDarkBackground = widget.color.computeLuminance() < 0.5;
+    final bool isDarkBackground = color.computeLuminance() < 0.5;
 
     // If the background is light, darken the color
     final Color backgroundColor =
-        isDarkBackground ? widget.color : darkenColor(widget.color, 0.11);
+        isDarkBackground ? color : ColorClass.darkenColor(color, 0.11);
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -78,7 +72,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                         colorFilter: ColorFilter.mode(
                           isDarkBackground
                               ? const Color.fromARGB(57, 255, 255, 255)
-                              : widget.color,
+                              : color,
                           BlendMode.srcIn,
                         ),
                         child: Image.asset('assets/images/pokeball.png'),
@@ -131,14 +125,16 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                           : 'No Name', // Fallback text if name is null or empty
                       style: TextStyle(
                         fontFamily: 'Pokemon GB',
-                        wordSpacing: 0,
-                        letterSpacing: 0,
+                        wordSpacing: -2,
+                        letterSpacing: -2,
                         color:
                             isDarkBackground
                                 ? Colors.white
                                 : const Color.fromARGB(255, 5, 19, 53),
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        
                         shadows: [
                           Shadow(
                             color:
@@ -151,6 +147,8 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                         ],
                       ),
                       textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,  
+                      maxLines: 1, 
                     ),
 
                     Divider(

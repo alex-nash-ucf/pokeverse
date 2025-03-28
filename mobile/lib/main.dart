@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/componenets/header.dart';
-import 'package:mobile/screens/SignUp.dart';
-import 'package:mobile/screens/hub.dart';
-import 'package:mobile/screens/login.dart';
+import 'package:mobile/pages/pokemonSearch.dart'; // Ensure this is correctly imported
 import 'package:mobile/themes/theme.dart';
 
 void main() {
@@ -16,10 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pokeverse',
+      theme: lightMode, // Add your theme here
       home: ScreenContainer(
-        HubScreen(),
-      ), // INSERT SCREEN HERE FOR UNIVERSAL HEADER
-      theme: lightMode,
+        const PokemonSearch(), // Pass PokemonSearch as the screen here
+      ),
     );
   }
 }
@@ -36,35 +34,57 @@ class ScreenContainer extends StatefulWidget {
 class _ScreenContainerState extends State<ScreenContainer> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // BODY ////////////////////////////////////////////////////////
-        Column(
-          children: [
-            SizedBox(height: 64), 
-            Expanded(child: widget.screen), 
-          ],
-        ),
+    // Move the screen height retrieval here, inside build()
+    double screen_height = MediaQuery.of(context).size.height;
+    double screen_width = MediaQuery.of(context).size.width;
 
-        // HEADER ////////////////////////////////////////////////////////
-        Column(
-          children: [
-            // RED PADDING
-            Container(
-              height: MediaQuery.of(context).padding.top,
-              color: Theme.of(context).primaryColor,
-            ),
+    return Scaffold(
+      body: Stack(
+        children: [
+          // BODY ////////////////////////////////////////////////////////
+          Column(
+            children: [
+              SizedBox(height: 48), // Adjust this padding if necessary
+              Expanded(
+                child: widget.screen,
+              ), // This holds the PokemonSearch widget
+            ],
+          ),
 
-            CustomPaint(
-              size: Size(MediaQuery.of(context).size.width, 128),
-              painter: Header(
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.secondary,
+          // HEADER ////////////////////////////////////////////////////////
+          Column(
+            children: [
+              // RED PADDING for the header area
+              Container(
+                height: MediaQuery.of(context).padding.top,
+                color: Theme.of(context).primaryColor,
+              ),
+
+              // Apply the translation (offset the header upwards by screen height)
+              Transform.translate(
+                offset: Offset(0, 0),
+                child: HeaderWithSvg(
+                  primaryColor: Theme.of(context).colorScheme.primary,
+                  secondaryColor: Theme.of(context).colorScheme.secondary,
+                  topHeight: screen_height + 16,
+                ),
+              ),
+            ],
+          ),
+
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: IgnorePointer(
+              ignoring: true, // Prevent interaction with the footer
+              child: FooterWithSvg(
+                primaryColor: Theme.of(context).colorScheme.primary,
+                secondaryColor: Theme.of(context).colorScheme.secondary,
+                bottomHeight: screen_height + 16,
               ),
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
