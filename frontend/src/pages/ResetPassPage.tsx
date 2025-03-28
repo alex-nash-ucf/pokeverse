@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { useParams, useNavigate } from "react-router-dom"; 
 import Navbar from "../components/nav.tsx"; 
 
@@ -15,8 +15,7 @@ const ResetPasswordPage = () => {
     if (newPassword !== confirmPassword) {
       setMessage("Passwords do not match");
       return;
-    }
-
+    }  
     try {
       const response = await fetch("http://localhost:5001/users/reset-password", {
         method: "POST",

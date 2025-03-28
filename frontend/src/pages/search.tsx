@@ -26,7 +26,7 @@ const LoggedIn = () => {
           />
 
         <SidebarItem
-            icon={<img src="/assets/search.svg" alt="Dashboard" className="w-5 h-5" />}
+            icon={<img src="/assets/search.svg" alt="Search" className="w-5 h-5" />}
             text="Search"
             onClick={() => navigate('/search')} 
             active
