@@ -153,14 +153,14 @@ class Footer extends CustomPainter {
           ..isAntiAlias = true;
 
     Path path = Path();
-    path.moveTo(-16, offset); 
+    path.moveTo(-16, offset * 2); 
     path.lineTo(-16, offset - extra_height); 
 
     path.lineTo((size.width / 2) - (slope_width / 2), offset - extra_height); 
     path.lineTo((size.width / 2) + (slope_width / 2), offset - extra_height - slope_height); 
 
     path.lineTo(16 + size.width,  offset  - extra_height - slope_height); 
-    path.lineTo(16 + size.width,  offset ); 
+    path.lineTo(16 + size.width,  offset * 2 ); 
     path.close();
 
     // DRAW THE FILL
@@ -200,29 +200,28 @@ class FooterWithSvg extends StatelessWidget {
 
           return Stack(
             children: [
-              // Align(
-              //   alignment: Alignment.topLeft, // Align the SVG elements to the top
-              //   child: Transform.translate(
-              //     offset: Offset(0, -32), // Adjust to align better in footer
-              //     child: Container(
-              //       width: (width / 2) - (128 / 2), // slope_width is 128
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-              //         children: [
-              //           SvgPicture.asset(
-              //             'assets/svg/Blue.svg', // Replace with your actual SVG path
-              //           ),
-              //           SvgPicture.asset(
-              //             'assets/svg/Yellow.svg', // Replace with your actual SVG path
-              //           ),
-              //           SvgPicture.asset(
-              //             'assets/svg/Green.svg', // Replace with your actual SVG path
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              Align(
+                alignment: Alignment.bottomRight, // Align the SVG elements to the top
+                child: Transform.translate(
+                  offset: Offset(0, -4), // Adjust to align better in footer
+                  child: Container(
+                    width: (width / 2) - (128 / 2), 
+                    height: 64 + 14,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/svg/White.svg', 
+                        ),
+                        SvgPicture.asset(
+                          'assets/svg/Red.svg', 
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           );
         },

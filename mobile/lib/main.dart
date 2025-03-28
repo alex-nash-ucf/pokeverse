@@ -72,17 +72,14 @@ class _ScreenContainerState extends State<ScreenContainer> {
             ],
           ),
 
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: IgnorePointer(
-              ignoring: true, // Prevent interaction with the footer
-              child: FooterWithSvg(
-                primaryColor: Theme.of(context).colorScheme.primary,
-                secondaryColor: Theme.of(context).colorScheme.secondary,
-                bottomHeight: screen_height + 16,
-              ),
+          Transform.translate(
+                offset: Offset(0, 0),
+                child: FooterWithSvg(
+                  primaryColor: Theme.of(context).colorScheme.primary,
+                  secondaryColor: Theme.of(context).colorScheme.secondary,
+                  bottomHeight: screen_height + 16,
+                ),
             ),
-          ),
         ],
       ),
     );
