@@ -306,7 +306,7 @@ const Search = () => {
           <h2 className="text-xl font-bold mb-4">Add {selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)} To Your Team</h2>
           
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Ability:</label>
+            <label className="!text-black block mb-2 font-medium">Ability:</label>
             <select
               value={selectedAbility}
               onChange={(e) => setSelectedAbility(e.target.value)}
@@ -321,7 +321,7 @@ const Search = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Moves:</label>
+            <label className="block mb-2 !text-black font-medium">Moves:</label>
             {selectedMoves.map((move, index) => (
               <select
                 key={index}
@@ -331,7 +331,7 @@ const Search = () => {
                   newMoves[index] = e.target.value;
                   setSelectedMoves(newMoves);
                 }}
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded !text-black mb-2"
               >
                 <option value="">Select a move</option>
                 {moves.map((m, i) => (
@@ -344,7 +344,7 @@ const Search = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Add to:</label>
+            <label className="block mb-2  !text-black font-medium">Add to:</label>
             {/* 
             <div className="flex items-center mb-2">
               <input
@@ -364,7 +364,7 @@ const Search = () => {
               <select
                 value={selectedTeamId}
                 onChange={(e) => setSelectedTeamId(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full !text-black p-2 border rounded"
               >
                 <option value="">Select a team</option>
                 {teams.map((team) => (
@@ -408,10 +408,10 @@ const Search = () => {
 
           {/* Error and success messages */}
           {errorMessage && (
-            <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>
+            <div className="mb-4 !text-red-500 text-sm">{errorMessage}</div>
           )}
           {successMessage && (
-            <div className="mb-4 text-green-500 text-sm">{successMessage}</div>
+            <div className="mb-4 !text-green-500 text-sm">{successMessage}</div>
           )}
 
           <div className="flex justify-end space-x-2">
@@ -446,7 +446,7 @@ const Search = () => {
           placeholder="Search Pokémon..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded bg-white z-0"
+          className="w-full p-2 border border-gray-300 !text-black rounded bg-white z-0"
         />
       </div>
 

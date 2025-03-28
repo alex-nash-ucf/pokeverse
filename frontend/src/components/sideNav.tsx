@@ -23,7 +23,7 @@ export const SideNav = ({ children }: SideNavProps) => {
       <div className="mt-2 mb-5 flex justify-between items-center">
           <button
             onClick={() => setExpanded((curr) => !curr)} 
-            className="rounded-lg hover:!bg-blue-100 " 
+            className="rounded-lg !bg-blue-100 " 
           >
             {expanded ? (
               <img
@@ -35,14 +35,14 @@ export const SideNav = ({ children }: SideNavProps) => {
                 <img
                 src="/assets/rightarrow.png"
                 alt="Expand"
-                className="w-4 h-4 forceImg"
+                className="w-4 h-4 forceImg "
                 />
             )}
           </button>
         </div>
 
 
-        <div className="border-t flex p-3">
+        <div className="border-t !border-black flex p-3">
           <div
             className={`
               flex justify-between items-center
@@ -56,7 +56,7 @@ export const SideNav = ({ children }: SideNavProps) => {
           <ul className="flex-1 px-3">{children}</ul>
         </SidebarContext.Provider>
 
-        <div className="border-t flex p-3">
+        <div className="border-t flex p-3 !border-black">
           <div
             className={`
               flex justify-between items-center
@@ -73,7 +73,7 @@ export const SideNav = ({ children }: SideNavProps) => {
               logout();
               navigate('/')
             }} 
-            className="rounded-lg hover:!bg-blue-100 "
+            className="rounded-lg !bg-blue-100 !text-black"
 
           >
             {expanded ? (
@@ -136,7 +136,7 @@ export function SidebarItem({
       </span>
       {alert && (
         <div
-          className={`absolute right-2 w-4 h-4 rounded bg-gray-500 ${
+          className={`absolute right-2 w-4 h-4 rounded   ${
             expanded ? '' : 'top-2'
           }`}
         />

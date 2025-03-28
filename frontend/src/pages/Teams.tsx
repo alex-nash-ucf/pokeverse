@@ -20,6 +20,12 @@ const Teams = () => {
   const [showModal, setShowModal] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<{ id: string | null, name: string | null }>({ id: null, name: null });
   const [popoverPosition, setPopoverPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  var apiURL="";
+
+  if (import.meta.env.NODE_ENV === 'development') {
+    apiURL="http://localhost:5001";
+  }
+  else apiURL="http://pokeverse.space:5001";
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -30,7 +36,7 @@ const Teams = () => {
           return;
         }
 
-        const response = await fetch('http://localhost:5001/getTeams', {
+        const response = await fetch(`${apiURL}/getTeams`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -60,7 +66,7 @@ const Teams = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/addTeam', {
+      const response = await fetch(`${apiURL}/addTeams`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +101,7 @@ const Teams = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5001/deleteTeam/${teamToDelete.id}`, {
+      const response = await fetch(`${apiURL}/deleteTeam/${teamToDelete.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -134,7 +140,7 @@ const Teams = () => {
             /> 
           </SideNav>
           <div className="flex-1 p-4">
-            <p>Loading teams...</p>
+            <p className= "!text-black">Loading teams...</p>
           </div>
         </div>
       </div>
@@ -160,11 +166,11 @@ const Teams = () => {
         </SideNav>
 
         <div className="flex-1 mt-10 p-4">
-          <h1 className="text-2xl font-bold mb-2">Your Teams</h1>
+          <h1 className="text-2xl font-bold !text-black mb-2">Your Teams</h1>
                     
           {teams.length === 0 ? (
             <div className="text-center py-8">
-              <p className="mb-4">You don't have any teams yet.</p>
+              <p className="mb-4 !text-black">You don't have any teams yet.</p>
               <button 
                 onClick={() => navigate('/search')}
                 className="!bg-blue-300 hover:bg-blue-600 text-white px-4 mb-2 py-2 rounded"
@@ -184,18 +190,18 @@ const Teams = () => {
               </div>
 
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Your Teams ({teams.length})</h2>
+                <h2 className="text-xl font-semibold !text-black">Your Teams ({teams.length})</h2>
               </div>
 
               {showCreateForm && (
                 <div className="mb-6 p-4 bg-gray-100 rounded">
-                  <h3 className="font-medium mb-2">Create A New Team</h3>
+                  <h3 className="font-medium mb-2 !text-black">Create A New Team</h3>
                   <input
                     type="text"
                     value={newTeamName}
                     onChange={(e) => setNewTeamName(e.target.value)}
                     placeholder="Enter team name"
-                    className="w-full p-2 border rounded mb-2"
+                    className="w-full !text-black p-2 !border rounded mb-2"
                   />
                   <div className="flex gap-2">
                     <button 
@@ -221,7 +227,7 @@ const Teams = () => {
                 {teams.map(team => (
                   <div key={team._id} className="border rounded-lg p-4 shadow-sm">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-medium">{team.name}</h3>
+                      <h3 className="text-lg !text-black font-medium">{team.name}</h3>
                     </div>
                     <p className="text-gray-600 mb-3">
                       {team.pokemon.length} Pokémon
@@ -229,21 +235,21 @@ const Teams = () => {
                     <div className="flex justify-between items-center">
                       <button 
                         onClick={() => navigate(`/team/${team._id}`)}
-                        className="text-blue-500 w-full"
+                        className="!bg-gray-100 text-blue-500 w-full "
                       >
                         View
                       </button>
 
                       <button 
                         onClick={() => navigate('/search')}
-                        className="ml-4 text-green-500 w-full "
+                        className="ml-4 !bg-gray-100 text-green-500 w-full "
                       >
                         Add
                       </button>
                       
                       <button 
                         onClick={(e) => handleDeleteTeam(team._id, team.name, e)}
-                        className="text-red-500 hover:text-red-700 ml-4"
+                        className="text-red-500 !bg-gray-100 hover:text-red-700 ml-4"
                       >
                         Delete
                       </button>
@@ -266,7 +272,7 @@ const Teams = () => {
           }}
         >
           <div className="absolute bg-white p-4 rounded-lg shadow-lg max-w-xs w-full">
-            <h2 className="text-md font-semibold mb-4">Are you sure you want to delete {teamToDelete.name}?</h2>
+            <h2 className="text-md font-semibold !text-black mb-4">Are you sure you want to delete {teamToDelete.name}?</h2>
             <div className="flex ml-10 justify-center mt-4">
               <button 
                 onClick={handleConfirmDelete} 
