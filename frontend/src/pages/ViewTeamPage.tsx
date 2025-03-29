@@ -224,14 +224,14 @@ const ViewTeamPage = () => {
                   </div>
                   <div className="mt-3">
                     <h4 className="font-medium !text-black">Ability:</h4>
-                    <p className="capitalize">{pokemon.ability}</p>
+                    <p className="capitalize !text-black">{pokemon.ability}</p>
                   </div>
                   
                   <div className="mt-3">
                     <h4 className="font-medium !text-black">Moves:</h4>
                     <ul className="list-disc list-inside">
                       {pokemon.moves.map((move, index) => (
-                        <li key={index} className="capitalize">
+                        <li key={index} className="!text-black capitalize">
                           {move || 'Unknown move'}
                         </li>
                       ))}
@@ -241,7 +241,7 @@ const ViewTeamPage = () => {
                   <div className="mt-4 flex justify-end">
                     <button 
                       onClick={() => handleRemovePokemon(pokemon._id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 !bg-gray-100 hover:text-red-700"
                     >
                       Remove
                     </button>

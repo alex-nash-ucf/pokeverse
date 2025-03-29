@@ -318,7 +318,7 @@ const Search = () => {
             <select
               value={selectedAbility}
               onChange={(e) => setSelectedAbility(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full !text-black p-2 border rounded"
             >
               {abilities.map((ability, index) => (
                 <option key={index} value={ability}>
