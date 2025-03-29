@@ -7,6 +7,7 @@ import Search from "./pages/search.tsx";
 import ResetPass from "./pages/resetpass.tsx"; 
 import TeamsPage from "./pages/Teams.tsx"; 
 import ResetPassPage from "./pages/ResetPassPage.tsx"; 
+import ViewTeamPage from './pages/ViewTeamPage.tsx';
 
 
 
@@ -27,6 +28,8 @@ function App() {
           <Route path="/resetpass" element={<ResetPass/>} />
           <Route path="/teams" element={<ProtectedRoute><TeamsPage/> </ProtectedRoute>} />
           <Route path="/forgot-password" element={<ResetPassPage/>} />
+          <Route path="/team/:teamId" element={<ProtectedRoute><ViewTeamPage /></ProtectedRoute>} />
+
 
 
         </Routes>

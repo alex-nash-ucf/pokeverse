@@ -234,7 +234,7 @@ const Teams = () => {
                     </p>
                     <div className="flex justify-between items-center">
                       <button 
-                        onClick={() => navigate(`/team/${team._id}`)}
+                        onClick={() => navigate(`/team/${team._id}`, { state: { teamName: team.name } })}
                         className="!bg-gray-100 text-blue-500 w-full "
                       >
                         View
