@@ -475,7 +475,7 @@ app.get('/getTeams', verifyToken, async (req, res) => {
   }
 });
 
-app.get('/searchTeams/:name', verifyToken, async (req, res) => {
+app.get('/getTeams/:name', verifyToken, async (req, res) => {
   const userId = req.id;
   const query = req.params.name.toLowerCase(); 
   const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;  
