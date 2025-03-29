@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/globals.dart';
 import 'package:mobile/componenets/screenContainer.dart';
 import 'package:mobile/pages/editTeam.dart';
@@ -67,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
         
         // Handle the response data (e.g., save user ID, navigate to the next screen)
         print('token: ${responseData['token']}');
+        TOKEN = responseData['token'];
 
 
         // GO TO SCREEN

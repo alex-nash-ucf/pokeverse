@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/globals.dart';
+import 'package:mobile/pages/editTeam.dart';
 
 class TeamSearchItem extends StatefulWidget {
   final Map<String, dynamic>? team;
@@ -38,22 +40,22 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Shadow color
-            offset: Offset(0, 4), // Shadow offset (horizontal, vertical)
-            blurRadius: 6, // Spread the shadow
-            spreadRadius: 1, // Spread the shadow a little more
+            color: Colors.black.withOpacity(0.2), 
+            offset: Offset(0, 4), 
+            blurRadius: 6, 
+            spreadRadius: 1, 
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(
           12,
-        ), // Ensure child is clipped with rounded corners
+        ), 
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.all(16),
             backgroundColor:
-                backgroundColor, // Use the adjusted background color
+                backgroundColor, 
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -167,7 +169,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
             ],
           ),
           onPressed: () {
-            print("Button Pressed");
+            ScreenManager().setScreen(EditTeam(team: widget.team,));
           },
         ),
       ),

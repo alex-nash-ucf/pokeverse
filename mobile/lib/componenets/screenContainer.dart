@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/globals.dart'; // Assuming this contains your globals, like ScreenManager
 import 'package:mobile/componenets/header.dart';
-import 'package:mobile/pages/editTeam.dart'; // Example page
 
 class ScreenContainer extends StatefulWidget {
   const ScreenContainer({super.key});

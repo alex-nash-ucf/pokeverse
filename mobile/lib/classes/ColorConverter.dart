@@ -50,7 +50,8 @@ class ColorClass {
 
   static Color generateColorFromString(String seed) {
     Color special = fromCssColorName(seed);
-    if (seed == "New Team" || special != Colors.transparent) return Colors.grey;
+    if (seed == "New Team") return Colors.grey;
+    if (special != Colors.transparent) return special;
 
     int hash = seed.hashCode;
 
