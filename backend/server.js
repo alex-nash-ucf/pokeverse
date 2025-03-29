@@ -524,7 +524,10 @@ app.post('/addTeam', verifyToken, async (req, res) => {
     account.teams.push(newTeam);
     await account.save();
 
-    res.status(201).json({ message: 'New empty team added successfully.', team: newTeam });
+    // Access the last element of the teams array, which is the newly added team
+    const addedTeam = account.teams[account.teams.length - 1];
+
+    res.status(201).json({ message: 'New empty team added successfully.', team: { _id: addedTeam._id, name: addedTeam.name, pokemon: addedTeam.pokemon } });
   } catch (error) {
     console.error('Error adding team:', error);
     res.status(500).json({ error: 'Internal server error.' });
