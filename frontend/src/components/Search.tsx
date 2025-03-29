@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const typeIcons: Record<string, string> = {
@@ -71,8 +71,22 @@ const Search = () => {
 
   interface AbilityResponse {
     abilities: Ability[];
+    data: { name: string }[];
   }
 
+
+  interface Move {
+    move: {
+      name: string;
+      url: string;
+    };
+  }
+
+  interface MoveResponse {
+    moves: Move[];
+    data: { name: string }[];
+  }
+  
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [filteredPokemon, setFilteredPokemon] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,13 +94,13 @@ const Search = () => {
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
-  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeamName] = useState('');
   const [abilities, setAbilities] = useState<string[]>([]);
   const [selectedAbility, setSelectedAbility] = useState('');
   const [moves, setMoves] = useState<string[]>([]);
   const [selectedMoves, setSelectedMoves] = useState<string[]>(['', '', '', '']);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showNewTeamInput, setShowNewTeamInput] = useState(false);
+  const [showNewTeamInput] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   var apiURL="";
@@ -119,7 +133,7 @@ const Search = () => {
 
         console.log('Fetched Pokémon:', response.data);
 
-        if (response.data && (Array.isArray(response.data) || response.data.name)) {
+        if (response.data && (Array.isArray(response.data) || response.data)) {
           const pokemonData = Array.isArray(response.data) ? response.data : [response.data];
           const pokemonListWithImages = pokemonData.map((pokemon: any) => ({
             ...pokemon,
@@ -184,14 +198,24 @@ const Search = () => {
     try {
       // Fetch abilities
       const abilitiesResponse = await axios.get<AbilityResponse>(`${apiURL}/pokemon-abilities/${pokemon.name}`);
-      setAbilities(abilitiesResponse.data.map((ab: any) => ab.name));
-      setSelectedAbility(abilitiesResponse.data[0]?.name || '');
+      if (Array.isArray(abilitiesResponse.data)) {
+          setAbilities(abilitiesResponse.data.map((ab: any) => ab.name));
+          setSelectedAbility(abilitiesResponse.data[0]?.name || '');
+        }else {
+        console.error("abilitiesResponse.data is not an array", abilitiesResponse.data);
+      }
 
       // Fetch moves
-      const movesResponse = await axios.get(`${apiURL}/pokemon-moves/${pokemon.name}`);
-      const moveNames = movesResponse.data.map((move: any) => move.name);
-      setMoves(moveNames);
+      const movesResponse = await axios.get<MoveResponse>(`${apiURL}/pokemon-moves/${pokemon.name}`);
+      if (Array.isArray(movesResponse.data)) {
+        setAbilities(movesResponse.data.map((ab: any) => ab.name));
+        const moveNames = movesResponse.data.map((move: any) => move.name);
+        setMoves(moveNames);
       setSelectedMoves(moveNames.slice(0, 4));
+      }else {
+        console.error("abilitiesResponse.data is not an array", abilitiesResponse.data);
+      } 
+      
 
       setShowAddModal(true);
     } catch (error) {
@@ -282,7 +306,7 @@ const Search = () => {
           <h2 className="text-xl font-bold mb-4">Add {selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)} To Your Team</h2>
           
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Ability:</label>
+            <label className="!text-black block mb-2 font-medium">Ability:</label>
             <select
               value={selectedAbility}
               onChange={(e) => setSelectedAbility(e.target.value)}
@@ -297,7 +321,7 @@ const Search = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Moves:</label>
+            <label className="block mb-2 !text-black font-medium">Moves:</label>
             {selectedMoves.map((move, index) => (
               <select
                 key={index}
@@ -307,7 +331,7 @@ const Search = () => {
                   newMoves[index] = e.target.value;
                   setSelectedMoves(newMoves);
                 }}
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded !text-black mb-2"
               >
                 <option value="">Select a move</option>
                 {moves.map((m, i) => (
@@ -320,7 +344,7 @@ const Search = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Add to:</label>
+            <label className="block mb-2  !text-black font-medium">Add to:</label>
             {/* 
             <div className="flex items-center mb-2">
               <input
@@ -340,7 +364,7 @@ const Search = () => {
               <select
                 value={selectedTeamId}
                 onChange={(e) => setSelectedTeamId(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full !text-black p-2 border rounded"
               >
                 <option value="">Select a team</option>
                 {teams.map((team) => (
@@ -384,10 +408,10 @@ const Search = () => {
 
           {/* Error and success messages */}
           {errorMessage && (
-            <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>
+            <div className="mb-4 !text-red-500 text-sm">{errorMessage}</div>
           )}
           {successMessage && (
-            <div className="mb-4 text-green-500 text-sm">{successMessage}</div>
+            <div className="mb-4 !text-green-500 text-sm">{successMessage}</div>
           )}
 
           <div className="flex justify-end space-x-2">
@@ -416,13 +440,13 @@ const Search = () => {
   return (
     <div className="p-2 sm:p-3 md:p-4 lg:p-6 xl:p-8 ml-2 sm:ml-3 md:ml-5 lg:ml-8 xl:ml-10">
       <div className="flex items-center space-x-2 mb-4">
-        <img src="/assets/search.svg" alt="Dashboard" className="w-5 h-7" />
+        <img src="/assets/search.svg" alt="Search" className="w-5 h-7" />
         <input
           type="text"
           placeholder="Search Pokémon..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded bg-white z-0"
+          className="w-full p-2 border border-gray-300 !text-black rounded bg-white z-0"
         />
       </div>
 

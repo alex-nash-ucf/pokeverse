@@ -31,6 +31,7 @@ class _TeamSearchState extends State<TeamSearch> {
     if (_isRequestInProgress != query) {
       _offset = 0; // Reset offset for new search
       _noMoreResults = false; // Reset noMoreResults flag for new search
+      _teamResults = [];
     }
 
     // Cancel the previous request if there is an ongoing one
@@ -222,10 +223,27 @@ class _TeamSearchState extends State<TeamSearch> {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Container(
-                                margin: EdgeInsets.symmetric(
-                                  vertical: (96 / 2) ,
-                                ), 
-                                child: PokeballLoader(),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 128 + 32,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color:
+                                          Colors
+                                              .grey, 
+                                      width: 2, 
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: PokeballLoader(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               );
                             }
 
@@ -233,9 +251,8 @@ class _TeamSearchState extends State<TeamSearch> {
                               final pokemon = snapshot.data;
 
                               team["pokemon"] = pokemon;
-                              return TeamSearchItem(
-                                team: team,
-                              );
+                              team["color"] = ColorClass.generateColorFromString(team["name"]);
+                              return TeamSearchItem(team: team);
                             }
 
                             return SizedBox();
@@ -248,8 +265,9 @@ class _TeamSearchState extends State<TeamSearch> {
           // BOTTOM LOADER: Positioned outside the Column
           if ((!_noMoreResults && _teamResults.isNotEmpty) || _isLoading)
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 16, 0, 24),
+              padding: EdgeInsets.fromLTRB(0, 24, 0, 24),
               child: Container(
+                margin: EdgeInsets.symmetric(vertical: 16),
                 width: double.infinity,
                 child: Center(child: PokeballLoader()),
               ),

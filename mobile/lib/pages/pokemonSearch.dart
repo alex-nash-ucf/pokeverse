@@ -29,13 +29,12 @@ class _PokemonSearchState extends State<PokemonSearch> {
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
     // Reset pagination and results if a new search is performed
     if (_isRequestInProgress != query) {
+      _pokemonResults = [];
       _offset = 0; // Reset offset for new search
       _noMoreResults = false; // Reset noMoreResults flag for new search
     }
 
-    if (_isRequestInProgress != '') {
-      _isRequestInProgress = '';
-    }
+    if (!mounted) return;  // Check if widget is still mounted
 
     setState(() {
       if (offset == 0) {
@@ -50,7 +49,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
       final results = await apiService.searchPokemon(query, offset: offset);
 
       // request relevant?
-      if (_isRequestInProgress == query) {
+      if (_isRequestInProgress == query && mounted) {  // Ensure widget is still mounted
         setState(() {
           _pokemonResults.addAll(results);
           _offset = offset + results.length;
@@ -61,11 +60,13 @@ class _PokemonSearchState extends State<PokemonSearch> {
         });
       }
     } catch (error) {
-      setState(() {
-        _pokemonResults = [];
-      });
+      if (mounted) {
+        setState(() {
+          _pokemonResults = [];
+        });
+      }
     } finally {
-      if (_isRequestInProgress == query) {
+      if (_isRequestInProgress == query && mounted) {  // Ensure widget is still mounted
         setState(() {
           if (offset == 0) {
             _isLoading = false;
@@ -79,11 +80,13 @@ class _PokemonSearchState extends State<PokemonSearch> {
 
   // Handle the search input change with debounce
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false)
+    if (_debounce?.isActive ?? false) {
       _debounce?.cancel(); // Cancel previous timer
+    }
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      // Trigger search after a 500ms delay
-      _searchPokemon(query);
+      if (mounted) {  // Ensure widget is still mounted before calling _searchPokemon
+        _searchPokemon(query);
+      }
     });
   }
 
@@ -115,7 +118,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    _debounce?.cancel();  // Cancel any active debounce timer
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
@@ -206,7 +209,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
                         }
                         final pokemon = _pokemonResults[index];
                         return PokemonSearchItem(
-                          color: CssColorConverter.fromCssColorName(
+                          color: ColorClass.fromCssColorName(
                             pokemon['color'],
                           ),
                           name: pokemon['name'],
@@ -227,6 +230,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
                 ), // Show loading indicator
               ),
             ),
+          
+          SizedBox(height: 32,)
         ],
       ),
     );

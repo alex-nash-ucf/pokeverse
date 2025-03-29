@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+String TOKEN = "";
+
 class ApiService {
   // temp token for testing
-  String TOKEN = "";
+  //String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZTU1YzJlOTFlMDAxZWExYjljYjFiMyIsInVzZXJuYW1lIjoiYWJjIiwiaWF0IjoxNzQzMjAyNTk0LCJleHAiOjE3NDMyMDYxOTR9.xo0jVb2htDh_sjNzUsYC05AOzeyVe5aQKbbIQ3QhnGE";
   static const String baseUrl = 'http://157.230.80.230:5001';
 
   // ERRO HANDLING
@@ -27,10 +29,8 @@ class ApiService {
   Future<List<dynamic>> fetchTeams(String query, {int offset = 0}) async {
     return await _handleRequest(() async {
       return await http.get(
-        Uri.parse('$baseUrl/getTeams'),
-        headers: {
-          'Authorization': 'Bearer $TOKEN',
-        },
+        Uri.parse('$baseUrl/getTeams/$query?limit=8&offset=$offset'),
+        headers: {'Authorization': 'Bearer $TOKEN'},
       );
     });
   }
@@ -49,10 +49,29 @@ class ApiService {
     return await _handleRequest(() async {
       return await http.get(
         Uri.parse('$baseUrl/getPokemon/$teamId'),
-        headers: {
-          'Authorization': 'Bearer $TOKEN',
-        },
+        headers: {'Authorization': 'Bearer $TOKEN'},
       );
     });
+  }
+
+  Future<void> editTeamName(String teamId, String newTeamName) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/updateTeam/$teamId'),
+        headers: {
+          'Authorization': 'Bearer $TOKEN',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({'newTeamName': newTeamName}),
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        throw Exception('Failed to update team name');
+      }
+    } catch (error) {
+      throw Exception('Error occurred: $error');
+    }
   }
 }

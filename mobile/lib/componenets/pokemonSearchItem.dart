@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/ColorConverter.dart';
 
 class PokemonSearchItem extends StatefulWidget {
   final Color color;
@@ -17,28 +18,15 @@ class PokemonSearchItem extends StatefulWidget {
 }
 
 class _PokemonSearchItemState extends State<PokemonSearchItem> {
-  // Function to darken a color
-  Color darkenColor(Color color, double amount) {
-    assert(amount >= 0 && amount <= 1);
-    final double factor = 1 - amount;
-    return Color.fromRGBO(
-      (color.red * factor).toInt(),
-      (color.green * factor).toInt(),
-      (color.blue * factor).toInt(),
-      1,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // Determine if the background is light or dark
     final bool isDarkBackground = widget.color.computeLuminance() < 0.5;
 
-    // If the background is light, darken the color
     final Color backgroundColor =
         isDarkBackground
             ? widget.color
-            : darkenColor(widget.color, 0.11); // Darken by 30%
+            : ColorClass.darkenColor(widget.color, 0.11); 
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -72,11 +60,11 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Transform.rotate(
-                  angle: 0.0,
+                  angle: 0.3,
                   child: Transform.translate(
-                    offset: Offset(32, 59.5),
+                    offset: Offset(32, 20.5),
                     child: Transform.scale(
-                      scale: 2.5,
+                      scale: 2.0,
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
                           isDarkBackground
@@ -118,13 +106,15 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                               widget.name.substring(1)
                           : widget.name,
                       style: TextStyle(
-                        
+                        fontFamily: 'Pokemon GB',
                         color:
                             isDarkBackground
                                 ? Colors.white
                                 : const Color.fromARGB(255, 5, 19, 53),
-                        fontSize: 20,
+                        fontSize: 16,
+                        letterSpacing: -1,
                         fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
                         shadows: [
                           Shadow(
                             color: !isDarkBackground ? const Color.fromARGB(119, 255, 255, 255)
@@ -139,11 +129,13 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                     Text(
                       "#${widget.index}",
                       style: TextStyle(
+                        fontFamily: 'Pokemon GB',
                         color:
                             isDarkBackground
-                                ? const Color.fromARGB(200, 255, 255, 255)
+                                ? const Color.fromARGB(150, 255, 255, 255)
                                 : const Color.fromARGB(100, 0, 0, 0),
-                        fontSize: 16,
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.bold,
                         
                       ),

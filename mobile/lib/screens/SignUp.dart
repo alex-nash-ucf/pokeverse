@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile/classes/globals.dart';
+import 'package:mobile/componenets/screenContainer.dart';
+import 'package:mobile/pages/editTeam.dart';
+import 'package:mobile/pages/teamSearch.dart';
 import 'dart:convert';
 import 'package:mobile/screens/login.dart';
 import 'package:mobile/screens/hub.dart';
@@ -77,7 +81,8 @@ class _SignUpPageState extends State<SignUpPage> {
         print('Email: ${responseData['email']}');
         print('Name: ${responseData['firstname']} ${responseData['lastName']}');
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
+        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
+        ScreenManager().setScreen(TeamSearch());
       } else if (response.statusCode == 401) {
         // Invalid credentials
         ScaffoldMessenger.of(context).showSnackBar(
@@ -133,10 +138,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 GestureDetector(
                   onTap: () {
                     print('Get Started pressed');
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ScreenContainer(LoginPage())),
-                    );
+                    ScreenManager().setScreen(LoginPage());
+                    // Navigator.push(
+                    // context,
+                    // MaterialPageRoute(builder: (context) => ScreenContainer(LoginPage())),
+                    // );
                   },
                   child: Text(
                     'Sign in.',

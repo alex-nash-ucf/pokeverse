@@ -12,7 +12,7 @@ class HubScreen extends StatefulWidget {
 }
 
 class _HubScreenState extends State<HubScreen> {
-    final PageController _pageController = PageController(initialPage: 1);
+    final PageController _pageController = PageController(initialPage: 2);
 
   // CONTROLS SCROLL ANIMATION
   void slideToPage(int index) {
@@ -34,11 +34,10 @@ class _HubScreenState extends State<HubScreen> {
             child: PageView(
               controller: _pageController,
               physics:
-                  NeverScrollableScrollPhysics(), // Disable manual scrolling
+                  ScrollPhysics(), // Disable manual scrolling
               children: [
                 PokemonSearch(),
                 TeamSearch(),
-                EditTeam()
               ],
             ),
           ),
