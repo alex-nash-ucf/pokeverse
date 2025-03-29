@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/globals.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
 import 'package:mobile/componenets/teamSearchItem.dart';
+import 'package:mobile/pages/editTeam.dart';
 
 class TeamSearch extends StatefulWidget {
   const TeamSearch({super.key});
@@ -21,6 +23,7 @@ class _TeamSearchState extends State<TeamSearch> {
   int _offset = 0; // To handle pagination offset
   Timer? _debounce; // Timer for debounce
   String _isRequestInProgress = ''; // To track if a request is in progress
+  bool _isButtonLoading = false; // To track the loading state of the button
 
   // Create an instance of ApiService
   final ApiService _apiService = ApiService();
@@ -182,9 +185,26 @@ class _TeamSearchState extends State<TeamSearch> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
-              onPressed: () {
-                // Action for button press
-              },
+              onPressed:
+                  _isButtonLoading
+                      ? null
+                      : () async {
+                        setState(() {
+                          _isButtonLoading = true;
+                        });
+                        try {
+                          Map<String, dynamic> response = await ApiService()
+                              .addTeam("New Team");
+
+                          print(response);
+
+                          ScreenManager().setScreen(EditTeam(team: response["team"]));
+
+                        } catch (error) {
+                          print('Error adding team: $error');
+                          _isButtonLoading = false;
+                        }
+                      },
               style: ElevatedButton.styleFrom(
                 elevation: 6,
                 backgroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -194,17 +214,27 @@ class _TeamSearchState extends State<TeamSearch> {
                 ),
                 surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
               ),
-              child: Text(
-                '+',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
-              ),
+              child:
+                  _isButtonLoading
+                      ? PokeballLoader()
+                      : Text(
+                        '+',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
+                      ),
             ),
           ),
 
+          SizedBox(height: 16),
+          Divider(
+            thickness: 3,
+            color: const Color.fromARGB(145, 158, 158, 158),
+            endIndent: 16,
+            indent: 16,
+          ),
           SizedBox(height: 16),
 
           Padding(
@@ -229,10 +259,8 @@ class _TeamSearchState extends State<TeamSearch> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color:
-                                          Colors
-                                              .grey, 
-                                      width: 2, 
+                                      color: Colors.grey,
+                                      width: 2,
                                     ),
                                   ),
                                   child: Stack(
@@ -251,7 +279,10 @@ class _TeamSearchState extends State<TeamSearch> {
                               final pokemon = snapshot.data;
 
                               team["pokemon"] = pokemon;
-                              team["color"] = ColorClass.generateColorFromString(team["name"]);
+                              team["color"] =
+                                  ColorClass.generateColorFromString(
+                                    team["name"],
+                                  );
                               return TeamSearchItem(team: team);
                             }
 

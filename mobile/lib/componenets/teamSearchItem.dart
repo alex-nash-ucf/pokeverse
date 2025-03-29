@@ -117,14 +117,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                   children: [
                     // Safely accessing 'name' with null check and fallback
                     Text(
-                      // Check if 'name' is null or empty, provide fallback text if necessary
-                      widget.team?["name"]?.isNotEmpty ?? false
-                          ? (widget.team?["name"]
-                                      ?.substring(0, 1)
-                                      .toUpperCase() ??
-                                  '') +
-                              (widget.team?["name"]?.substring(1) ?? '')
-                          : 'No Name', // Fallback text if name is null or empty
+                      widget.team?["name"], // Fallback text if name is null or empty
                       style: TextStyle(
                         fontFamily: 'Pokemon GB',
                         wordSpacing: -2,

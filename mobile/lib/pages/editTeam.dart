@@ -22,8 +22,8 @@ class _EditTeamState extends State<EditTeam> {
   void initState() {
     super.initState();
     // Initialize state variables from the passed team data
-    name = widget.team?["name"] ?? "New Team";
-    color = widget.team?["color"] ?? const Color.fromARGB(255, 79, 79, 79);
+    name = widget.team?["name"] ?? "NOT READY";
+    color = widget.team?["color"] ?? ColorClass.generateColorFromString(name);
     _textController = TextEditingController(
       text: name,
     ); // Initialize the TextEditingController
@@ -247,7 +247,9 @@ class _EditTeamState extends State<EditTeam> {
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Action for button press
+                    String id = widget.team?["_id"];
+                    ApiService().deleteTeam(id);
+                    ScreenManager().setScreen(TeamSearch());
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 6,

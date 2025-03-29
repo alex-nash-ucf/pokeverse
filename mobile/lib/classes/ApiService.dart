@@ -74,4 +74,55 @@ class ApiService {
       throw Exception('Error occurred: $error');
     }
   }
+
+  // delete team
+  Future<void> deleteTeam(String teamId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deleteTeam/$teamId'),
+        headers: {
+          'Authorization': 'Bearer $TOKEN',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Team deleted successfully.');
+      } else {
+        throw Exception('Failed to delete team');
+      }
+    } catch (error) {
+      throw Exception('Error occurred: $error');
+    }
+  }
+
+  //ADD TEAM
+  
+  // ADD TEAM
+Future<Map<String, dynamic>> addTeam(String teamName) async {
+  if (teamName.isEmpty) {
+    throw Exception('Team name is required.');
+  }
+
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/addTeam'),
+      headers: {
+        'Authorization': 'Bearer $TOKEN',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({'teamName': teamName}),
+    );
+
+    if (response.statusCode == 201) { 
+      // Parse the response body and return it as a map
+      final responseData = json.decode(response.body);
+      return responseData;
+    } else {
+      throw Exception('Failed to add team');
+    }
+  } catch (error) {
+    throw Exception('Error occurred: $error');
+  }
 }
+
+} 
