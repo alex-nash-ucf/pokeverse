@@ -10,7 +10,7 @@ class Header extends CustomPainter {
 
   double slope_height = 64;
   double slope_width = 128;
-  double line_width = 6;
+  double line_width = 0;
 
 @override
 void paint(Canvas canvas, Size size) {
@@ -130,7 +130,7 @@ class Footer extends CustomPainter {
 
   double slope_height = 64;
   double slope_width = 128;
-  double line_width = 6;
+  double line_width = 0;
   double extra_height = 48;
 
   @override

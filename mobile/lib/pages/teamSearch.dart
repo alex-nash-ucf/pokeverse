@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
@@ -31,38 +32,44 @@ class _TeamSearchState extends State<TeamSearch> {
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
     if (_isRequestInProgress != query) {
-      _offset = 0; 
-      _noMoreResults = false; 
+      _offset = 0;
+      _noMoreResults = false;
       _teamResults = [];
     }
 
     setState(() {
       if (offset == 0) {
-        _isLoading = true; 
+        _isLoading = true;
       } else {
         _isFetchingMore = true;
       }
-      _isRequestInProgress = query; 
+      _isRequestInProgress = query;
     });
 
     try {
-      final result = await _apiService.fetchTeams(query, offset: offset);
+      final List<dynamic> result = await _apiService.fetchTeams(
+        query,
+        offset: offset,
+      );
 
       if (_isRequestInProgress == query) {
         setState(() {
-            _teamResults.addAll(result); 
-          _offset = offset + result.length; 
+          
+          _teamResults.addAll(result);
+          _offset = offset + result.length;
 
           if (result.length < 8) {
             _noMoreResults = true;
           }
         });
       }
-    } catch (error) {
+    } catch (error) 
+    {
       setState(() {
-        _teamResults = [];
+        _noMoreResults = true;
       });
-    } finally {
+    } 
+    finally {
       if (_isRequestInProgress == query) {
         setState(() {
           if (offset == 0) {
@@ -77,24 +84,23 @@ class _TeamSearchState extends State<TeamSearch> {
 
   // Handle the search input change with debounce
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false)
-      _debounce?.cancel(); 
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _searchPokemon(query);
     });
   }
 
- void _scrollListener() {
-  
-  if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
-      !_isFetchingMore && !_noMoreResults) {
-    final query = _searchController.text;
-    if (query.isNotEmpty || _teamResults.isNotEmpty) {
-      _searchPokemon(query, offset: _offset);  // Fetch more data
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
+        !_isFetchingMore &&
+        !_noMoreResults) {
+      final query = _searchController.text;
+      if (query.isNotEmpty || _teamResults.isNotEmpty) {
+        _searchPokemon(query, offset: _offset);
+      }
     }
   }
-}
 
   // Scroll controller to monitor scrolling behavior
   ScrollController _scrollController = ScrollController();
@@ -183,8 +189,9 @@ class _TeamSearchState extends State<TeamSearch> {
 
                           print(response);
 
-                          ScreenManager().setScreen(EditTeam(team: response["team"]));
-
+                          ScreenManager().setScreen(
+                            EditTeam(team: response["team"]),
+                          );
                         } catch (error) {
                           print('Error adding team: $error');
                           _isButtonLoading = false;
@@ -230,6 +237,7 @@ class _TeamSearchState extends State<TeamSearch> {
                     : Column(
                       spacing: 16,
                       children: List.generate(_teamResults.length, (index) {
+                        
                         final team = _teamResults[index];
 
                         return FutureBuilder(

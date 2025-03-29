@@ -22,7 +22,7 @@ class _ScreenContainerState extends State<ScreenContainer> {
           // Body
           Column(
             children: [
-              SizedBox(height: 42),
+              SizedBox(height: 38),
               Expanded(
                 child: StreamBuilder<Widget>(
                   stream: ScreenManager().screenStream,  

@@ -59,7 +59,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _pokemonResults = [];
+          _noMoreResults = true;
+          //_pokemonResults = [];
         });
       }
     } finally {
