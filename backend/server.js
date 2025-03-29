@@ -458,20 +458,29 @@ app.get('/pokemon-abilities/:query', async (req, res) => {
 
 app.get('/getTeams', verifyToken, async (req, res) => {
   const userId = req.id;
+  const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;  
+  const offset = parseInt(req.query.offset) || 0;  
 
   try {
-    // Find the account by user ID and select only the teams array
     const account = await Account.findById(userId).select('teams');
 
     if (!account) {
       return res.status(404).json({ message: 'Account not found for this user.' });
     }
 
-    res.json(account.teams);
+    const matchingTeams = account.teams;
+
+    const paginatedTeams = matchingTeams.slice(offset, offset + limit);
+    
+    if (paginatedTeams.length > 0) {
+      res.json(paginatedTeams);
+    } else {
+      res.status(404).json({ message: 'No teams found matching the search criteria.' });
+    }
 
   } catch (error) {
-    console.error('Error fetching teams:', error);
-    res.status(500).json({ message: 'Internal server error while fetching teams.' });
+    console.error('Error searching teams:', error);
+    res.status(500).json({ message: 'Internal server error while searching teams.' });
   }
 });
 
