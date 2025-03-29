@@ -22,16 +22,13 @@ class _PokemonSearchState extends State<PokemonSearch> {
   Timer? _debounce; // Timer for debounce
   String _isRequestInProgress = ''; // To track if a request is in progress
 
-  // Instance of ApiService to fetch data
   final ApiService apiService = ApiService();
 
-  // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
-    // Reset pagination and results if a new search is performed
     if (_isRequestInProgress != query) {
       _pokemonResults = [];
-      _offset = 0; // Reset offset for new search
-      _noMoreResults = false; // Reset noMoreResults flag for new search
+      _offset = 0; 
+      _noMoreResults = false; 
     }
 
     if (!mounted) return;  // Check if widget is still mounted

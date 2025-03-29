@@ -30,43 +30,31 @@ class _TeamSearchState extends State<TeamSearch> {
 
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
-    // Reset pagination and results if a new search is performed
     if (_isRequestInProgress != query) {
-      _offset = 0; // Reset offset for new search
-      _noMoreResults = false; // Reset noMoreResults flag for new search
+      _offset = 0; 
+      _noMoreResults = false; 
       _teamResults = [];
-    }
-
-    // Cancel the previous request if there is an ongoing one
-    if (_isRequestInProgress != '') {
-      _isRequestInProgress = ''; // Mark previous request as canceled
     }
 
     setState(() {
       if (offset == 0) {
-        _isLoading = true; // Show loading indicator for initial fetch
+        _isLoading = true; 
       } else {
-        _isFetchingMore = true; // Show loading indicator for more results
+        _isFetchingMore = true;
       }
-      _isRequestInProgress = query; // Mark new request as in progress
+      _isRequestInProgress = query; 
     });
 
     try {
       final result = await _apiService.fetchTeams(query, offset: offset);
 
       if (_isRequestInProgress == query) {
-        // Proceed only if the request was not canceled
         setState(() {
-          if (offset == 0) {
-            _teamResults = result; // Initial results
-          } else {
-            _teamResults.addAll(result); // Append new results for lazy loading
-          }
-          _offset = offset + result.length; // Update the offset
+            _teamResults.addAll(result); 
+          _offset = offset + result.length; 
 
-          // Check if there are no more results to fetch
           if (result.length < 8) {
-            _noMoreResults = true; // No more results to load
+            _noMoreResults = true;
           }
         });
       }
@@ -90,26 +78,23 @@ class _TeamSearchState extends State<TeamSearch> {
   // Handle the search input change with debounce
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false)
-      _debounce?.cancel(); // Cancel previous timer
+      _debounce?.cancel(); 
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      // Trigger search after a 500ms delay
       _searchPokemon(query);
     });
   }
 
-  // Detect when user has scrolled to the bottom and fetch more data
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // Fetch more data when scrolled to the bottom
-      if (!_isFetchingMore && !_noMoreResults) {
-        final query = _searchController.text;
-        if (query.isNotEmpty || _teamResults.isNotEmpty) {
-          _searchPokemon(query, offset: _offset); // Fetch more data
-        }
-      }
+ void _scrollListener() {
+  
+  if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent &&
+      !_isFetchingMore && !_noMoreResults) {
+    final query = _searchController.text;
+    if (query.isNotEmpty || _teamResults.isNotEmpty) {
+      _searchPokemon(query, offset: _offset);  // Fetch more data
     }
   }
+}
 
   // Scroll controller to monitor scrolling behavior
   ScrollController _scrollController = ScrollController();
