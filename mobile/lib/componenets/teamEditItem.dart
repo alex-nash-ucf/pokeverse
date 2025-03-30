@@ -6,6 +6,8 @@ import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/globals.dart';
+import 'package:mobile/pages/editPokemon.dart';
 
 class TeamEditItem extends StatefulWidget {
   final Map<String, dynamic>? pokemon;
@@ -350,7 +352,7 @@ class _TeamEditItemState extends State<TeamEditItem> {
                     ],
                   ),
                   onPressed: () {
-                    print("Button Pressed");
+                    ScreenManager().setScreen(EditPokemon(pokemon: widget.pokemon, color: color,));;
                   },
                 ),
               ),

@@ -132,11 +132,8 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                         
                         shadows: [
                           Shadow(
-                            color:
-                                !isDarkBackground
-                                    ? const Color.fromARGB(230, 255, 255, 255)
-                                    : const Color.fromARGB(144, 5, 19, 53),
-                            offset: Offset(0, 6),
+                            color:const Color.fromARGB(144, 5, 19, 53),
+                            offset: Offset(0, 4),
                             blurRadius: 4,
                           ),
                         ],

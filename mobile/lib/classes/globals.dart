@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/editPokemon.dart';
 import 'package:mobile/pages/editTeam.dart';
 import 'package:mobile/pages/pokemonSearch.dart';
 import 'package:mobile/screens/login.dart';
