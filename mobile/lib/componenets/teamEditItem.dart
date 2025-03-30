@@ -11,8 +11,8 @@ import 'package:mobile/pages/editPokemon.dart';
 
 class TeamEditItem extends StatefulWidget {
   final Map<String, dynamic>? pokemon;
-
-  const TeamEditItem({super.key, this.pokemon});
+    final Map<String, dynamic>? team;
+  const TeamEditItem({super.key, this.pokemon, this.team, });
 
   @override
   _TeamEditItemState createState() => _TeamEditItemState();
@@ -352,7 +352,7 @@ class _TeamEditItemState extends State<TeamEditItem> {
                     ],
                   ),
                   onPressed: () {
-                    ScreenManager().setScreen(EditPokemon(pokemon: widget.pokemon, color: color,));;
+                    ScreenManager().setScreen(EditPokemon(pokemon: widget.pokemon, color: color, team: widget.team,));
                   },
                 ),
               ),

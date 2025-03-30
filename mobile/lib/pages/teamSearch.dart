@@ -271,7 +271,7 @@ class _TeamSearchState extends State<TeamSearch> {
 
                             if (snapshot.hasData) {
                               final pokemon = snapshot.data;
-
+                                
                               team["pokemon"] = pokemon;
                               team["color"] =
                                   ColorClass.generateColorFromString(

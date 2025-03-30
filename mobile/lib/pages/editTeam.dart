@@ -232,6 +232,7 @@ class _EditTeamState extends State<EditTeam> {
                     ) {
                       return TeamEditItem(
                         pokemon: widget.team?["pokemon"][index],
+                        team: widget.team,
                       );
                     }),
 
