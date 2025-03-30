@@ -64,7 +64,8 @@ class _EditTeamState extends State<EditTeam> {
               // Change the color of the underline here
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: color.computeLuminance() < 0.5
+                  color:
+                      color.computeLuminance() < 0.5
                           ? Colors.white
                           : const Color.fromARGB(255, 5, 19, 53),
                   width: 2.0,
@@ -72,7 +73,8 @@ class _EditTeamState extends State<EditTeam> {
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color:color.computeLuminance() < 0.5
+                  color:
+                      color.computeLuminance() < 0.5
                           ? Colors.white
                           : const Color.fromARGB(255, 5, 19, 53),
                   width: 2.0,
@@ -135,12 +137,9 @@ class _EditTeamState extends State<EditTeam> {
           begin: Alignment.topLeft, // Starting point of the gradient
           end: Alignment.bottomRight, // Ending point of the gradient
           colors: [
-            ColorClass.lightenColor(
-              color,
-              0.6,
-            ), // Lighter version of the main color
+            ColorClass.lightenColor(color, 0.5),
             color,
-            color, // Original color
+            ColorClass.darkenColor(color, 0.5),
           ],
         ),
       ),
@@ -225,9 +224,58 @@ class _EditTeamState extends State<EditTeam> {
 
               //TEAM
               Column(
-                children: List.generate(6, (index) {
-                  return TeamEditItem();
-                }),
+                children: [
+                  // POKEMON LOAD
+                  if (widget.team?["pokemon"] != null)
+                    ...List.generate(widget.team?["pokemon"].length ?? 0, (
+                      index,
+                    ) {
+                      return TeamEditItem(
+                        pokemon: widget.team?["pokemon"][index],
+                      );
+                    }),
+
+                  //ADD MORE POKEMON BUTTON
+                  if (widget.team?["pokemon"] != null &&
+                      widget.team?["pokemon"].length < 6)
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(12, 16, 12, 4),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // String id = widget.team?["_id"];
+                          // ApiService().deleteTeam(id);
+                          // ScreenManager().setScreen(TeamSearch());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 6,
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            63,
+                            243,
+                            102,
+                          ),
+                          minimumSize: Size(double.infinity, 64),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          "+",
+                          style: TextStyle(
+                            fontFamily: 'Pokemon GB',
+                            wordSpacing: -2,
+                            letterSpacing: -2,
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
 
               SizedBox(height: 20),
@@ -244,7 +292,7 @@ class _EditTeamState extends State<EditTeam> {
 
               // DELETE TEAM
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                 child: ElevatedButton(
                   onPressed: () {
                     String id = widget.team?["_id"];

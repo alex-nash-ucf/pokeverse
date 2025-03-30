@@ -69,7 +69,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                   child: Transform.translate(
                     offset: Offset(-32, 25),
                     child: Transform.scale(
-                      scale: 4.5,
+                      scale: 3.5,
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
                           isDarkBackground
@@ -134,9 +134,9 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                           Shadow(
                             color:
                                 !isDarkBackground
-                                    ? const Color.fromARGB(119, 255, 255, 255)
+                                    ? const Color.fromARGB(230, 255, 255, 255)
                                     : const Color.fromARGB(144, 5, 19, 53),
-                            offset: Offset(2, 2),
+                            offset: Offset(0, 6),
                             blurRadius: 4,
                           ),
                         ],

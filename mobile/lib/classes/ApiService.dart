@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
+import 'package:mobile/classes/ColorConverter.dart';
 
 String TOKEN = "";
 
@@ -95,7 +97,6 @@ class ApiService {
     }
   }
 
-  //ADD TEAM
   
   // ADD TEAM
 Future<Map<String, dynamic>> addTeam(String teamName) async {
@@ -122,6 +123,25 @@ Future<Map<String, dynamic>> addTeam(String teamName) async {
     }
   } catch (error) {
     throw Exception('Error occurred: $error');
+  }
+}
+
+
+Future<Color> fetchPokemonColor(String pokemonName) async {
+  final response = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon-species/$pokemonName'));
+
+  if (response.statusCode == 200) {
+    // Parse the JSON response
+    Map<String, dynamic> data = json.decode(response.body);
+
+    // Get the color field from the response
+    String colorName = data['color']['name'];
+
+    // You can map the color name to an actual color (you can also create your own mapping)
+    Color color = ColorClass.fromCssColorName(colorName);
+    return color;
+  } else {
+    throw Exception('Failed to load Pokemon color');
   }
 }
 

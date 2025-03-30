@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/ApiService.dart';
@@ -91,8 +92,8 @@ class _TeamSearchState extends State<TeamSearch> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent  - (16 * MediaQuery.of(context).devicePixelRatio)  &&
         !_isFetchingMore &&
         !_noMoreResults) {
       final query = _searchController.text;
@@ -289,13 +290,15 @@ class _TeamSearchState extends State<TeamSearch> {
           // BOTTOM LOADER: Positioned outside the Column
           if ((!_noMoreResults && _teamResults.isNotEmpty) || _isLoading)
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 24, 0, 24),
+              padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 16),
                 width: double.infinity,
                 child: Center(child: PokeballLoader()),
               ),
             ),
+
+          SizedBox(height: 64,)
         ],
       ),
     );
