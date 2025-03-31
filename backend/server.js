@@ -189,7 +189,7 @@ app.post("/userlogin", async (req, res) =>{
 });
 
 // API sending email for password reset
-app.post('/users/forgot-password', async (req, res) => {
+app.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
   try
