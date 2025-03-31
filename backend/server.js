@@ -523,24 +523,33 @@ app.get('/pokemon-abilities/:query', async (req, res) => {
 
 app.get('/getTeams', verifyToken, async (req, res) => {
   const userId = req.id;
+  const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;  
+  const offset = parseInt(req.query.offset) || 0;  
 
   try {
-    // Find the account by user ID and select only the teams array
     const account = await Account.findById(userId).select('teams');
 
     if (!account) {
       return res.status(404).json({ message: 'Account not found for this user.' });
     }
 
-    res.json(account.teams);
+    const matchingTeams = account.teams;
+
+    const paginatedTeams = matchingTeams.slice(offset, offset + limit);
+    
+    if (paginatedTeams.length > 0) {
+      res.json(paginatedTeams);
+    } else {
+      res.status(404).json({ message: 'No teams found matching the search criteria.' });
+    }
 
   } catch (error) {
-    console.error('Error fetching teams:', error);
-    res.status(500).json({ message: 'Internal server error while fetching teams.' });
+    console.error('Error searching teams:', error);
+    res.status(500).json({ message: 'Internal server error while searching teams.' });
   }
 });
 
-app.get('/searchTeams/:name', verifyToken, async (req, res) => {
+app.get('/getTeams/:name', verifyToken, async (req, res) => {
   const userId = req.id;
   const query = req.params.name.toLowerCase(); 
   const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;  
@@ -589,7 +598,10 @@ app.post('/addTeam', verifyToken, async (req, res) => {
     account.teams.push(newTeam);
     await account.save();
 
-    res.status(201).json({ message: 'New empty team added successfully.', team: newTeam });
+    // Access the last element of the teams array, which is the newly added team
+    const addedTeam = account.teams[account.teams.length - 1];
+
+    res.status(201).json({ message: 'New empty team added successfully.', team: { _id: addedTeam._id, name: addedTeam.name, pokemon: addedTeam.pokemon } });
   } catch (error) {
     console.error('Error adding team:', error);
     res.status(500).json({ error: 'Internal server error.' });

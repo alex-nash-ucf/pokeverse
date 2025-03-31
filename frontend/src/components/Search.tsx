@@ -54,13 +54,13 @@ const Search = () => {
     pokemon: string[];
   }
   
-  interface TeamResponse {
+  /*interface TeamResponse {
     team: {
       _id: string;
       name: string;
       pokemon: string[];
     };
-  }
+  }*/
 
   interface Ability {
     name: string;
@@ -94,7 +94,7 @@ const Search = () => {
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
-  const [newTeamName] = useState('');
+  //const [newTeamName] = useState('');
   const [abilities, setAbilities] = useState<string[]>([]);
   const [selectedAbility, setSelectedAbility] = useState('');
   const [moves, setMoves] = useState<string[]>([]);
@@ -225,8 +225,21 @@ const Search = () => {
   };
 
   const handleAddToTeam = async () => {
+    // Validate required fields
     if (!selectedPokemon || !selectedAbility || selectedMoves.some(move => !move)) {
       setErrorMessage('Please select all required fields');
+      return;
+    }
+  
+    // Validate exactly 4 moves
+    if (selectedMoves.length !== 4) {
+      setErrorMessage('Please select exactly 4 moves');
+      return;
+    }
+  
+    // Validate team selection
+    if (!selectedTeamId) {
+      setErrorMessage('Please select a team');
       return;
     }
   
@@ -237,40 +250,35 @@ const Search = () => {
         return;
       }
   
-      let teamId = selectedTeamId;
-      
-      if (showNewTeamInput && newTeamName) {
-        if (!newTeamName.trim()) {
-          setErrorMessage('Please enter a team name');
-          return;
+      // Prepare the request data
+      const requestData = {
+        speciesName: selectedPokemon.name,
+        teamId: selectedTeamId,
+        pokedexNumber: Number(selectedPokemon.pokedexNumber), // Ensure number
+        ability: selectedAbility,
+        moves: selectedMoves.filter(Boolean) // Remove empty strings
+      };
+  
+      console.log('Sending data:', requestData); // Debug log
+  
+      const response = await axios.post(`${apiURL}/addPokemon`, requestData, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
+      });
   
-        const teamResponse = await axios.post<TeamResponse>(
-          `${apiURL}/addTeam`, 
-          { teamName: newTeamName },
-          { headers: { 'Authorization': `Bearer ${token}` } }
-        );
-        teamId = teamResponse.data.team._id;
-      }
-
-      await axios.post(`${apiURL}/addPokemon`, 
-        {
-          speciesName: selectedPokemon.name,
-          teamId: teamId,
-          ability: selectedAbility,  
-          moves: selectedMoves     
-        },
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
+      console.log('Response:', response.data); // Debug log
   
-      setSuccessMessage('Pokemon added to team successfully!');
+      setSuccessMessage('Pokémon added to team successfully!');
       setTimeout(() => {
         setShowAddModal(false);
         setSuccessMessage('');
       }, 1500);
-    } catch (error) {
-      console.error('Error adding pokemon to team:', error);
-      setErrorMessage('Failed to add pokemon to team. Please try again.');
+      
+    } catch (error: any) {
+      console.error('Detailed error:', error.response?.data || error.message);
+      setErrorMessage(error.response?.data?.message || 'Failed to add Pokémon. Please try again.');
     }
   };
 
@@ -306,11 +314,11 @@ const Search = () => {
           <h2 className="text-xl font-bold mb-4">Add {selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)} To Your Team</h2>
           
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Ability:</label>
+            <label className="!text-black block mb-2 font-medium">Ability:</label>
             <select
               value={selectedAbility}
               onChange={(e) => setSelectedAbility(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full !text-black p-2 border rounded"
             >
               {abilities.map((ability, index) => (
                 <option key={index} value={ability}>
@@ -321,7 +329,7 @@ const Search = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Moves:</label>
+            <label className="block mb-2 !text-black font-medium">Moves:</label>
             {selectedMoves.map((move, index) => (
               <select
                 key={index}
@@ -331,7 +339,7 @@ const Search = () => {
                   newMoves[index] = e.target.value;
                   setSelectedMoves(newMoves);
                 }}
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded !text-black mb-2"
               >
                 <option value="">Select a move</option>
                 {moves.map((m, i) => (
@@ -344,7 +352,7 @@ const Search = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Add to:</label>
+            <label className="block mb-2  !text-black font-medium">Add to:</label>
             {/* 
             <div className="flex items-center mb-2">
               <input
@@ -364,7 +372,7 @@ const Search = () => {
               <select
                 value={selectedTeamId}
                 onChange={(e) => setSelectedTeamId(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full !text-black p-2 border rounded"
               >
                 <option value="">Select a team</option>
                 {teams.map((team) => (
@@ -408,10 +416,10 @@ const Search = () => {
 
           {/* Error and success messages */}
           {errorMessage && (
-            <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>
+            <div className="mb-4 !text-red-500 text-sm">{errorMessage}</div>
           )}
           {successMessage && (
-            <div className="mb-4 text-green-500 text-sm">{successMessage}</div>
+            <div className="mb-4 !text-green-500 text-sm">{successMessage}</div>
           )}
 
           <div className="flex justify-end space-x-2">
@@ -446,7 +454,7 @@ const Search = () => {
           placeholder="Search Pokémon..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded bg-white z-0"
+          className="w-full p-2 border border-gray-300 !text-black rounded bg-white z-0"
         />
       </div>
 

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/globals.dart';
+import 'package:mobile/pages/editTeam.dart';
 
 class TeamSearchItem extends StatefulWidget {
   final Map<String, dynamic>? team;
@@ -38,22 +40,22 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Shadow color
-            offset: Offset(0, 4), // Shadow offset (horizontal, vertical)
-            blurRadius: 6, // Spread the shadow
-            spreadRadius: 1, // Spread the shadow a little more
+            color: Colors.black.withOpacity(0.2), 
+            offset: Offset(0, 4), 
+            blurRadius: 6, 
+            spreadRadius: 1, 
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(
           12,
-        ), // Ensure child is clipped with rounded corners
+        ), 
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.all(16),
             backgroundColor:
-                backgroundColor, // Use the adjusted background color
+                backgroundColor, 
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -67,7 +69,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                   child: Transform.translate(
                     offset: Offset(-32, 25),
                     child: Transform.scale(
-                      scale: 4.5,
+                      scale: 3.5,
                       child: ColorFiltered(
                         colorFilter: ColorFilter.mode(
                           isDarkBackground
@@ -115,14 +117,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                   children: [
                     // Safely accessing 'name' with null check and fallback
                     Text(
-                      // Check if 'name' is null or empty, provide fallback text if necessary
-                      widget.team?["name"]?.isNotEmpty ?? false
-                          ? (widget.team?["name"]
-                                      ?.substring(0, 1)
-                                      .toUpperCase() ??
-                                  '') +
-                              (widget.team?["name"]?.substring(1) ?? '')
-                          : 'No Name', // Fallback text if name is null or empty
+                      widget.team?["name"], // Fallback text if name is null or empty
                       style: TextStyle(
                         fontFamily: 'Pokemon GB',
                         wordSpacing: -2,
@@ -137,11 +132,8 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
                         
                         shadows: [
                           Shadow(
-                            color:
-                                !isDarkBackground
-                                    ? const Color.fromARGB(119, 255, 255, 255)
-                                    : const Color.fromARGB(144, 5, 19, 53),
-                            offset: Offset(2, 2),
+                            color:const Color.fromARGB(144, 5, 19, 53),
+                            offset: Offset(0, 4),
                             blurRadius: 4,
                           ),
                         ],
@@ -167,7 +159,7 @@ class _TeamSearchItemState extends State<TeamSearchItem> {
             ],
           ),
           onPressed: () {
-            print("Button Pressed");
+            ScreenManager().setScreen(EditTeam(team: widget.team,));
           },
         ),
       ),

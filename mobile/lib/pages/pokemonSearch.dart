@@ -6,7 +6,8 @@ import 'package:mobile/componenets/pokeballLoading.dart';
 import 'package:mobile/componenets/pokemonSearchItem.dart';
 
 class PokemonSearch extends StatefulWidget {
-  const PokemonSearch({super.key});
+  final Map<String, dynamic>? team;
+  const PokemonSearch({super.key, this.team});
 
   @override
   _PokemonSearchState createState() => _PokemonSearchState();
@@ -16,25 +17,22 @@ class _PokemonSearchState extends State<PokemonSearch> {
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _pokemonResults = [];
   bool _isLoading = false;
-  bool _isFetchingMore = false; // Flag to track fetching more data
-  bool _noMoreResults = false; // Flag to indicate no more results
-  int _offset = 0; // To handle pagination offset
-  Timer? _debounce; // Timer for debounce
-  String _isRequestInProgress = ''; // To track if a request is in progress
+  bool _isFetchingMore = false; 
+  bool _noMoreResults = false; 
+  int _offset = 0;
+  Timer? _debounce; 
+  String _isRequestInProgress = '';
 
-  // Instance of ApiService to fetch data
   final ApiService apiService = ApiService();
 
-  // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
-    // Reset pagination and results if a new search is performed
     if (_isRequestInProgress != query) {
       _pokemonResults = [];
-      _offset = 0; // Reset offset for new search
-      _noMoreResults = false; // Reset noMoreResults flag for new search
+      _offset = 0;
+      _noMoreResults = false;
     }
 
-    if (!mounted) return;  // Check if widget is still mounted
+    if (!mounted) return; 
 
     setState(() {
       if (offset == 0) {
@@ -49,7 +47,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
       final results = await apiService.searchPokemon(query, offset: offset);
 
       // request relevant?
-      if (_isRequestInProgress == query && mounted) {  // Ensure widget is still mounted
+      if (_isRequestInProgress == query && mounted) {
+        // Ensure widget is still mounted
         setState(() {
           _pokemonResults.addAll(results);
           _offset = offset + results.length;
@@ -62,11 +61,13 @@ class _PokemonSearchState extends State<PokemonSearch> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _pokemonResults = [];
+          _noMoreResults = true;
+          //  _pokemonResults = [];
         });
       }
     } finally {
-      if (_isRequestInProgress == query && mounted) {  // Ensure widget is still mounted
+      if (_isRequestInProgress == query && mounted) {
+        // Ensure widget is still mounted
         setState(() {
           if (offset == 0) {
             _isLoading = false;
@@ -84,7 +85,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
       _debounce?.cancel(); // Cancel previous timer
     }
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (mounted) {  // Ensure widget is still mounted before calling _searchPokemon
+      if (mounted) {
+        // Ensure widget is still mounted before calling _searchPokemon
         _searchPokemon(query);
       }
     });
@@ -118,7 +120,7 @@ class _PokemonSearchState extends State<PokemonSearch> {
 
   @override
   void dispose() {
-    _debounce?.cancel();  // Cancel any active debounce timer
+    _debounce?.cancel(); // Cancel any active debounce timer
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
@@ -209,11 +211,10 @@ class _PokemonSearchState extends State<PokemonSearch> {
                         }
                         final pokemon = _pokemonResults[index];
                         return PokemonSearchItem(
-                          color: ColorClass.fromCssColorName(
-                            pokemon['color'],
-                          ),
+                          color: ColorClass.fromCssColorName(pokemon['color']),
                           name: pokemon['name'],
                           index: pokemon['pokedexNumber'],
+                          team: widget.team,
                         );
                       },
                     ),
@@ -230,8 +231,8 @@ class _PokemonSearchState extends State<PokemonSearch> {
                 ), // Show loading indicator
               ),
             ),
-          
-          SizedBox(height: 32,)
+
+          SizedBox(height: 32),
         ],
       ),
     );

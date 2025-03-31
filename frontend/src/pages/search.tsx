@@ -9,7 +9,7 @@ const LoggedIn = () => {
 
   return (
 
-  <div className="hero-class flex flex-col min-h-screen w-full max-w-[90%] sm:max-w-[85%] md:max-w-[80%] lg:max-w-[75%] xl:max-w-[70%] mx-auto bg-white">
+    <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
   {/* top nav */}
         <Navbar/>
 
@@ -36,9 +36,9 @@ const LoggedIn = () => {
         {/* Right content */}
         <div className="top-23 fixed ml-20 right-40 left-0 h-[85vh] w-full sm:w-auto rounded bg-white shadow-sm overflow-y-auto">
           <div className="p-4 bg-white shadow-sm  w-full rounded z-100">
-          <h1 className="ml-10 sm:ml-6 md:ml-4 text-base sm:text-sm md:text-md lg:text-lg font-bold mb-4">
-          Search & Add To Your Team!
-        </h1>
+          <h1 className="!text-black ml-10 sm:ml-6 md:ml-4 text-base sm:text-sm md:text-md lg:text-lg font-bold mb-4">
+            Search & Add To Your Team!
+          </h1>
               <Search />
             {/* Your page content goes here */}
           </div>

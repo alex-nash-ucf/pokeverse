@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/globals.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
 import 'package:mobile/componenets/teamSearchItem.dart';
+import 'package:mobile/pages/editTeam.dart';
 
 class TeamSearch extends StatefulWidget {
   const TeamSearch({super.key});
@@ -21,57 +25,52 @@ class _TeamSearchState extends State<TeamSearch> {
   int _offset = 0; // To handle pagination offset
   Timer? _debounce; // Timer for debounce
   String _isRequestInProgress = ''; // To track if a request is in progress
+  bool _isButtonLoading = false; // To track the loading state of the button
 
   // Create an instance of ApiService
   final ApiService _apiService = ApiService();
 
   // Fetch Pokemon search results from the API with pagination
   Future<void> _searchPokemon(String query, {int offset = 0}) async {
-    // Reset pagination and results if a new search is performed
     if (_isRequestInProgress != query) {
-      _offset = 0; // Reset offset for new search
-      _noMoreResults = false; // Reset noMoreResults flag for new search
+      _offset = 0;
+      _noMoreResults = false;
       _teamResults = [];
-    }
-
-    // Cancel the previous request if there is an ongoing one
-    if (_isRequestInProgress != '') {
-      _isRequestInProgress = ''; // Mark previous request as canceled
     }
 
     setState(() {
       if (offset == 0) {
-        _isLoading = true; // Show loading indicator for initial fetch
+        _isLoading = true;
       } else {
-        _isFetchingMore = true; // Show loading indicator for more results
+        _isFetchingMore = true;
       }
-      _isRequestInProgress = query; // Mark new request as in progress
+      _isRequestInProgress = query;
     });
 
     try {
-      final result = await _apiService.fetchTeams(query, offset: offset);
+      final List<dynamic> result = await _apiService.fetchTeams(
+        query,
+        offset: offset,
+      );
 
       if (_isRequestInProgress == query) {
-        // Proceed only if the request was not canceled
         setState(() {
-          if (offset == 0) {
-            _teamResults = result; // Initial results
-          } else {
-            _teamResults.addAll(result); // Append new results for lazy loading
-          }
-          _offset = offset + result.length; // Update the offset
+          
+          _teamResults.addAll(result);
+          _offset = offset + result.length;
 
-          // Check if there are no more results to fetch
           if (result.length < 8) {
-            _noMoreResults = true; // No more results to load
+            _noMoreResults = true;
           }
         });
       }
-    } catch (error) {
+    } catch (error) 
+    {
       setState(() {
-        _teamResults = [];
+        _noMoreResults = true;
       });
-    } finally {
+    } 
+    finally {
       if (_isRequestInProgress == query) {
         setState(() {
           if (offset == 0) {
@@ -86,24 +85,20 @@ class _TeamSearchState extends State<TeamSearch> {
 
   // Handle the search input change with debounce
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false)
-      _debounce?.cancel(); // Cancel previous timer
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      // Trigger search after a 500ms delay
       _searchPokemon(query);
     });
   }
 
-  // Detect when user has scrolled to the bottom and fetch more data
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // Fetch more data when scrolled to the bottom
-      if (!_isFetchingMore && !_noMoreResults) {
-        final query = _searchController.text;
-        if (query.isNotEmpty || _teamResults.isNotEmpty) {
-          _searchPokemon(query, offset: _offset); // Fetch more data
-        }
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent  - (16 * MediaQuery.of(context).devicePixelRatio)  &&
+        !_isFetchingMore &&
+        !_noMoreResults) {
+      final query = _searchController.text;
+      if (query.isNotEmpty || _teamResults.isNotEmpty) {
+        _searchPokemon(query, offset: _offset);
       }
     }
   }
@@ -182,9 +177,27 @@ class _TeamSearchState extends State<TeamSearch> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
-              onPressed: () {
-                // Action for button press
-              },
+              onPressed:
+                  _isButtonLoading
+                      ? null
+                      : () async {
+                        setState(() {
+                          _isButtonLoading = true;
+                        });
+                        try {
+                          Map<String, dynamic> response = await ApiService()
+                              .addTeam("New Team");
+
+                          print(response);
+
+                          ScreenManager().setScreen(
+                            EditTeam(team: response["team"]),
+                          );
+                        } catch (error) {
+                          print('Error adding team: $error');
+                          _isButtonLoading = false;
+                        }
+                      },
               style: ElevatedButton.styleFrom(
                 elevation: 6,
                 backgroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -194,17 +207,27 @@ class _TeamSearchState extends State<TeamSearch> {
                 ),
                 surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
               ),
-              child: Text(
-                '+',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                ),
-              ),
+              child:
+                  _isButtonLoading
+                      ? PokeballLoader()
+                      : Text(
+                        '+',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
+                      ),
             ),
           ),
 
+          SizedBox(height: 16),
+          Divider(
+            thickness: 3,
+            color: const Color.fromARGB(145, 158, 158, 158),
+            endIndent: 16,
+            indent: 16,
+          ),
           SizedBox(height: 16),
 
           Padding(
@@ -215,6 +238,7 @@ class _TeamSearchState extends State<TeamSearch> {
                     : Column(
                       spacing: 16,
                       children: List.generate(_teamResults.length, (index) {
+                        
                         final team = _teamResults[index];
 
                         return FutureBuilder(
@@ -229,10 +253,8 @@ class _TeamSearchState extends State<TeamSearch> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color:
-                                          Colors
-                                              .grey, 
-                                      width: 2, 
+                                      color: Colors.grey,
+                                      width: 2,
                                     ),
                                   ),
                                   child: Stack(
@@ -249,9 +271,12 @@ class _TeamSearchState extends State<TeamSearch> {
 
                             if (snapshot.hasData) {
                               final pokemon = snapshot.data;
-
+                                
                               team["pokemon"] = pokemon;
-                              team["color"] = ColorClass.generateColorFromString(team["name"]);
+                              team["color"] =
+                                  ColorClass.generateColorFromString(
+                                    team["name"],
+                                  );
                               return TeamSearchItem(team: team);
                             }
 
@@ -265,13 +290,15 @@ class _TeamSearchState extends State<TeamSearch> {
           // BOTTOM LOADER: Positioned outside the Column
           if ((!_noMoreResults && _teamResults.isNotEmpty) || _isLoading)
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 24, 0, 24),
+              padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 16),
                 width: double.infinity,
                 child: Center(child: PokeballLoader()),
               ),
             ),
+
+          SizedBox(height: 64,)
         ],
       ),
     );
