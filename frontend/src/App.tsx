@@ -7,6 +7,7 @@ import Search from "./pages/search.tsx";
 import ResetPass from "./pages/resetpass.tsx"; 
 import TeamsPage from "./pages/Teams.tsx"; 
 import ResetPassPage from "./pages/ResetPassPage.tsx"; 
+import Verification from "./pages/Verification.tsx";
 
 
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/resetpass" element={<ResetPass/>} />
           <Route path="/teams" element={<ProtectedRoute><TeamsPage/> </ProtectedRoute>} />
           <Route path="/forgot-password" element={<ResetPassPage/>} />
+          <Route path="/verification/:token" element={<Verification/>} />
 
 
         </Routes>

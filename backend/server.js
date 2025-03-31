@@ -130,7 +130,7 @@ const fetchDefaultMoves = async (speciesName) => {
 async function createTemporaryAccount(accountData) {
   try {
     
-    const newAccount = new temporaryAccountAccount(accountData);
+    const newAccount = new temporaryAccount(accountData);
     const savedAccount = await newAccount.save();
     console.log('Temporary Account created:', savedAccount);
     return savedAccount;
@@ -295,6 +295,71 @@ app.delete('/users/:id', async (req, res) => { // Delete user (We probably won't
       console.error('Error deleting user:', error);
       res.status(500).json({ error: 'Failed to delete user' });
   }
+});
+
+// Signup test
+app.post('/signup', async (req, res) => {
+
+        try { // given first, last, email, user, pw
+		const userData = req.body;
+		accountData = {
+			username: userData.username,
+			email: userData.email,
+			password: userData.password
+		};
+		// post to waitingForVerificationDb
+		const tempAccount = createTemporaryAccount(accountData);
+		// then send email containing related ID
+		const token = jwt.sign(
+			accountData,
+			process.env.JWT_SECRET,
+			{ expiresIn: "1w" }
+		);
+		const link = `http://localhost:5001/verification/${token}`;
+		const emailToSend = {
+			to: userData.email,
+			from: 'lance@pokeverse.space',
+			subject: 'Verify Your Account',
+			text: `Hello ${userData.username}!\n\n
+				We are excited for you to join our platform, but before you receive full access to our service, we ask that you verify your account.\n\n
+				Please click the link below to verify your account.\n
+				${link}\n\n
+				Thank you,\n
+				The Pokeverse Team`
+		};
+		await sendgrid.send(emailToSend);
+		return res.json({ message: "A verification email has been sent to your email.\n Please verify your email within a week."});
+        } catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: "Error creating account"});
+        }
+});
+
+// Verification test
+app.post('/verification', async (req, res) => {
+
+        try {
+                // given ID, find entry in waitingForVerificationDb
+                const token = req.body.token;
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		const userData = decoded;
+		const account = await temporaryAccount.findOne({email: userData.email});
+		if (!account) return res.status(400).json({ error: "User does not exist"});
+		// add entry to Users
+    const accountData = {
+      "username": account.username,
+      "email": account.email,
+      "password": account.password
+    }
+		const newAccount = createAccount(accountData);
+		// remove tempAccount from tempAccCollection
+		const deletedUser = await temporaryAccount.deleteOne({_id: account._id});
+    return res.status(200).json({ message: "Successfully created your account! Please enjoy our services!"});
+        } catch (error) {
+                console.error(error);
+		return res.status(500).json({ error: "Error verifying account"});
+        }
+
 });
 
 /*
