@@ -8,6 +8,12 @@ const ResetPasswordPage = () => {
   const [message, setMessage] = useState("");
   const { token } = useParams(); // Get the token from the URL
   const navigate = useNavigate(); 
+  var apiURL="";
+
+  if (import.meta.env.NODE_ENV === 'development') {
+    apiURL="http://localhost:5001";
+  }
+  else apiURL="http://pokeverse.space:5001";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +23,7 @@ const ResetPasswordPage = () => {
       return;
     }  
     try {
-      const response = await fetch("http://localhost:5001/users/reset-password", {
+      const response = await fetch(apiURL+"/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword }),
