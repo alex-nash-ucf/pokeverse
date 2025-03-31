@@ -7,11 +7,8 @@ import Search from "./pages/search.tsx";
 import ResetPass from "./pages/resetpass.tsx"; 
 import TeamsPage from "./pages/Teams.tsx"; 
 import ResetPassPage from "./pages/ResetPassPage.tsx"; 
-<<<<<<< HEAD
 import Verification from "./pages/Verification.tsx";
-=======
 import ViewTeamPage from './pages/ViewTeamPage.tsx';
->>>>>>> 005bc33ce01b8c4110665b091142db3aac332c05
 
 
 
@@ -32,12 +29,9 @@ function App() {
           <Route path="/resetpass" element={<ResetPass/>} />
           <Route path="/teams" element={<ProtectedRoute><TeamsPage/> </ProtectedRoute>} />
           <Route path="/forgot-password" element={<ResetPassPage/>} />
-<<<<<<< HEAD
           <Route path="/verification/:token" element={<Verification/>} />
-=======
           <Route path="/team/:teamId" element={<ProtectedRoute><ViewTeamPage /></ProtectedRoute>} />
 
->>>>>>> 005bc33ce01b8c4110665b091142db3aac332c05
 
 
         </Routes>
