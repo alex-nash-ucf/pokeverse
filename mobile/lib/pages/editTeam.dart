@@ -114,6 +114,7 @@ class _EditTeamState extends State<EditTeam> {
                 String newName = _textController.text;
                 if (newName.isNotEmpty) {
                   ApiService().editTeamName(widget.team?["_id"], newName);
+                  widget.team?["name"] = newName;
                   updateTeamNameAndColor(
                     newName,
                     ColorClass.generateColorFromString(newName),
