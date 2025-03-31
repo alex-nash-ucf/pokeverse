@@ -224,12 +224,69 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        // Successfully received data, parse the response body as JSON
         final List<dynamic> moves = json.decode(response.body);
-        // You can also map the response to a List of Map<String, dynamic> if necessary
         return List<Map<String, dynamic>>.from(moves);
       } else {
         throw Exception('Failed to load Pokemon moves');
+      }
+    } catch (error) {
+      throw Exception('Error occurred: $error');
+    }
+  }
+
+  Future<void> deletePokemon(String teamId, String pokemonId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/deletePokemon/$teamId/$pokemonId'),
+        headers: {'Authorization': 'Bearer $TOKEN'},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData['message']);
+      } else if (response.statusCode == 404) {
+        throw Exception('Team or Pokemon not found.');
+      } else {
+        throw Exception('Failed to delete Pokemon');
+      }
+    } catch (error) {
+      throw Exception('Error occurred: $error');
+    }
+  }
+
+  Future<Map<String, dynamic>> addPokemon(
+    String speciesName,
+    String teamId,
+    int pokedexNumber,
+  ) async {
+    // Validate required parameters
+    if (speciesName.isEmpty || teamId.isEmpty) {
+      throw Exception('All required fields must be provided.');
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/addPokemon'),
+        headers: {
+          'Authorization': 'Bearer $TOKEN',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'speciesName': speciesName,
+          'teamId': teamId,
+          'pokedexNumber': pokedexNumber,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        return responseData;
+      } else if (response.statusCode == 400) {
+        throw Exception('Bad request: ${response.body}');
+      } else if (response.statusCode == 404) {
+        throw Exception('Team not found or invalid input.');
+      } else {
+        throw Exception('Failed to add Pokemon to team');
       }
     } catch (error) {
       throw Exception('Error occurred: $error');

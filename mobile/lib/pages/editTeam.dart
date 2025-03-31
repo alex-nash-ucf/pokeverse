@@ -3,6 +3,7 @@ import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/classes/globals.dart';
 import 'package:mobile/componenets/teamEditItem.dart';
+import 'package:mobile/pages/pokemonSearch.dart';
 import 'package:mobile/pages/teamSearch.dart';
 
 class EditTeam extends StatefulWidget {
@@ -243,9 +244,7 @@ class _EditTeamState extends State<EditTeam> {
                       padding: EdgeInsets.fromLTRB(12, 16, 12, 4),
                       child: ElevatedButton(
                         onPressed: () {
-                          // String id = widget.team?["_id"];
-                          // ApiService().deleteTeam(id);
-                          // ScreenManager().setScreen(TeamSearch());
+                          ScreenManager().setScreen(PokemonSearch(team: widget.team));
                         },
                         style: ElevatedButton.styleFrom(
                           elevation: 6,

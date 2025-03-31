@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/globals.dart';
+import 'package:mobile/componenets/teamSearchItem.dart';
+import 'package:mobile/pages/editPokemon.dart';
+import 'package:mobile/pages/editTeam.dart'; // Import the edit team page for navigation
 
 class PokemonSearchItem extends StatefulWidget {
+  final Map<String, dynamic>? team;
   final Color color;
   final String name;
   final int index;
@@ -10,7 +16,8 @@ class PokemonSearchItem extends StatefulWidget {
     super.key,
     this.color = Colors.blue,
     this.name = "PokemonName",
-    this.index = 0,
+    this.index = 0, 
+    this.team,
   });
 
   @override
@@ -22,11 +29,8 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
   Widget build(BuildContext context) {
     // Determine if the background is light or dark
     final bool isDarkBackground = widget.color.computeLuminance() < 0.5;
-
     final Color backgroundColor =
-        isDarkBackground
-            ? widget.color
-            : ColorClass.darkenColor(widget.color, 0.11); 
+        isDarkBackground ? widget.color : ColorClass.darkenColor(widget.color, 0.11);
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -35,28 +39,26 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Shadow color
-            offset: Offset(0, 4), // Shadow offset (horizontal, vertical)
-            blurRadius: 6, // Spread the shadow
-            spreadRadius: 1, // Spread the shadow a little more
+            color: Colors.black.withOpacity(0.2), 
+            offset: Offset(0, 4), 
+            blurRadius: 6,
+            spreadRadius: 1, 
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          12,
-        ), // Ensure child is clipped with rounded corners
+        borderRadius: BorderRadius.circular(12),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.all(16),
-            backgroundColor:
-                backgroundColor, // Use the adjusted background color
+            backgroundColor: backgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
           child: Stack(
             children: [
+              // Pokeball and Image Widgets (same as before)
               Align(
                 alignment: Alignment.bottomRight,
                 child: Transform.rotate(
@@ -78,7 +80,6 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                   ),
                 ),
               ),
-
               Align(
                 alignment: Alignment.bottomRight,
                 child: Transform.translate(
@@ -102,27 +103,26 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                   children: [
                     Text(
                       widget.name.isNotEmpty
-                          ? widget.name[0].toUpperCase() +
-                              widget.name.substring(1)
+                          ? widget.name[0].toUpperCase() + widget.name.substring(1)
                           : widget.name,
                       style: TextStyle(
                         fontFamily: 'Pokemon GB',
-                        color:
-                            isDarkBackground
-                                ? Colors.white
-                                : const Color.fromARGB(255, 5, 19, 53),
+                        color: isDarkBackground
+                            ? Colors.white
+                            : const Color.fromARGB(255, 5, 19, 53),
                         fontSize: 16,
                         letterSpacing: -1,
                         fontWeight: FontWeight.bold,
                         fontStyle: FontStyle.italic,
                         shadows: [
                           Shadow(
-                            color: !isDarkBackground ? const Color.fromARGB(119, 255, 255, 255)
+                            color: !isDarkBackground
+                                ? const Color.fromARGB(119, 255, 255, 255)
                                 : const Color.fromARGB(144, 5, 19, 53), 
                             offset: Offset(2, 2), 
                             blurRadius: 4, 
-                            
-                          ),]
+                          ),
+                        ],
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -130,14 +130,12 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
                       "#${widget.index}",
                       style: TextStyle(
                         fontFamily: 'Pokemon GB',
-                        color:
-                            isDarkBackground
-                                ? const Color.fromARGB(150, 255, 255, 255)
-                                : const Color.fromARGB(100, 0, 0, 0),
+                        color: isDarkBackground
+                            ? const Color.fromARGB(150, 255, 255, 255)
+                            : const Color.fromARGB(100, 0, 0, 0),
                         fontSize: 14,
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.bold,
-                        
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -146,8 +144,21 @@ class _PokemonSearchItemState extends State<PokemonSearchItem> {
               ),
             ],
           ),
-          onPressed: () {
-            print("Button Pressed");
+          onPressed: () async {
+
+            final response = await ApiService().addPokemon(
+              widget.name,
+              widget.team?["_id"],
+              widget.index,
+            );
+            
+            if (response != null) {
+              final pokemon = response['pokemon'];
+              final new_team = widget.team;
+              new_team?["pokemon"].add(pokemon);
+              ScreenManager().setScreen(EditPokemon(pokemon: pokemon, color: widget.color, team: new_team,));
+            }
+
           },
         ),
       ),

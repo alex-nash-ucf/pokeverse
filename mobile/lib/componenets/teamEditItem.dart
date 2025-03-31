@@ -7,12 +7,13 @@ import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
 import 'package:mobile/classes/globals.dart';
+import 'package:mobile/componenets/pokeballLoading.dart';
 import 'package:mobile/pages/editPokemon.dart';
 
 class TeamEditItem extends StatefulWidget {
   final Map<String, dynamic>? pokemon;
-    final Map<String, dynamic>? team;
-  const TeamEditItem({super.key, this.pokemon, this.team, });
+  final Map<String, dynamic>? team;
+  const TeamEditItem({super.key, this.pokemon, this.team});
 
   @override
   _TeamEditItemState createState() => _TeamEditItemState();
@@ -30,7 +31,23 @@ class _TeamEditItemState extends State<TeamEditItem> {
       builder: (BuildContext context, AsyncSnapshot<Color> snapshot) {
         // If the data is still loading
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Center(
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 13 ,horizontal: 8),
+              padding: EdgeInsets.fromLTRB(0, 64, 0, 64), // Apply padding here
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey, // Border color
+                  width: 2, // Border width
+                ),
+                borderRadius: BorderRadius.circular(
+                  8,
+                ), // Optional: rounded corners
+              ),
+              child: Center(child: PokeballLoader()),
+            ),
+          );
         }
 
         // If there is an error
@@ -42,8 +59,9 @@ class _TeamEditItemState extends State<TeamEditItem> {
         if (snapshot.hasData) {
           Color color = snapshot.data ?? Color.fromRGBO(255, 255, 255, 1);
           String name =
-              widget
-                  .pokemon?["nickname"]; // widget.pokemon?["nickname"] ?? "ERROR";
+              widget.pokemon?["nickname"] ??
+              widget.pokemon?["name"] ??
+              "ERROR"; // widget.pokemon?["nickname"] ?? "ERROR";
           int index = widget.pokemon?["index"] ?? 0;
           List<dynamic> moves = widget.pokemon?["moves"] ?? [];
 
@@ -157,22 +175,13 @@ class _TeamEditItemState extends State<TeamEditItem> {
 
                           Divider(
                             thickness: 3,
-                            color: isDarkBackground
-                                          ? const Color.fromARGB(
-                                            255,
-                                            255,
-                                            255,
-                                            255,
-                                          )
-                                          : const Color.fromARGB(
-                                            255,
-                                            5,
-                                            19,
-                                            53,
-                                          ),
+                            color:
+                                isDarkBackground
+                                    ? const Color.fromARGB(255, 255, 255, 255)
+                                    : const Color.fromARGB(255, 5, 19, 53),
                           ),
 
-                          SizedBox(height: 8,),
+                          SizedBox(height: 8),
 
                           Text(
                             "Moves:",
@@ -212,7 +221,7 @@ class _TeamEditItemState extends State<TeamEditItem> {
                             maxLines: 1,
                           ),
 
-                          SizedBox(height: 8,),
+                          SizedBox(height: 8),
 
                           ...List.generate(moves.length, (num) {
                             return Text(
@@ -258,7 +267,6 @@ class _TeamEditItemState extends State<TeamEditItem> {
                               maxLines: 1,
                             );
                           }),
-
 
                           // // ability
                           // SizedBox(height: 8,),
@@ -345,14 +353,18 @@ class _TeamEditItemState extends State<TeamEditItem> {
                           //     overflow: TextOverflow.ellipsis,
                           //     maxLines: 1,
                           //   )
-
-
                         ],
                       ),
                     ],
                   ),
                   onPressed: () {
-                    ScreenManager().setScreen(EditPokemon(pokemon: widget.pokemon, color: color, team: widget.team,));
+                    ScreenManager().setScreen(
+                      EditPokemon(
+                        pokemon: widget.pokemon,
+                        color: color,
+                        team: widget.team,
+                      ),
+                    );
                   },
                 ),
               ),
