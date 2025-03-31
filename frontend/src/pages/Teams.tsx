@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from "../components/nav.tsx"; 
 import { SideNav, SidebarItem } from "../components/sideNav.tsx";
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import './HomePage.css';
 interface Team {
   _id: string;
   name: string;
-  pokemon: any[]; // You can define a more specific Pokemon interface if needed
+  pokemon: any[];
 }
 
 const Teams = () => {
@@ -20,43 +20,74 @@ const Teams = () => {
   const [showModal, setShowModal] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<{ id: string | null, name: string | null }>({ id: null, name: null });
   const [popoverPosition, setPopoverPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
-  var apiURL="";
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<number | undefined>(undefined);  
+  var apiURL = "";
 
   if (import.meta.env.NODE_ENV === 'development') {
-    apiURL="http://localhost:5001";
+    apiURL = "http://localhost:5001";
+  } else {
+    apiURL = "http://pokeverse.space:5001";
   }
-  else apiURL="http://pokeverse.space:5001";
+
+  const fetchTeams = async (query = '') => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      let url = `${apiURL}/getTeams`;
+      if (query) {
+        url = `${apiURL}/getTeams/${encodeURIComponent(query)}`;
+      }
+
+      setIsSearching(true);
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch teams');
+      }
+
+      const data = await response.json();
+      if (data.message && data.message.includes('No teams found')) {
+        setTeams([]);
+      } else {
+        setTeams(Array.isArray(data) ? data : []); 
+      }
+    } catch (err) {
+      setError('Error fetching teams');
+      setTeams([]); 
+    } finally {
+      setLoading(false);
+      setIsSearching(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          navigate('/login');
-          return;
-        }
-
-        const response = await fetch(`${apiURL}/getTeams`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch teams');
-        }
-
-        const data = await response.json();
-        setTeams(data);
-      } catch (err) {
-        setError('Error fetching teams');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTeams();
   }, [navigate]);
+
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchTeams(searchQuery);
+    }, 300);
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
 
   const handleCreateTeam = async () => {
     if (!newTeamName.trim()) {
@@ -92,7 +123,7 @@ const Teams = () => {
   const handleDeleteTeam = (teamId: string, teamName: string, event: React.MouseEvent) => {
     setTeamToDelete({ id: teamId, name: teamName });
     const { top, left } = (event.target as HTMLElement).getBoundingClientRect();
-    setPopoverPosition({ top: top + 20, left: left - 80 }); // Adjust positioning as needed
+    setPopoverPosition({ top: top + 20, left: left - 80 });
     setShowModal(true);
   };
   
@@ -113,11 +144,11 @@ const Teams = () => {
       }
 
       setTeams(teams.filter(team => team._id !== teamToDelete.id));
-      setShowModal(false); // Close the modal after successful deletion
-      setTeamToDelete({ id: null, name: null }); // Reset the team to delete
+      setShowModal(false);
+      setTeamToDelete({ id: null, name: null });
     } catch (err) {
       setError('Error deleting team');
-      setShowModal(false); // Close the modal in case of an error
+      setShowModal(false);
     }
   };
 
@@ -136,11 +167,11 @@ const Teams = () => {
               icon={<img src="/assets/search.svg" alt="Search" className="w-5 h-5" />}
               text="Search"
               onClick={() => navigate('/search')} 
-              active
+              
             /> 
           </SideNav>
           <div className="flex-1 p-4">
-            <p className= "!text-black">Loading teams...</p>
+            <p className="!text-black">Loading teams...</p>
           </div>
         </div>
       </div>
@@ -149,7 +180,9 @@ const Teams = () => {
 
   return (
     <div className="hero-class flex flex-col min-h-screen w-screen bg-white overflow-hidden">
+      <div className="z-10 flex flex-1">
       <Navbar />
+      </div>
       <div className="flex flex-1">
         <SideNav>
           <SidebarItem 
@@ -161,102 +194,115 @@ const Teams = () => {
             icon={<img src="/assets/search.svg" alt="Search" className="w-5 h-5" />}
             text="Search"
             onClick={() => navigate('/search')} 
-            active
+            
           /> 
         </SideNav>
 
         <div className="flex-1 mt-10 p-4">
           <h1 className="text-2xl font-bold !text-black mb-2">Your Teams</h1>
-                    
-          {teams.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="mb-4 !text-black">You don't have any teams yet.</p>
-              <button 
-                onClick={() => navigate('/search')}
-                className="!bg-blue-300 hover:bg-blue-600 text-white px-4 mb-2 py-2 rounded"
-              >
-                Create A Team
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div className="flex justify-between items-center mb-4">
+          
+          {/* searchbar*/}
+          <div className="mb-6 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search teams by name..."
+              className="mt-3 w-full md:w-[700px] lg:w-[950px] p-2 !border rounded !text-black focus:outline-none focus:ring-2 focus:ring-blue-300 pr-10"/>
+              {isSearching && (
+              <div className="absolute right-3 top-2.5">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-between items-center mb-4">
+            <button 
+              onClick={() => setShowCreateForm(true)}
+              className="!bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Create New Team
+            </button>
+          </div>
+
+          {/* Team count header */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold !text-black">
+              {searchQuery ? 'Search Results' : 'Your Teams'} ({teams.length})
+            </h2>
+          </div>
+
+          {showCreateForm && (
+            <div className="mb-6 p-4 bg-gray-100 rounded">
+              <h3 className="font-medium mb-2 !text-black">Create A New Team</h3>
+              <input
+                type="text"
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+                placeholder="Enter team name"
+                className="w-full !text-black p-2 !border rounded mb-2"
+              />
+              <div className="flex gap-2">
                 <button 
-                  onClick={() => setShowCreateForm(true)}
-                  className="!bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                  onClick={handleCreateTeam}
+                  className="!bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
                 >
-                  Create New Team
+                  Create
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    setNewTeamName('');
+                  }}
+                  className="!bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                  Cancel
                 </button>
               </div>
+            </div>
+          )}
 
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold !text-black">Your Teams ({teams.length})</h2>
-              </div>
-
-              {showCreateForm && (
-                <div className="mb-6 p-4 bg-gray-100 rounded">
-                  <h3 className="font-medium mb-2 !text-black">Create A New Team</h3>
-                  <input
-                    type="text"
-                    value={newTeamName}
-                    onChange={(e) => setNewTeamName(e.target.value)}
-                    placeholder="Enter team name"
-                    className="w-full !text-black p-2 !border rounded mb-2"
-                  />
-                  <div className="flex gap-2">
+          {teams.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="mb-4 !text-black">
+                {searchQuery ? 
+                  'No teams found matching your search.' : 
+                  'You don\'t have any teams yet.'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teams.map(team => (
+                <div key={team._id} className="border rounded-lg p-4 shadow-sm">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg !text-black font-medium">{team.name}</h3>
+                  </div>
+                  <p className="text-gray-600 mb-3">
+                    {team.pokemon.length} Pokémon
+                  </p>
+                  <div className="flex justify-between items-center">
                     <button 
-                      onClick={handleCreateTeam}
-                      className="!bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    onClick={() => navigate(`/team/${team._id}`, { state: { teamName: team.name } })}                      className="!bg-gray-100 text-blue-500 w-full "
                     >
-                      Create
+                      View
                     </button>
+
                     <button 
-                      onClick={() => {
-                        setShowCreateForm(false);
-                        setNewTeamName('');
-                      }}
-                      className="!bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                      onClick={() => navigate('/search')}
+                      className="ml-4 !bg-gray-100 text-green-500 w-full "
                     >
-                      Cancel
+                      Add
+                    </button>
+                    
+                    <button 
+                      onClick={(e) => handleDeleteTeam(team._id, team.name, e)}
+                      className="text-red-500 !bg-gray-100 hover:text-red-700 ml-4"
+                    >
+                      Delete
                     </button>
                   </div>
                 </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {teams.map(team => (
-                  <div key={team._id} className="border rounded-lg p-4 shadow-sm">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg !text-black font-medium">{team.name}</h3>
-                    </div>
-                    <p className="text-gray-600 mb-3">
-                      {team.pokemon.length} Pokémon
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <button 
-                        onClick={() => navigate(`/team/${team._id}`, { state: { teamName: team.name } })}
-                        className="!bg-gray-100 text-blue-500 w-full "
-                      >
-                        View
-                      </button>
-
-                      <button 
-                        onClick={() => navigate('/search')}
-                        className="ml-4 !bg-gray-100 text-green-500 w-full "
-                      >
-                        Add
-                      </button>
-                      
-                      <button 
-                        onClick={(e) => handleDeleteTeam(team._id, team.name, e)}
-                        className="text-red-500 !bg-gray-100 hover:text-red-700 ml-4"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           )}
         </div>
@@ -290,7 +336,6 @@ const Teams = () => {
           </div>
           <div>
             {error && <p>{error}</p>}
-            {/* Other component code */}
           </div>
         </div>
       )}

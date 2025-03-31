@@ -21,7 +21,7 @@ const LoggedIn = () => {
           <SidebarItem 
             icon={<img src="/assets/teams.png" alt="Teams" className="w-6 h-4" />}
             text="Teams" 
-            active
+            
             onClick={() => navigate('/teams')} 
           />
 

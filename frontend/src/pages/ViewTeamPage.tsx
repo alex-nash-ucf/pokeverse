@@ -117,12 +117,12 @@ const ViewTeamPage = () => {
             <SidebarItem 
               icon={<img src="/assets/teams.png" alt="Teams" className="w-6 h-4" />}
               text="Teams" 
-              onClick={() => navigate('/teams')} 
+              onClick={() => navigate('/teams')} active
             />
             <SidebarItem
               icon={<img src="/assets/search.svg" alt="Search" className="w-5 h-5" />}
               text="Search"
-              onClick={() => navigate('/search')} 
+              onClick={() => navigate('/search')} active
             /> 
           </SideNav>
           <div className="flex-1 p-4">
@@ -172,7 +172,7 @@ const ViewTeamPage = () => {
           <SidebarItem 
             icon={<img src="/assets/teams.png" alt="Teams" className="w-6 h-4" />}
             text="Teams" 
-            onClick={() => navigate('/teams')} 
+            onClick={() => navigate('/teams')} active
           />
           <SidebarItem
             icon={<img src="/assets/search.svg" alt="Search" className="w-5 h-5" />}

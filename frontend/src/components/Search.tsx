@@ -62,17 +62,14 @@ const Search = () => {
     };
   }*/
 
-  interface Ability {
-    name: string;
-    url: string;
-    is_hidden: boolean;
-    slot: number;
-  }
-
-  interface AbilityResponse {
-    abilities: Ability[];
-    data: { name: string }[];
-  }
+    interface Ability {
+      name: string;
+      url: string;
+      is_hidden: boolean;
+      slot: number;
+    }
+    
+    type AbilityResponse = Ability[]; 
 
 
   interface Move {
@@ -86,6 +83,11 @@ const Search = () => {
     moves: Move[];
     data: { name: string }[];
   }
+  interface AddPokemonResponse {
+    message: string;
+   
+  }
+  
   
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [filteredPokemon, setFilteredPokemon] = useState<Pokemon[]>([]);
@@ -198,25 +200,20 @@ const Search = () => {
     try {
       // Fetch abilities
       const abilitiesResponse = await axios.get<AbilityResponse>(`${apiURL}/pokemon-abilities/${pokemon.name}`);
-      if (Array.isArray(abilitiesResponse.data)) {
-          setAbilities(abilitiesResponse.data.map((ab: any) => ab.name));
-          setSelectedAbility(abilitiesResponse.data[0]?.name || '');
-        }else {
-        console.error("abilitiesResponse.data is not an array", abilitiesResponse.data);
-      }
-
+      const abilityNames = abilitiesResponse.data.map(ability => ability.name);
+      setAbilities(abilityNames);
+      setSelectedAbility(abilityNames[0] || '');
+  
       // Fetch moves
       const movesResponse = await axios.get<MoveResponse>(`${apiURL}/pokemon-moves/${pokemon.name}`);
       if (Array.isArray(movesResponse.data)) {
-        setAbilities(movesResponse.data.map((ab: any) => ab.name));
         const moveNames = movesResponse.data.map((move: any) => move.name);
         setMoves(moveNames);
-      setSelectedMoves(moveNames.slice(0, 4));
-      }else {
-        console.error("abilitiesResponse.data is not an array", abilitiesResponse.data);
-      } 
-      
-
+        setSelectedMoves(moveNames.slice(0, 4));
+      } else {
+        console.error("Moves data is not an array", movesResponse.data);
+      }
+  
       setShowAddModal(true);
     } catch (error) {
       console.error('Error fetching pokemon data:', error);
@@ -225,19 +222,16 @@ const Search = () => {
   };
 
   const handleAddToTeam = async () => {
-    // Validate required fields
     if (!selectedPokemon || !selectedAbility || selectedMoves.some(move => !move)) {
       setErrorMessage('Please select all required fields');
       return;
     }
   
-    // Validate exactly 4 moves
     if (selectedMoves.length !== 4) {
       setErrorMessage('Please select exactly 4 moves');
       return;
     }
   
-    // Validate team selection
     if (!selectedTeamId) {
       setErrorMessage('Please select a team');
       return;
@@ -250,27 +244,31 @@ const Search = () => {
         return;
       }
   
-      // Prepare the request data
+      // Get the full abilities list to find the index
+      const abilitiesResponse = await axios.get<AbilityResponse>(`${apiURL}/pokemon-abilities/${selectedPokemon.name}`);
+      const abilityIndex = abilitiesResponse.data.findIndex(ab => ab.name === selectedAbility);
+  
+      if (abilityIndex === -1) {
+        setErrorMessage('Selected ability not found');
+        return;
+      }
+  
       const requestData = {
         speciesName: selectedPokemon.name,
         teamId: selectedTeamId,
-        pokedexNumber: Number(selectedPokemon.pokedexNumber), // Ensure number
-        ability: selectedAbility,
-        moves: selectedMoves.filter(Boolean) // Remove empty strings
+        pokedexNumber: Number(selectedPokemon.pokedexNumber),
+        ability: abilityIndex,
+        moves: selectedMoves.filter(Boolean) 
       };
   
-      console.log('Sending data:', requestData); // Debug log
-  
-      const response = await axios.post(`${apiURL}/addPokemon`, requestData, {
+      const response = await axios.post<AddPokemonResponse>(`${apiURL}/addPokemon`, requestData, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
   
-      console.log('Response:', response.data); // Debug log
-  
-      setSuccessMessage('Pokémon added to team successfully!');
+      setSuccessMessage(response.data.message || 'Pokémon added to team successfully!');
       setTimeout(() => {
         setShowAddModal(false);
         setSuccessMessage('');
@@ -278,10 +276,13 @@ const Search = () => {
       
     } catch (error: any) {
       console.error('Detailed error:', error.response?.data || error.message);
-      setErrorMessage(error.response?.data?.message || 'Failed to add Pokémon. Please try again.');
+      setErrorMessage(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        'Failed to add Pokémon. Please try again.'
+      );
     }
   };
-
   const TypeIcon = ({ type }: { type: string }) => {
     const [imgError, setImgError] = useState(false);
     const normalizedType = type.toLowerCase();
@@ -437,7 +438,7 @@ const Search = () => {
               }}
               className="px-4 py-2 !bg-gray-300 rounded"
             >
-              Cancel
+              Close
             </button>
           </div>
         </div>
