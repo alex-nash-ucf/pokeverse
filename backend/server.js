@@ -1,6 +1,7 @@
 const http = require('http');
 
-const hostname = 'localhost'; // Localhost
+const apiURL="http://pokeverse.space:5001";
+//const apiURL="http://localhost:5001";
 
 const express = require('express');
 const axios = require('axios');
@@ -118,7 +119,7 @@ const fetchAbilities = async (speciesName) => {
 // Helper function to fetch moves for a Pokemon species from your /pokemon-moves endpoint
 const fetchDefaultMoves = async (speciesName) => {
   try {
-    const response = await axios.get(`http://localhost:5001/pokemon-moves/${speciesName}`); // Adjust path if needed
+    const response = await axios.get(apiURL+`/pokemon-moves/${speciesName}`); // Adjust path if needed
     return response.data.slice(0, 4).map(move => move.name);
   } catch (error) {
     console.error('Error fetching default moves:', error);
@@ -210,7 +211,7 @@ app.post('/users/forgot-password', async (req, res) => {
       { expiresIn: "1w" }
     );
     
-    const link = `https://localhost:5001/reset-password/${token}`;
+    const link = apiURL+`/reset-password/${token}`;
 
     const email_msg =
     {
@@ -315,7 +316,7 @@ app.post('/signup', async (req, res) => {
 			process.env.JWT_SECRET,
 			{ expiresIn: "1w" }
 		);
-		const link = `http://localhost:5001/verification/${token}`;
+		const link = apiURL+`/verification/${token}`;
 		const emailToSend = {
 			to: userData.email,
 			from: 'lance@pokeverse.space',
