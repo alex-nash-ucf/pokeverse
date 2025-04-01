@@ -7,37 +7,37 @@ const ResetPasswordForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const apiURL = import.meta.env.NODE_ENV === 'development'
+    const apiURL = import.meta.env.MODE === 'development'  // Changed from NODE_ENV to MODE
       ? "http://localhost:5001"
       : "http://pokeverse.space:5001";
-
+  
     try {
       const response = await fetch(`${apiURL}/forgot-password`, {
         method: "POST",
         body: JSON.stringify({ email }),
         headers: { "Content-Type": "application/json" },
       });
-
-      if (!response.ok) {
-        setMessage("Error: Invalid response from server");
-        return;
-      }
-
+  
       const res = await response.json();
       console.log("Reset Password response:", res);
-
-      if (res.success) {
-        setMessage("Password reset instructions have been sent to your email.");
-      } else {
-        setMessage("Email not found or unable to send reset instructions.");
+  
+      if (!response.ok) {
+        // Use server error message if available, fallback to generic message
+        setMessage(res.message || "Error occurred while sending reset email. Please make sure email is valid and try again.");
+        return;
       }
-
+  
+      // Successful response handling
+      if (res.message) {
+        setMessage(res.message);
+      } else {
+        setMessage("Password reset instructions have been sent to your email.");
+      }
+  
     } catch (error) {
       setMessage("Error occurred while sending reset email.");
       console.error("Reset Pass Error:", error);
     }
-    
-    console.log("Reset link sent to:", email);
   };
 
   return (
