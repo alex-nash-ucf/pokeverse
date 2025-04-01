@@ -7,15 +7,33 @@ const SignUpForm = () => {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    // requirements
+    const passwordRequirements = [
+        { regex: /.{8,}/, message: "At least 8 characters" },
+        { regex: /[A-Z]/, message: "At least one uppercase letter" },
+        { regex: /[a-z]/, message: "At least one lowercase letter" },
+        { regex: /[0-9]/, message: "At least one number" },
+        { regex: /[^A-Za-z0-9]/, message: "At least one special character" }
+    ];
+
     const apiURL = import.meta.env.MODE === 'development' 
         ? "http://localhost:5001" 
         : "http://pokeverse.space:5001";
 
+    // check password meets requirements
+    const isPasswordValid = () => {
+        return passwordRequirements.every(req => req.regex.test(password));
+    };
+
     const doSignUp = async (event: React.FormEvent): Promise<void> => {
         event.preventDefault();
+        if (!isPasswordValid()) {
+            setMessage("Please fix password requirements");
+            return;
+        }
+
         setIsLoading(true);
         setMessage("");
-
         const userData = {
             email,
             username,
@@ -27,12 +45,11 @@ const SignUpForm = () => {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Accept": "application/json" // Explicitly ask for JSON
+                    "Accept": "application/json"
                 },
                 body: JSON.stringify(userData),
             });
 
-            // First check if the response is JSON
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                 const text = await response.text();
@@ -84,15 +101,34 @@ const SignUpForm = () => {
                     <input
                         type="password"
                         required
-                        className="w-full p-3 border text-[13px] border-gray-300 text-gray-700 rounded-md h-8"
+                        className={`w-full p-3 border text-[13px] border-gray-300 text-gray-700 rounded-md h-8 ${
+                            password && !isPasswordValid() ? "border-red-500" : ""
+                        }`}
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
 
+                {/* pass requirements*/}
+                {password && (
+                    <div className="mb-2 text-[8pt] !text-gray-600">
+                        <p className="font-medium mb-1">Password requirements:</p>
+                        <div className="space-y-1">
+                            {passwordRequirements.map((req, index) => (
+                                <div 
+                                    key={index}
+                                    className={req.regex.test(password) ? "text-green-500" : "text-red-500"}
+                                >
+                                    {req.regex.test(password) ? "✓" : "*"} {req.message}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {message && (
-                    <p className={`text-sm mb-4 ${
+                    <p className={`text-[7px] ${
                         message.includes("Verification") ? "text-green-500" : "text-red-500"
                     }`}>
                         {message}
@@ -101,7 +137,7 @@ const SignUpForm = () => {
 
                 <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || (password ? !isPasswordValid() : false)}
                     className="signup-btn w-full bg-red-600 text-white py-3 rounded-md h-9 disabled:opacity-50"
                 >
                     {isLoading ? "Processing..." : "Sign Up"}
