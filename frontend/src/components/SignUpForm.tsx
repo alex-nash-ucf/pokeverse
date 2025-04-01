@@ -110,8 +110,8 @@ const SignUpForm = () => {
                     />
                 </div>
 
-                {/* pass requirements*/}
-                {password && (
+                {/* Show requirements only when password has value AND not all requirements are met */}
+                {password && !isPasswordValid() && (
                     <div className="mb-2 text-[8pt] !text-gray-600">
                         <p className="font-medium mb-1">Password requirements:</p>
                         <div className="space-y-1">
@@ -128,7 +128,7 @@ const SignUpForm = () => {
                 )}
 
                 {message && (
-                    <p className={`text-[7px] ${
+                    <p className={`text-[13px] mb-2 ${
                         message.includes("Verification") ? "text-green-500" : "text-red-500"
                     }`}>
                         {message}
