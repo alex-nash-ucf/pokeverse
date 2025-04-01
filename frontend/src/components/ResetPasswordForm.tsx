@@ -8,8 +8,8 @@ const ResetPasswordForm = () => {
     e.preventDefault();
     
     const apiURL = import.meta.env.NODE_ENV === 'development'
-      ? "http://localhost:5173"
-      : "http://pokeverse.space";
+      ? "http://localhost:5001"
+      : "http://pokeverse.space:5001";
 
     try {
       const response = await fetch(`${apiURL}/forgot-password`, {

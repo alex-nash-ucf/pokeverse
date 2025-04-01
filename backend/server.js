@@ -1,7 +1,7 @@
 const http = require('http');
 
-const apiURL="http://pokeverse.space:5001";
-//const apiURL="http://localhost:5001";
+const apiURL="http://pokeverse.space";
+//const apiURL="http://localhost:5173";
 
 const express = require('express');
 const axios = require('axios');
