@@ -20,8 +20,10 @@ class _SignUpPageState extends State<SignUpPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
-  final _fnameController = TextEditingController();
-  final _lnameController = TextEditingController();
+  bool usernameEmpty = false;
+  bool emailEmpty = false;
+  bool passwordEmpty = false;
+  bool signedUp = false;
   bool _isLoading = false;
 
   @override
@@ -29,26 +31,47 @@ class _SignUpPageState extends State<SignUpPage> {
     _usernameController.dispose();
     _passwordController.dispose();
     _emailController.dispose();
-    _fnameController.dispose();
-    _lnameController.dispose();
     super.dispose();
   }
 
   Future<void> _signUp() async {
     setState(() {
       _isLoading = true;
+      usernameEmpty = false;
+      emailEmpty = false;
+      passwordEmpty = false;
+      signedUp = false;
     });
 
     final String username = _usernameController.text.trim();
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
-    final String fname = _fnameController.text.trim();
-    final String lname = _lnameController.text.trim();
 
-    if (username.isEmpty || password.isEmpty || email.isEmpty || fname.isEmpty || lname.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all inputs.' , style: TextStyle(color: Colors.black))),
-      );
+    // if (username.isEmpty || password.isEmpty || email.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Please fill in all inputs.' , style: TextStyle(color: Colors.black))),
+    //   );
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    //   return;
+    // }
+    if (username.isEmpty) {
+      setState(() {
+        usernameEmpty = true;
+      });
+    }
+    if (password.isEmpty) {
+      setState(() {
+        passwordEmpty = true;
+      });
+    }
+    if (email.isEmpty) {
+      setState(() {
+        emailEmpty = true;
+      });
+    }
+    if(emailEmpty || passwordEmpty || usernameEmpty){
       setState(() {
         _isLoading = false;
       });
@@ -57,11 +80,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:5001/addUser'), // UPDATE API CALL
+        Uri.parse('http://pokeverse.space:5001/signup'), // UPDATE API CALL
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'firstName': fname,
-          'lastName' : lname,
           'email': email,
           'username': username,
           'password': password,
@@ -72,6 +93,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (response.statusCode == 200) {
         // SignUp successful
+        setState(() {
+          signedUp = true;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('SignUp successful', style: TextStyle(color: Colors.black))),
         );
@@ -82,16 +106,10 @@ class _SignUpPageState extends State<SignUpPage> {
         print('Name: ${responseData['firstname']} ${responseData['lastName']}');
 
         //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
-        ScreenManager().setScreen(TeamSearch());
-      } else if (response.statusCode == 401) {
-        // Invalid credentials
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['error'])),
-        );
       } else {
         // Other errors
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to sign up: ${responseData['error']}', style: TextStyle(color: Colors.black))),
+          SnackBar(content: Text('${responseData['error']}', style: TextStyle(color: Colors.black))),
         );
       }
     } catch (e) {
@@ -118,12 +136,13 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Welcome!',
+                  'Welcome, \nJoin Us Today!',
                   style: TextStyle(
                     fontFamily: 'Pokemon GB',
                     fontSize: 20,
                     color: Colors.black,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 15),
                 Text(
@@ -145,7 +164,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     // );
                   },
                   child: Text(
-                    'Sign in.',
+                    'Login here',
                     style: TextStyle(
                       fontFamily: 'Pokemon GB',
                       fontSize: 12,
@@ -154,58 +173,68 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
-                                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 120,
-                      child: TextField(
-                        controller: _fnameController,
-                        style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: 'First Name',
-                          hintStyle: TextStyle(color: Colors.black),
-                          filled: true,
-                          fillColor: Colors.grey,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[600]!),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black), 
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                        ),
-                      )
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      width: 120,
-                      child: TextField(
-                        controller: _lnameController,
-                        style: TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: 'Last Name',
-                          hintStyle: TextStyle(color: Colors.black),
-                          filled: true,
-                          fillColor: Colors.grey,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[600]!),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black), 
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                        ),
-                      )
-                    ),
-                  ]
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Container(
+                //       width: 120,
+                //       child: TextField(
+                //         controller: _fnameController,
+                //         style: TextStyle(color: Colors.black),
+                //         decoration: InputDecoration(
+                //           hintText: 'First Name',
+                //           hintStyle: TextStyle(color: Colors.black),
+                //           filled: true,
+                //           fillColor: Colors.grey,
+                //           enabledBorder: OutlineInputBorder(
+                //             borderSide: BorderSide(color: Colors.grey[600]!),
+                //             borderRadius: BorderRadius.circular(20),
+                //           ),
+                //           focusedBorder: OutlineInputBorder(
+                //             borderSide: BorderSide(color: Colors.black), 
+                //             borderRadius: BorderRadius.circular(20),
+                //           ),
+                //           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                //         ),
+                //       )
+                //     ),
+                //     SizedBox(width: 10),
+                //     Container(
+                //       width: 120,
+                //       child: TextField(
+                //         controller: _lnameController,
+                //         style: TextStyle(color: Colors.black),
+                //         decoration: InputDecoration(
+                //           hintText: 'Last Name',
+                //           hintStyle: TextStyle(color: Colors.black),
+                //           filled: true,
+                //           fillColor: Colors.grey,
+                //           enabledBorder: OutlineInputBorder(
+                //             borderSide: BorderSide(color: Colors.grey[600]!),
+                //             borderRadius: BorderRadius.circular(20),
+                //           ),
+                //           focusedBorder: OutlineInputBorder(
+                //             borderSide: BorderSide(color: Colors.black), 
+                //             borderRadius: BorderRadius.circular(20),
+                //           ),
+                //           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                //         ),
+                //       )
+                //     ),
+                //   ]
+                // ),
                 SizedBox(height: 15),
+                if(usernameEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please enter a username.",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                 SizedBox(
                   width: 250,
                   child: TextField(
@@ -229,13 +258,24 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 15),
+                if(emailEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please enter your email.",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                 SizedBox(
                   width: 250,
                   child: TextField(
                     controller: _emailController,
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
-                      hintText: 'Email@example.com',
+                      hintText: 'Email',
                       hintStyle: TextStyle(color: Colors.black),
                       filled: true,
                       fillColor: Colors.grey,
@@ -252,6 +292,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 SizedBox(height: 15),
+                if(passwordEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please enter a password.",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                 SizedBox(
                   width: 250,
                   child: TextField(
@@ -291,6 +342,17 @@ class _SignUpPageState extends State<SignUpPage> {
                     style: TextStyle(color: Colors.white, fontFamily: 'Pokemon GB'),
                   ),
                 ),
+                if(signedUp)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please verify your email and procceed to login",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
