@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://157.230.80.230:5001/userlogin'),
+        Uri.parse('http://pokeverse.space:5001/userlogin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'login': username,

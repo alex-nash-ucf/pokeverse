@@ -8,6 +8,8 @@ import 'dart:convert';
 import 'package:mobile/screens/login.dart';
 import 'package:mobile/screens/hub.dart';
 import 'package:mobile/main.dart';
+import 'package:email_validator/email_validator.dart';
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -24,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool emailEmpty = false;
   bool passwordEmpty = false;
   bool signedUp = false;
+  bool validEmail = true;
   bool _isLoading = false;
 
   @override
@@ -41,6 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
       emailEmpty = false;
       passwordEmpty = false;
       signedUp = false;
+      validEmail = true;
     });
 
     final String username = _usernameController.text.trim();
@@ -107,10 +111,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
         //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ScreenContainer(HubScreen())));
       } else {
-        // Other errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${responseData['error']}', style: TextStyle(color: Colors.black))),
-        );
+        setState(() {
+          validEmail = false;
+        });
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('${responseData['error']}', style: TextStyle(color: Colors.black))),
+        // );
       }
     } catch (e) {
       // Handle network or server errors
@@ -173,56 +179,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     Container(
-                //       width: 120,
-                //       child: TextField(
-                //         controller: _fnameController,
-                //         style: TextStyle(color: Colors.black),
-                //         decoration: InputDecoration(
-                //           hintText: 'First Name',
-                //           hintStyle: TextStyle(color: Colors.black),
-                //           filled: true,
-                //           fillColor: Colors.grey,
-                //           enabledBorder: OutlineInputBorder(
-                //             borderSide: BorderSide(color: Colors.grey[600]!),
-                //             borderRadius: BorderRadius.circular(20),
-                //           ),
-                //           focusedBorder: OutlineInputBorder(
-                //             borderSide: BorderSide(color: Colors.black), 
-                //             borderRadius: BorderRadius.circular(20),
-                //           ),
-                //           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                //         ),
-                //       )
-                //     ),
-                //     SizedBox(width: 10),
-                //     Container(
-                //       width: 120,
-                //       child: TextField(
-                //         controller: _lnameController,
-                //         style: TextStyle(color: Colors.black),
-                //         decoration: InputDecoration(
-                //           hintText: 'Last Name',
-                //           hintStyle: TextStyle(color: Colors.black),
-                //           filled: true,
-                //           fillColor: Colors.grey,
-                //           enabledBorder: OutlineInputBorder(
-                //             borderSide: BorderSide(color: Colors.grey[600]!),
-                //             borderRadius: BorderRadius.circular(20),
-                //           ),
-                //           focusedBorder: OutlineInputBorder(
-                //             borderSide: BorderSide(color: Colors.black), 
-                //             borderRadius: BorderRadius.circular(20),
-                //           ),
-                //           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                //         ),
-                //       )
-                //     ),
-                //   ]
-                // ),
                 SizedBox(height: 15),
                 if(usernameEmpty)
                   Padding(
@@ -263,6 +219,17 @@ class _SignUpPageState extends State<SignUpPage> {
                     padding: const EdgeInsets.only(left: 12.0, top: 4.0),
                     child: Text(
                       "Please enter your email.",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                if(!validEmail)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please enter a valid email.",
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 15,
@@ -350,7 +317,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
+                        fontFamily: 'Pokemon GB'
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
               ],

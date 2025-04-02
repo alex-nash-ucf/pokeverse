@@ -20,6 +20,9 @@ class ResetPasswordPage extends StatefulWidget {
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _emailController = TextEditingController();
+  bool emailEmpty = false;
+  bool isUser = true;
+  bool isSent = false;
   bool _isLoading = false;
 
   @override
@@ -31,6 +34,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Future<void> _resetPassword() async {
     setState(() {
       _isLoading = true;
+      emailEmpty = false;
+      isUser = true;
+      isSent = false;
     });
 
     final String email = _emailController.text.trim();
@@ -41,6 +47,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
       setState(() {
         _isLoading = false;
+        emailEmpty = true;
       });
       return;
     }
@@ -57,21 +64,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Login successful
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Link sent', style: TextStyle(color: Colors.black))),
-        );
+        // Reset succesful
+        setState(() {
+          isSent = true;
+        });
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Link sent', style: TextStyle(color: Colors.black))),
+        // );
 
-        
-        // Handle the response data (e.g., save user ID, navigate to the next screen)
         print('token: ${responseData['token']}');
         TOKEN = responseData['token'];
 
-      } else if (response.statusCode == 401) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['error'], style: TextStyle(color: Colors.black))),
-        );
       } else {
+        setState(() {
+          isUser = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to send link: ${responseData['error']}', style: TextStyle(color: Colors.black))),
         );
@@ -119,6 +126,28 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 ),
                 
                 SizedBox(height: 20),
+                if(emailEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please enter your email.",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                if(!isUser)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Invalid email.",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                 SizedBox(
                   width: 250,
                   child: TextField(
@@ -174,6 +203,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     ),
                   ),
                 ),
+                if(isSent)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, top: 4.0),
+                    child: Text(
+                      "Please check your email.",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
               ],
             ),
           ),
