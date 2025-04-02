@@ -28,6 +28,13 @@ class _SignUpPageState extends State<SignUpPage> {
   bool signedUp = false;
   bool validEmail = true;
   bool _isLoading = false;
+  // Password requirements
+  bool passwordChanged = false;
+  bool isMinLength = false;
+  bool hasOneUppercase = false;
+  bool hasOneLowercase = false;
+  bool hasOneNumber = false;
+  bool hasSpecialChar = false;
 
   @override
   void dispose() {
@@ -45,6 +52,12 @@ class _SignUpPageState extends State<SignUpPage> {
       passwordEmpty = false;
       signedUp = false;
       validEmail = true;
+      passwordChanged = false;
+      isMinLength = false;
+      hasOneUppercase = false;
+      hasOneLowercase = false;
+      hasOneNumber = false;
+      hasSpecialChar = false;
     });
 
     final String username = _usernameController.text.trim();
@@ -75,12 +88,16 @@ class _SignUpPageState extends State<SignUpPage> {
         emailEmpty = true;
       });
     }
-    if(emailEmpty || passwordEmpty || usernameEmpty){
+
+    if(emailEmpty || passwordEmpty || usernameEmpty || !_isValidPassword()){
       setState(() {
         _isLoading = false;
+        passwordChanged = true;
       });
+      _checkPasswordRequirements(password);
       return;
     }
+
 
     try {
       final response = await http.post(
@@ -128,6 +145,20 @@ class _SignUpPageState extends State<SignUpPage> {
         _isLoading = false;
       });
     }
+  }
+
+  void _checkPasswordRequirements(String password){
+    setState(() {
+      isMinLength = password.length >= 8;
+      hasOneUppercase = password.contains(RegExp(r'[A-Z]'));
+      hasOneLowercase = password.contains(RegExp(r'[a-z]'));
+      hasOneNumber = password.contains(RegExp(r'[0-9]'));
+      hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    });
+  }
+
+  bool _isValidPassword(){
+    return isMinLength && hasOneLowercase && hasOneUppercase && hasOneNumber && hasSpecialChar;
   }
 
   @override
@@ -276,6 +307,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: _passwordController,
                     style: TextStyle(color: Colors.black),
                     obscureText: true,
+                    onChanged: (value) {
+                      setState(() {
+                        passwordChanged = true;
+                        _checkPasswordRequirements(value);
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: 'Password',
                       hintStyle: TextStyle(color: Colors.black),
@@ -293,6 +330,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
+                if(passwordChanged)
+                  _buildPasswordRequirements(),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _signUp,
@@ -327,6 +366,51 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPasswordRequirements(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Password must contain:',
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 5),
+        // Insert requirement text
+        _buildRequirementText('At least 8 characters', isMinLength),
+        _buildRequirementText('At least one uppercase letter', hasOneUppercase),
+        _buildRequirementText('At least one lowercase letter', hasOneLowercase),
+        _buildRequirementText('At least one number', hasOneNumber),
+        _buildRequirementText('At least one special character', hasSpecialChar),
+      ],
+    );
+  }
+
+  Widget _buildRequirementText(String requirement, bool isMet){
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          isMet ? Icons.check : Icons.close,
+          color: isMet ? Colors.green : Colors.red,
+          size: 15,
+        ),
+        SizedBox(width: 2),
+        Text(
+          requirement,
+          style: TextStyle(
+            color: isMet ? Colors.green : Colors.red,
+            fontSize: 15,
+          ),
+        )
+      ],
     );
   }
 }
