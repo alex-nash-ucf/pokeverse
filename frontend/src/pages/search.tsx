@@ -38,7 +38,7 @@ const LoggedIn = () => {
           <div className="p-4 bg-white shadow-sm  w-full rounded z-100">
           <h1 className="!text-black ml-10 sm:ml-6 md:ml-4 text-base sm:text-sm md:text-md lg:text-lg font-bold mb-4">
             Search & Add To Your Team!
-          </h1>
+          </h1 >
               <Search />
             {/* Your page content goes here */}
           </div>
