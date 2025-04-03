@@ -97,7 +97,7 @@ const Teams = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${apiURL}/addTeams`, {
+      const response = await fetch(`${apiURL}/addTeam`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
