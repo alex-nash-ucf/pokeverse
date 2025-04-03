@@ -1,7 +1,9 @@
 const http = require('http');
 
-const apiURL="http://pokeverse.space";
+const siteURL="http://pokeverse.space";
 //const apiURL="http://localhost:5173";
+
+const apiURL="http://pokeverse.space:5001";
 
 const express = require('express');
 const axios = require('axios');
@@ -124,7 +126,7 @@ const fetchDefaultMoves = async (speciesName) => {
   } catch (error) {
     console.error('Error fetching default moves:', error);
     return [null, null, null, null];
-  }
+  } 
 };
 
 
@@ -211,7 +213,7 @@ app.post('/forgot-password', async (req, res) => {
       { expiresIn: "1w" }
     );
     
-    const link = apiURL+`/reset-password/${token}`;
+    const link = siteURL+`/reset-password/${token}`;
 
     const email_msg =
     {
@@ -316,7 +318,7 @@ app.post('/signup', async (req, res) => {
 			process.env.JWT_SECRET,
 			{ expiresIn: "1w" }
 		);
-		const link = apiURL+`/verification/${token}`;
+		const link = siteURL+`/verification/${token}`;
 		const emailToSend = {
 			to: userData.email,
 			from: 'lance@pokeverse.space',
@@ -778,6 +780,7 @@ app.post('/addPokemon', verifyToken, async (req, res) => {
     const defaultMoves = moves!==undefined?moves:
     await fetchDefaultMoves(speciesName);
 
+    console.log(fetchDefaultMoves(speciesName));
     if (abilities.length === 0) {
       return res.status(404).json({ message: `Abilities not found for species: ${speciesName}` });
     }
