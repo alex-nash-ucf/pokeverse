@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/classes/ApiService.dart';
+import 'package:mobile/classes/SecureStorage.dart';
 import 'package:mobile/classes/globals.dart';
 import 'package:mobile/componenets/screenContainer.dart';
 import 'package:mobile/pages/editTeam.dart';
@@ -25,12 +26,36 @@ class _LoginPageState extends State<LoginPage> {
   bool passwordEmpty = false;
   bool isUser = true;
   bool _isLoading = false;
+  bool rememberMe = false;
+
+  @override
+  void initState(){
+    super.initState();
+    _loadSavedLogin();
+  }
 
   @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadSavedLogin() async {
+    try {
+      final savedUsername = await SecureStorage.getUsername();
+      final savedPassword = await SecureStorage.getPassword();
+      
+      if (savedUsername != null && savedPassword != null) {
+        setState(() {
+          _usernameController.text = savedUsername;
+          _passwordController.text = savedPassword;
+          rememberMe = true;
+        });
+      }
+    } catch (e){
+      print("Error loading saved credenial: $e");
+    }
   }
 
   Future<void> _login() async {
@@ -44,15 +69,6 @@ class _LoginPageState extends State<LoginPage> {
     final String username = _usernameController.text.trim();
     final String password = _passwordController.text.trim();
 
-    // if (username.isEmpty || password.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Please enter both username and password', style: TextStyle(color: Colors.black),), ),
-    //   );
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    //   return;
-    // }
     if (username.isEmpty) {
       setState(() {
         usernameEmpty = true;
@@ -84,13 +100,18 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         // Login successful
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Login successful', style: TextStyle(color: Colors.black))),
-        // );
-
-        // Handle the response data (e.g., save user ID, navigate to the next screen)
         print('token: ${responseData['token']}');
         TOKEN = responseData['token'];
+        await SecureStorage.saveToken(TOKEN);
+
+      if (rememberMe) {
+        await SecureStorage.saveCredentials(
+          _usernameController.text.trim(),
+          _passwordController.text.trim(),
+        );
+      } else {
+        await SecureStorage.clearCredentials();
+      }
 
         // GO TO SCREEN
         ScreenManager().setScreen(TeamSearch());
@@ -250,6 +271,31 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: rememberMe, 
+                      onChanged: (value){
+                        setState(() {
+                          rememberMe = value ?? false;
+                        });
+                        // print(rememberMe);
+                      },
+                      activeColor: Colors.blue,
+                      checkColor: Colors.black,
+                    ),
+                    Text(
+                      'Remember me.',
+                      style: TextStyle(
+                        fontFamily: 'Pokemon GB',
+                        fontSize: 12,
+                        color: Colors.black,
+                      ),
+                    )
+                  ],
+                ),
                 if(!isUser)
                   Padding(
                     padding: const EdgeInsets.only(left: 12.0, top: 4.0),
@@ -261,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                SizedBox(height: 20),
+                SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: _login,
                   style: ElevatedButton.styleFrom(
@@ -277,7 +323,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(color: Colors.white, fontFamily: 'Pokemon GB'),
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(height: 15,),
                 GestureDetector(
                   onTap: () {
                     ScreenManager().setScreen(ResetPasswordPage()); // Add new page
