@@ -303,7 +303,7 @@ app.delete('/users/:id', async (req, res) => { // Delete user (We probably won't
 // Signup test
 app.post('/signup', async (req, res) => {
 
-        try { // given first, last, email, user, pw
+  try { // given first, last, email, user, pw
 		const userData = req.body;
 		accountData = {
 			username: userData.username,

@@ -172,6 +172,8 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Image(image: AssetImage('assets/images/Pokeverse_Logo.png'),),
+                SizedBox(height: 15,),
                 Text(
                   'Welcome, \nJoin Us Today!',
                   style: TextStyle(

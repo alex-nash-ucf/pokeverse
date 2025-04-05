@@ -83,11 +83,6 @@ class ScreenManager {
     setScreen(TeamSearch());
   }
 
-  Future<void> logout() async {
-    await SecureStorage.clearAll();
-    setScreen(LoginPage());
-  }
-
   Widget get currentScreen => _currentScreen;
 
   void dispose() {

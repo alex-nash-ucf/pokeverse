@@ -145,19 +145,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: const Color.fromARGB(255, 255, 17, 0),
-      //   centerTitle: true,
-      //   title: Text(
-      //     'Pokeverse',
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //       fontFamily: 'Pokemon GB'
-      //     ), 
-      //   ),
-
-
-      // ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
@@ -166,6 +153,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Image(image: AssetImage('assets/images/Pokeverse_Logo.png'),),
+                SizedBox(height: 15,),
                 Text(
                   'Welcome Back!',
                   style: TextStyle(

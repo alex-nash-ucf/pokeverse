@@ -65,6 +65,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/pokeball.png
+    - assets/images/Pokeverse_Logo.png
     - assets/svg/Blue.svg
     - assets/svg/Green.svg
     - assets/svg/Yellow.svg
