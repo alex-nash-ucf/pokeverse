@@ -319,7 +319,7 @@ app.post('/signup', async (req, res) => {
 		const link = apiURL+`/verification/${token}`;
 		const emailToSend = {
 			to: userData.email,
-			from: 'lance@pokeverse.space',
+			from: 'noreply@pokeverse.space',
 			subject: 'Verify Your Account',
 			text: `Hello ${userData.username}!\n\n
 				We are excited for you to join our platform, but before you receive full access to our service, we ask that you verify your account.\n\n
