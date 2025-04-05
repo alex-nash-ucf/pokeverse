@@ -97,7 +97,7 @@ const Teams = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${apiURL}/addTeams`, {
+      const response = await fetch(`${apiURL}/addTeam`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,25 +198,29 @@ const Teams = () => {
           /> 
         </SideNav>
 
-        <div className="flex-1 mt-10 p-4">
+        <div className="top-23 fixed ml-20 right-40 left-0 h-[85vh] w-full sm:w-auto rounded bg-white shadow-sm overflow-y-auto">
+        <div className="p-4 bg-white shadow-sm  w-full rounded z-100">
           <h1 className="text-2xl font-bold !text-black mb-2">Your Teams</h1>
-          
           {/* searchbar*/}
           <div className="mb-6 relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search teams by name..."
-              className="mt-3 w-full md:w-[700px] lg:w-[950px] p-2 !border rounded !text-black focus:outline-none focus:ring-2 focus:ring-blue-300 pr-10"/>
-              {isSearching && (
-              <div className="absolute right-3 top-2.5">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
-              </div>
+            <div className="flex items-center space-x-2 mb-4">
+              <img src="/assets/search.svg" alt="Search" className="w-5 h-7" />
+
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search teams by name..."
+                className="w-full p-2 border border-gray-300 !text-black rounded bg-white z-0"/>
+                {isSearching && (
+                <div className="absolute right-3 top-2.5">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+                </div>
             )}
-          </div>
+             </div>
+             
           
-          <div className="flex justify-between items-center mb-4">
+          <div className="ml-2 flex justify-between items-center mb-4">
             <button 
               onClick={() => setShowCreateForm(true)}
               className="!bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded"
@@ -224,13 +228,7 @@ const Teams = () => {
               Create New Team
             </button>
           </div>
-
-          {/* Team count header */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold !text-black">
-              {searchQuery ? 'Search Results' : 'Your Teams'} ({teams.length})
-            </h2>
-          </div>
+        
 
           {showCreateForm && (
             <div className="mb-6 p-4 bg-gray-100 rounded">
@@ -261,6 +259,15 @@ const Teams = () => {
               </div>
             </div>
           )}
+
+           {/* Team count header */}
+           <div className="ml-2 flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold !text-black">
+              {searchQuery ? 'Search Results' : 'Your Teams'} ({teams.length})
+            </h2>
+          </div>
+
+          
 
           {teams.length === 0 ? (
             <div className="text-center py-8">
@@ -307,6 +314,8 @@ const Teams = () => {
           )}
         </div>
       </div>
+      </div>
+          </div>
 
       {/* Popover Modal */}
       {showModal && (

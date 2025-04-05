@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/globals.dart'; // Assuming this contains your globals, like ScreenManager
 import 'package:mobile/componenets/header.dart';
+import 'package:mobile/pages/teamSearch.dart';
 
 class ScreenContainer extends StatefulWidget {
   const ScreenContainer({super.key});
@@ -31,7 +32,7 @@ class _ScreenContainerState extends State<ScreenContainer> {
                       return Center(child: CircularProgressIndicator());
                     }
 
-                    Widget currentScreen = snapshot.data ?? const SizedBox(); 
+                    Widget currentScreen = snapshot.data ?? const SizedBox();
                     return currentScreen;
                   },
                 ),

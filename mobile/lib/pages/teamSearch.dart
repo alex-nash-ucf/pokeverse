@@ -4,10 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/classes/ApiService.dart';
 import 'package:mobile/classes/ColorConverter.dart';
+import 'package:mobile/classes/SecureStorage.dart';
 import 'package:mobile/classes/globals.dart';
 import 'package:mobile/componenets/pokeballLoading.dart';
 import 'package:mobile/componenets/teamSearchItem.dart';
 import 'package:mobile/pages/editTeam.dart';
+import 'package:mobile/componenets/logoutButton.dart';
+import 'package:mobile/screens/login.dart';
 
 class TeamSearch extends StatefulWidget {
   const TeamSearch({super.key});
@@ -130,8 +133,13 @@ class _TeamSearchState extends State<TeamSearch> {
       child: Column(
         children: <Widget>[
           // PADDING
-          SizedBox(height: 64 + 24),
-
+          SizedBox(height:  44), // 64 + 24
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              LogoutButton()
+            ],
+          ),
           // SEARCH BAR
           Container(
             margin: EdgeInsets.symmetric(horizontal: 32.0),

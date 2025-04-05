@@ -6,7 +6,7 @@ import 'package:mobile/pages/pokemonSearch.dart'; // Ensure this is correctly im
 import 'package:mobile/screens/login.dart';
 import 'package:mobile/themes/theme.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
