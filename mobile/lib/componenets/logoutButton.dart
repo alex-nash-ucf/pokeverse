@@ -10,6 +10,8 @@ class LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      iconSize: 32,
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       icon: const Icon(Icons.logout),
       tooltip: 'Logout',
       onPressed: () => _logoutPopup(context),

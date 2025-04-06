@@ -133,13 +133,17 @@ class _TeamSearchState extends State<TeamSearch> {
       child: Column(
         children: <Widget>[
           // PADDING
-          SizedBox(height:  44), // 64 + 24
+          SizedBox(height:  16), // 64 + 24
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              LogoutButton()
+              Padding(padding: EdgeInsets.fromLTRB(0, 0, 24, 0),
+              child: LogoutButton(),
+              )
+              
             ],
           ),
+          SizedBox(height:  32),
           // SEARCH BAR
           Container(
             margin: EdgeInsets.symmetric(horizontal: 32.0),

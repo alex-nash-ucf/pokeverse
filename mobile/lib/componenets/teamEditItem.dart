@@ -164,7 +164,7 @@ class _TeamEditItemState extends State<TeamEditItem> {
                                 ),
                                 Shadow(
                                   color: ColorClass.darkenColor(color, 0.5),
-                                  offset: Offset(0, 7.5),
+                                  offset: Offset(0, 4),
                                 ),
                               ],
                             ),
